@@ -1,0 +1,211 @@
+.page {
+  min-height: calc(100vh - 112px);
+  padding: 4rem 6rem;
+  background-color: #fffaf7;
+}
+
+.panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  border: 1px solid #f2d7c6;
+  border-radius: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  padding: 3rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 3rem;
+  font-weight: 800;
+}
+
+.header p {
+  margin: 0.75rem 0 0;
+  color: #6b7280;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.tableWrapper {
+  max-height: 520px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background-color: #ffffff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+.table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #f9fafb;
+}
+
+.table th {
+  padding: 1.25rem 1rem;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table td {
+  padding: 1.2rem 1rem;
+  text-align: center;
+  font-size: 1rem;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.nameCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.newBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 4px;
+  background-color: #ff6a00;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.viewButton {
+  border: none;
+  background: transparent;
+  font-size: 1.35rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.viewButton:hover {
+  transform: scale(1.1);
+}
+
+.notice {
+  margin-top: 2rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 1rem;
+}
+
+.modal {
+  position: relative;
+  width: 720px;
+  max-height: 85vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  background-color: #ffffff;
+  padding: 2.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+}
+
+.closeButton {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.4rem;
+  border: none;
+  background: transparent;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #374151;
+}
+
+.modal h2 {
+  margin: 0 0 2rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.detailGrid div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailGrid strong {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.detailGrid span {
+  color: #374151;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1024px) {
+  .page {
+    padding: 2rem;
+  }
+
+  .panel {
+    padding: 2rem;
+  }
+
+  .modal {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .panel {
+    padding: 1.25rem;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}

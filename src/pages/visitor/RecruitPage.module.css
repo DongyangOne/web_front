@@ -1,0 +1,383 @@
+.page {
+  min-height: calc(100vh - 112px);
+  padding: 4rem 10rem 5rem;
+  background-color: #fffaf7;
+}
+
+.panel {
+  max-width: 1120px;
+  margin: 0 auto;
+  border: 1px solid #f2d7c6;
+  border-radius: 24px;
+  background-color: #ffffff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.header {
+  padding: 3rem 4rem 2rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.category {
+  margin: 0 0 0.75rem;
+  color: #ff6a00;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 2.75rem;
+  font-weight: 800;
+}
+
+.stepList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid #f3f4f6;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  color: #9ca3af;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.step span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  font-size: 0.875rem;
+}
+
+.activeStep {
+  color: #ff6a00;
+  background-color: #fff4ec;
+}
+
+.stepContent {
+  padding: 3rem 4rem;
+}
+
+.sectionTitle {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle h2,
+.completeContent h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.sectionTitle p,
+.completeContent p {
+  margin: 0.75rem 0 0;
+  color: #6b7280;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* 핵심 수정 */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.75rem 2rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: #111827;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.95rem 1rem;
+  background-color: #ffffff;
+  color: #111827;
+  font: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #ff6a00;
+}
+
+.field textarea {
+  min-height: 10rem;
+  resize: vertical;
+}
+
+.wideField {
+  grid-column: span 2;
+}
+
+.fullField {
+  grid-column: 1 / -1;
+}
+
+.genderGroup {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.radioLabel input {
+  width: 18px;
+  height: 18px;
+  accent-color: #ff6a00;
+  cursor: pointer;
+}
+
+.privacyBox {
+  max-height: 260px;
+  overflow: auto;
+  padding: 2rem;
+  border: 1px solid #f2d7c6;
+  border-radius: 12px;
+  background-color: #fffaf7;
+}
+
+.privacyBox dl {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+}
+
+.privacyBox div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+}
+
+.privacyBox dt,
+.summary dt {
+  color: #111827;
+  font-weight: 800;
+}
+
+.privacyBox dd,
+.summary dd {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.checkField {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  color: #111827;
+  font-weight: 800;
+}
+
+.checkField input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: #ff6a00;
+}
+
+.actionArea {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.secondaryButton {
+  min-width: 7rem;
+  padding: 0.9rem 1.5rem;
+  border: 1px solid #f2d7c6;
+  border-radius: 10px;
+  background-color: #fff4ec;
+  color: #c35a00;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.completeContent {
+  text-align: center;
+}
+
+.completeMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 50%;
+  background-color: #ff6a00;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.summary {
+  display: grid;
+  gap: 1rem;
+  max-width: 720px;
+  margin: 2rem auto 0;
+  padding: 2rem;
+  border: 1px solid #f2d7c6;
+  border-radius: 12px;
+  background-color: #fffaf7;
+  text-align: left;
+}
+
+.summary div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .page {
+    padding: 2rem;
+  }
+
+  .header,
+  .stepContent {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+
+  .stepList,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .step {
+    justify-content: flex-start;
+  }
+
+  .wideField,
+  .fullField {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+  }
+
+  .header,
+  .stepContent {
+    padding: 1.5rem;
+  }
+
+  .privacyBox div,
+  .summary div {
+    grid-template-columns: 1fr;
+    gap: 0.375rem;
+  }
+
+  .actionArea {
+    flex-direction: column-reverse;
+  }
+
+  .genderGroup {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 420px;
+  padding: 2.5rem 2rem;
+  border: 1px solid #f2d7c6;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  text-align: center;
+}
+
+.modalText {
+  margin: 0;
+  color: #374151;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cancelButton {
+  min-width: 120px;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: #ff6a00;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.confirmButton {
+  min-width: 120px;
+  padding: 0.8rem 1.5rem;
+  border: 1px solid #f2d7c6;
+  border-radius: 12px;
+  background: #fff4ec;
+  color: #c35a00;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+}

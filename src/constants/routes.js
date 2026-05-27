@@ -8,4 +8,5 @@ export const ROUTES = {
   SCHEDULE: '/schedule',
   ABOUT: '/about',
   ADMIN: '/admin',
+  ADMIN_APPLICANTS: '/admin/applicants',
 };
