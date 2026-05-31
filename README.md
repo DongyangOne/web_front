@@ -26,16 +26,16 @@
 
 ## 1. 기술 스택
 
-| 분류 | 사용 기술 |
-|---|---|
-| Framework | React 18+ (Vite 기반) |
-| Language | JavaScript (ES2022+) 또는 TypeScript |
-| 3D | Three.js, @react-three/fiber, @react-three/drei |
-| Routing | react-router-dom v6 |
-| State | Zustand (전역), useState/useReducer (지역) |
-| HTTP | Axios |
-| Styling | Tailwind CSS (선택) 또는 CSS Modules |
-| Lint/Format | ESLint + Prettier |
+| 분류        | 사용 기술                                       |
+| ----------- | ----------------------------------------------- |
+| Framework   | React 18+ (Vite 기반)                           |
+| Language    | JavaScript (ES2022+) 또는 TypeScript            |
+| 3D          | Three.js, @react-three/fiber, @react-three/drei |
+| Routing     | react-router-dom v6                             |
+| State       | Zustand (전역), useState/useReducer (지역)      |
+| HTTP        | Axios                                           |
+| Styling     | Tailwind CSS                                    |
+| Lint/Format | ESLint + Prettier                               |
 
 > **버전 변경 시 PM 승인 필수.** `package.json` 의존성을 임의로 업그레이드하지 않습니다.
 
@@ -80,6 +80,7 @@ src/
 ```
 
 **규칙**
+
 - 한 폴더에 파일이 10개 이상 쌓이면 하위 폴더로 분리합니다.
 - `pages/` 안에는 라우트와 1:1로 매칭되는 파일만 둡니다. 그 외 로직은 `components/`, `hooks/`로 분리합니다.
 
@@ -87,19 +88,20 @@ src/
 
 ## 3. 네이밍 규칙
 
-| 대상 | 규칙 | 예시 |
-|---|---|---|
-| 컴포넌트 파일 | PascalCase + `.jsx` | `RecruitForm.jsx` |
-| 일반 JS 파일 | camelCase + `.js` | `formatDate.js` |
-| 커스텀 훅 | `use`로 시작, camelCase | `useRecruitForm.js` |
-| 상수 | UPPER_SNAKE_CASE | `MAX_FILE_SIZE` |
-| 변수/함수 | camelCase | `getUserInfo` |
-| Boolean 변수 | `is`, `has`, `can`, `should` 접두사 | `isLoading`, `hasError` |
-| 이벤트 핸들러 | `handle` + 동작 | `handleSubmit`, `handleClick` |
-| props로 받는 핸들러 | `on` + 동작 | `onSubmit`, `onClose` |
-| CSS 클래스 (CSS Modules) | camelCase | `submitButton` |
+| 대상                     | 규칙                                | 예시                          |
+| ------------------------ | ----------------------------------- | ----------------------------- |
+| 컴포넌트 파일            | PascalCase + `.jsx`                 | `RecruitForm.jsx`             |
+| 일반 JS 파일             | camelCase + `.js`                   | `formatDate.js`               |
+| 커스텀 훅                | `use`로 시작, camelCase             | `useRecruitForm.js`           |
+| 상수                     | UPPER_SNAKE_CASE                    | `MAX_FILE_SIZE`               |
+| 변수/함수                | camelCase                           | `getUserInfo`                 |
+| Boolean 변수             | `is`, `has`, `can`, `should` 접두사 | `isLoading`, `hasError`       |
+| 이벤트 핸들러            | `handle` + 동작                     | `handleSubmit`, `handleClick` |
+| props로 받는 핸들러      | `on` + 동작                         | `onSubmit`, `onClose`         |
+| CSS 클래스 (CSS Modules) | camelCase                           | `submitButton`                |
 
 **금지 사항**
+
 - 의미 없는 약어 사용 금지 (`btn`, `usr`, `tmp` 등). `button`, `user`, `temporary`로 풀어쓰기.
 - 한글 변수명 금지.
 - `data`, `info`, `value`처럼 모호한 이름 단독 사용 금지. `userData`, `recruitInfo`처럼 맥락 포함.
@@ -109,6 +111,7 @@ src/
 ## 4. 컴포넌트 작성 규칙
 
 ### 4.1 기본 원칙
+
 - **함수형 컴포넌트만 사용합니다.** Class 컴포넌트 금지.
 - **한 파일에 한 컴포넌트.** export default는 파일당 하나.
 - **150줄을 넘으면 분리를 고민합니다.** 250줄을 넘으면 무조건 분리합니다.
@@ -159,6 +162,7 @@ export default RecruitForm;
 ```
 
 ### 4.3 컴포넌트 작성 순서 (위에서 아래로)
+
 1. import
 2. 컴포넌트 함수 선언
 3. 상태(useState, useReducer)
@@ -170,12 +174,15 @@ export default RecruitForm;
 9. export default
 
 ### 4.4 조건부 렌더링
+
 - 삼항 연산자는 1단까지만. 중첩 금지.
 - 복잡한 분기는 변수로 빼거나 early return 사용.
 
 ```jsx
 // ❌ 나쁜 예
-{isLoading ? <Loading /> : error ? <Error /> : data ? <List /> : <Empty />}
+{
+  isLoading ? <Loading /> : error ? <Error /> : data ? <List /> : <Empty />;
+}
 
 // ✅ 좋은 예
 if (isLoading) return <Loading />;
@@ -189,11 +196,13 @@ return <List />;
 ## 5. 스타일링 규칙
 
 ### 5.1 도구 선택
+
 - **기본은 Tailwind CSS를 사용합니다.** (선택한 경우)
 - 복잡한 애니메이션, 글로벌 스타일은 `styles/` 아래 CSS 파일로 분리.
 - 인라인 style은 동적 값(예: `transform: translateX(${x}px)`)에만 사용.
 
 ### 5.2 색상과 폰트
+
 - **하드코딩 금지.** 모든 색상은 `tailwind.config.js` 또는 `src/constants/theme.js`에 정의 후 사용.
 
 ```js
@@ -207,6 +216,7 @@ export const COLORS = {
 ```
 
 ### 5.3 반응형
+
 - 모바일 우선(Mobile First). 기본 스타일은 모바일, `md:`, `lg:` 등으로 확장.
 - 브레이크포인트: `sm: 640px`, `md: 768px`, `lg: 1024px`, `xl: 1280px` (Tailwind 기본값 유지)
 
@@ -215,6 +225,7 @@ export const COLORS = {
 ## 6. Three.js 작성 규칙
 
 ### 6.1 기본 원칙
+
 - **`@react-three/fiber`를 통해 선언적으로 작성합니다.** 명령형(`new THREE.Scene()`)은 정말 필요한 경우에만.
 - Three.js 관련 모든 코드는 `src/three/` 아래에 둡니다.
 - 3D 모델 파일은 `assets/models/`에 두고, 파일명은 kebab-case (`hero-scene.glb`).
@@ -249,6 +260,7 @@ export default HeroScene;
 ```
 
 ### 6.3 성능 규칙 (인수인계용 필수 사항)
+
 - **메모리 누수 방지**: `useEffect` cleanup에서 `geometry.dispose()`, `material.dispose()`, `texture.dispose()` 호출.
 - **재사용 가능한 geometry/material은 `useMemo`로 감쌉니다.** 매 렌더마다 새로 만들지 않습니다.
 - **3D 모델은 `useGLTF.preload()`로 사전 로드**하여 초기 진입 지연을 줄입니다.
@@ -256,6 +268,7 @@ export default HeroScene;
 - **모델 파일 크기는 5MB 이하** 권장. Draco 압축 사용.
 
 ### 6.4 Three.js 매직 넘버 금지
+
 좌표, FOV, 회전 속도 같은 값은 컴포넌트 상단에 상수로 분리합니다.
 
 ```jsx
@@ -269,13 +282,15 @@ const LIGHT_INTENSITY = 0.8;
 ## 7. 상태 관리 및 API 통신
 
 ### 7.1 상태 분류
-| 종류 | 도구 |
-|---|---|
-| 컴포넌트 내부 상태 | `useState`, `useReducer` |
-| 전역 상태 (로그인 정보, 테마 등) | Zustand |
-| 서버 상태 (API 응답 캐싱) | TanStack Query 권장 / 또는 직접 관리 |
+
+| 종류                             | 도구                                 |
+| -------------------------------- | ------------------------------------ |
+| 컴포넌트 내부 상태               | `useState`, `useReducer`             |
+| 전역 상태 (로그인 정보, 테마 등) | Zustand                              |
+| 서버 상태 (API 응답 캐싱)        | TanStack Query 권장 / 또는 직접 관리 |
 
 ### 7.2 Axios 인스턴스
+
 모든 API는 `src/apis/instance.js`의 공통 인스턴스를 통해 호출합니다.
 
 ```js
@@ -297,6 +312,7 @@ export default instance;
 ```
 
 ### 7.3 API 함수 분리
+
 컴포넌트에서 직접 `axios.get(...)`을 호출하지 않습니다. 반드시 `apis/` 폴더의 함수를 통해 호출합니다.
 
 ```js
@@ -308,6 +324,7 @@ export const getRecruitList = () => instance.get('/admin/recruit');
 ```
 
 ### 7.4 에러 처리
+
 - 모든 비동기 호출은 `try-catch`로 감쌉니다.
 - 사용자에게 보일 에러 메시지는 상수로 관리하고, 콘솔에는 `[컴포넌트명] 에러내용` 형식으로 출력합니다.
 
@@ -343,6 +360,7 @@ import logoImage from '@/assets/images/logo.png';
 ## 9. 주석 작성 규칙
 
 ### 9.1 작성 원칙
+
 - **"무엇을" 하는지가 아니라 "왜" 하는지를 적습니다.** 코드만 봐서 알 수 있는 건 주석 달지 않습니다.
 - **인수인계받는 사람을 생각하고 적습니다.** "이건 ~ 때문에 이렇게 했다"가 핵심.
 - 한국어로 작성. 영어 섞지 않기.
@@ -364,6 +382,7 @@ const TEMP_BG_COLOR = '#CCCCCC';
 ```
 
 ### 9.3 JSDoc
+
 재사용 컴포넌트와 유틸 함수에는 JSDoc 권장.
 
 ```js
@@ -380,6 +399,7 @@ export function formatKoreanDate(dateString) { ... }
 ## 10. Git 컨벤션
 
 ### 10.1 브랜치 전략
+
 ```
 main      → 배포용 (PM만 머지)
 develop   → 개발 통합 브랜치
@@ -389,6 +409,7 @@ refactor/*→ 리팩토링
 ```
 
 ### 10.2 커밋 메시지 (Conventional Commits)
+
 ```
 <type>: <제목 (한국어, 명령형, 50자 이내)>
 
@@ -407,6 +428,7 @@ refactor/*→ 리팩토링
 | `chore` | 빌드 설정, 패키지 매니저 등 |
 
 **예시**
+
 ```
 feat: 신입부원 모집 신청 폼 구현
 fix: 모바일에서 Three.js 캔버스가 잘리는 문제 해결
@@ -414,6 +436,7 @@ docs: README에 환경 변수 설명 추가
 ```
 
 ### 10.3 PR 규칙
+
 - **base 브랜치는 항상 `develop`.** `main`에 직접 PR 금지.
 - 제목: 커밋 컨벤션과 동일한 형식
 - 본문에 포함할 것:
@@ -445,9 +468,11 @@ VITE_ADMIN_SECRET_KEY=your_key_here
 ## 12. 코드 품질 도구
 
 ### 12.1 ESLint + Prettier
+
 프로젝트 루트의 `.eslintrc`, `.prettierrc`를 따릅니다. 개인 설정으로 덮어쓰지 마세요.
 
 **필수 설정**
+
 ```json
 // .prettierrc
 {
@@ -461,6 +486,7 @@ VITE_ADMIN_SECRET_KEY=your_key_here
 ```
 
 ### 12.2 커밋 전 체크리스트
+
 - [ ] `npm run lint` 통과
 - [ ] `npm run format` 적용
 - [ ] `console.log` 제거 (디버깅 후)
@@ -468,6 +494,7 @@ VITE_ADMIN_SECRET_KEY=your_key_here
 - [ ] 주석 처리된 옛날 코드 제거
 
 ### 12.3 VSCode 확장 (권장)
+
 - ESLint
 - Prettier - Code formatter
 - ES7+ React/Redux/React-Native snippets
@@ -480,6 +507,7 @@ VITE_ADMIN_SECRET_KEY=your_key_here
 > **다음 기수에게 넘기기 전에 반드시 확인할 항목입니다.**
 
 ### 13.1 문서
+
 - [ ] 본 README가 최신 상태인지 확인
 - [ ] `.env.example`에 모든 환경 변수가 명시되어 있는지 확인
 - [ ] 주요 디렉토리에 `README.md`가 있는지 (예: `src/three/README.md`)
@@ -487,18 +515,21 @@ VITE_ADMIN_SECRET_KEY=your_key_here
 - [ ] 디자인 시안 링크 (Figma 등) 포함
 
 ### 13.2 코드
+
 - [ ] `TODO`, `FIXME` 주석 정리 (작성자/날짜 명시)
 - [ ] 사용하지 않는 파일/패키지 제거
 - [ ] 매직 넘버 상수화
 - [ ] 모든 페이지가 정상 동작하는지 수동 테스트
 
 ### 13.3 배포
+
 - [ ] 빌드 명령어 (`npm run build`) 정상 동작
 - [ ] 배포 URL, 도메인 정보 문서화
 - [ ] 호스팅 계정 인수인계 (Vercel, Netlify 등)
 - [ ] Firebase / 백엔드 서버 접근 권한 이양
 
 ### 13.4 회고
+
 - [ ] 알려진 버그/이슈 목록 작성
 - [ ] 다음 기수에게 전하고 싶은 개선 포인트 정리
 
