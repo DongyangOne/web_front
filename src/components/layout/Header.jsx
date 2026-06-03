@@ -9,7 +9,7 @@ import userOrangeIcon from '@/assets/images/User2.svg'; //주황 아이콘
 
 function Header() {
   return (
-    <header className="w-full bg-white shadow-md">
+    <header className="w-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
       <nav className="flex items-center justify-center gap-20 px-6 py-6">
         <NavLink to={ROUTES.SCHEDULE}>
   {({ isActive }) => (
