@@ -8,6 +8,7 @@ import SchedulePage from '@/pages/visitor/SchedulePage';
 import AboutPage from '@/pages/visitor/AboutPage';
 import AdminPage from '@/pages/admin/AdminPage';
 import MemberPage from '@/pages/admin/MemberPage';
+import MemberRegisterPage from '@/pages/admin/MemberRegisterPage';
 import NotFoundPage from '@/pages/visitor/NotFoundPage';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       </Route>
       {/* admin 명부 관리: 방문자 Layout(Header/Footer) 없이 렌더 */}
       <Route path={ROUTES.ADMIN_MEMBER} element={<MemberPage />} />
+      <Route path={ROUTES.ADMIN_MEMBER_REGISTER} element={<MemberRegisterPage />} />
     </Routes>
   );
 }

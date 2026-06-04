@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import { ROUTES } from '@/constants/routes';
 import StatusBadge from '@/components/admin/StatusBadge';
 import SortDropdown from '@/components/admin/SortDropdown';
 import RowCheckbox from '@/components/admin/RowCheckbox';
@@ -28,6 +30,7 @@ const PAGE_SIZE = 6;
  * admin 히든 경로(/admin/members) 하위에서 동작하는 부원 목록 CRUD 화면이다.
  */
 function MemberPage() {
+  const navigate = useNavigate();
   const [members, setMembers] = useState(INITIAL_MEMBERS);
   const [selectedIds, setSelectedIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,7 +59,7 @@ function MemberPage() {
       setAlertMessage('부원 등록은 선택이 불가한 메뉴입니다.\n선택 해제 후 실행해주세요.');
       return;
     }
-    // TODO: 부원 등록 폼으로 이동/열기
+    navigate(ROUTES.ADMIN_MEMBER_REGISTER);
   };
 
   // 정보 수정: 정확히 1명만 가능
@@ -98,7 +101,7 @@ function MemberPage() {
 
   return (
     <>
-      <main className="min-h-screen bg-admin-bg px-8 py-10">
+      <main className="min-h-screen bg-brand-soft px-8 py-10">
         <div className="mx-auto max-w-6xl rounded-card bg-white p-10 shadow-md">
           {/* 카드 헤더: 제목 + 액션 버튼 */}
           <div className="flex items-start justify-between">
