@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import { ROUTES } from '@/constants/routes';
 import StatusBadge from '@/components/admin/StatusBadge';
 import SortDropdown from '@/components/admin/SortDropdown';
 import RowCheckbox from '@/components/admin/RowCheckbox';
@@ -28,6 +30,7 @@ const PAGE_SIZE = 6;
  * admin 히든 경로(/admin/members) 하위에서 동작하는 부원 목록 CRUD 화면이다.
  */
 function MemberPage() {
+  const navigate = useNavigate();
   const [members, setMembers] = useState(INITIAL_MEMBERS);
   const [selectedIds, setSelectedIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,10 +59,10 @@ function MemberPage() {
       setAlertMessage('부원 등록은 선택이 불가한 메뉴입니다.\n선택 해제 후 실행해주세요.');
       return;
     }
-    // TODO: 부원 등록 폼으로 이동/열기
+    navigate(ROUTES.ADMIN_MEMBER_REGISTER);
   };
 
-  // 정보 수정: 정확히 1명만 가능
+  // 정보 수정: 정확히 1명만 가능. 선택한 부원 정보를 들고 수정 페이지로 이동한다.
   const handleEdit = () => {
     if (selectedIds.length === 0) {
       setAlertMessage('메뉴를 실행할 부원을\n선택해주세요.');
@@ -69,14 +72,8 @@ function MemberPage() {
       setAlertMessage('정보 수정은 복수 선택이 불가능합니다.\n한명만 선택해주세요.');
       return;
     }
-    setConfirmState({
-      message: '선택한 부원의 정보를\n수정하시겠습니까?',
-      confirmLabel: '수정',
-      onConfirm: () => {
-        setConfirmState(null);
-        // TODO: 부원 정보 수정 폼으로 이동/열기
-      },
-    });
+    const member = members.find((item) => item.id === selectedIds[0]);
+    navigate(ROUTES.ADMIN_MEMBER_EDIT, { state: { member } });
   };
 
   // 삭제: 1명 이상 선택 시 확인 후 제거
@@ -98,7 +95,7 @@ function MemberPage() {
 
   return (
     <>
-      <main className="min-h-screen bg-admin-bg px-8 py-10">
+      <main className="min-h-screen bg-brand-soft px-8 py-10">
         <div className="mx-auto max-w-6xl rounded-card bg-white p-10 shadow-md">
           {/* 카드 헤더: 제목 + 액션 버튼 */}
           <div className="flex items-start justify-between">
