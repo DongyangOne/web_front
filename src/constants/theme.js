@@ -16,6 +16,22 @@ export const COLORS = {
   success: '#10B981',
 };
 
+/**
+ * admin(명부 관리) 화면 브랜드 색상.
+ * tailwind.config.js의 colors와 값이 동일해야 한다.
+ * PNG 시안에서 근사 추출한 값이며, Figma 접근 복구 시 실측 토큰으로 재조정한다.
+ */
+export const BRAND_COLORS = {
+  brand: '#FF6B00',
+  brandDark: '#E66000',
+  brandSoft: '#FFF1E7',
+  adminBackground: '#FBE7D6',
+  tableHead: '#FFF1E7',
+  line: '#EEEEEE',
+  ink: '#1A1A1A',
+  inkSub: '#666666',
+};
+
 export const FONT_FAMILY = {
   base: "'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   heading: "'Pretendard', sans-serif",
