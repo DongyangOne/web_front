@@ -12,4 +12,6 @@ export const ROUTES = {
   ADMIN_MEMBER: '/admin/members',
   // 부원 등록: 명부 관리에서 '부원 등록' 클릭 시 이동하는 폼 화면.
   ADMIN_MEMBER_REGISTER: '/admin/members/register',
+  // 부원 정보 수정: 명부 관리에서 부원 1명 선택 후 '부원 정보 수정' 클릭 시 이동.
+  ADMIN_MEMBER_EDIT: '/admin/members/edit',
 };

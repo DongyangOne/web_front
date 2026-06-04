@@ -62,7 +62,7 @@ function MemberPage() {
     navigate(ROUTES.ADMIN_MEMBER_REGISTER);
   };
 
-  // 정보 수정: 정확히 1명만 가능
+  // 정보 수정: 정확히 1명만 가능. 선택한 부원 정보를 들고 수정 페이지로 이동한다.
   const handleEdit = () => {
     if (selectedIds.length === 0) {
       setAlertMessage('메뉴를 실행할 부원을\n선택해주세요.');
@@ -72,14 +72,8 @@ function MemberPage() {
       setAlertMessage('정보 수정은 복수 선택이 불가능합니다.\n한명만 선택해주세요.');
       return;
     }
-    setConfirmState({
-      message: '선택한 부원의 정보를\n수정하시겠습니까?',
-      confirmLabel: '수정',
-      onConfirm: () => {
-        setConfirmState(null);
-        // TODO: 부원 정보 수정 폼으로 이동/열기
-      },
-    });
+    const member = members.find((item) => item.id === selectedIds[0]);
+    navigate(ROUTES.ADMIN_MEMBER_EDIT, { state: { member } });
   };
 
   // 삭제: 1명 이상 선택 시 확인 후 제거
