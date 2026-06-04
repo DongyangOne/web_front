@@ -40,7 +40,7 @@ function StatusBadge({ status }) {
       <button
         type="button"
         onClick={handleToggle}
-        className="relative flex h-10 w-full items-center justify-center rounded-2xl border border-solid border-brand/25 bg-brand-soft pr-6 text-base text-brand"
+        className="relative flex h-10 w-full items-center justify-center rounded-2xl border border-solid border-brand/25 bg-brand-soft pr-6 text-xl text-brand"
       >
         {selectedStatus}
         <ChevronIcon isOpen={isOpen} />
@@ -53,7 +53,7 @@ function StatusBadge({ status }) {
               <button
                 type="button"
                 onClick={() => handleSelect(option)}
-                className="block w-full py-2 text-center text-base text-brand hover:bg-brand/10"
+                className="block w-full py-2 text-center text-xl text-brand hover:bg-brand/10"
               >
                 {option}
               </button>

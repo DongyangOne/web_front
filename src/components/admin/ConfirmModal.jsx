@@ -15,24 +15,24 @@ function ConfirmModal({ message, confirmLabel, onCancel, onConfirm }) {
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md rounded-3xl border border-solid border-brand/20 bg-white px-12 py-10 shadow-xl"
+        className="w-full max-w-md rounded-3xl border border-solid border-brand/20 bg-white px-12 pb-10 pt-[60px] shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
         <p className="whitespace-pre-line text-center text-lg leading-relaxed text-ink">
           {message}
         </p>
-        <div className="mt-8 flex justify-center gap-4">
+        <div className="mt-8 flex justify-center gap-6">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-xl bg-brand px-10 py-2.5 text-base font-medium text-white"
+            className="flex h-10 w-[150px] items-center justify-center rounded-2xl border border-solid border-brand/25 bg-brand text-base font-normal text-white"
           >
             취소
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-xl bg-brand-soft px-10 py-2.5 text-base font-medium text-brand"
+            className="flex h-10 w-[150px] items-center justify-center rounded-2xl border border-solid border-brand/25 bg-brand-soft text-base font-normal text-brand"
           >
             {confirmLabel}
           </button>

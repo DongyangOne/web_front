@@ -12,7 +12,7 @@ function AlertModal({ message, onConfirm }) {
       onClick={onConfirm}
     >
       <div
-        className="w-full max-w-md rounded-3xl border border-solid border-brand/20 bg-white px-12 py-10 shadow-xl"
+        className="w-full max-w-md rounded-3xl border border-solid border-brand/20 bg-white px-12 pb-10 pt-[60px] shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
         <p className="whitespace-pre-line text-center text-lg leading-relaxed text-ink">
@@ -22,7 +22,7 @@ function AlertModal({ message, onConfirm }) {
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-xl bg-brand-soft px-10 py-2.5 text-base font-medium text-brand"
+            className="flex h-10 w-[150px] items-center justify-center rounded-2xl border border-solid border-brand/25 bg-brand-soft text-base font-normal text-brand"
           >
             확인
           </button>

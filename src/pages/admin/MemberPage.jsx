@@ -103,30 +103,39 @@ function MemberPage() {
           {/* 카드 헤더: 제목 + 액션 버튼 */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <img src={groupIcon} alt="" className="h-28 w-40 object-contain" />
-              <div>
-                <h1 className="text-4xl font-bold text-ink">부원관리</h1>
+              {/* 아이콘 + 인원 수를 세로로 배치 (인원 로고 밑에 총 인원 수).
+                  로고는 원래 차지하던 공간(h-28 w-40)을 유지하고 이미지만 248x165로 키워
+                  넘치게 두어, '총 N명'과 '부원관리' 위치는 그대로 유지한다. */}
+              <div className="flex flex-col items-center">
+                <div className="flex h-28 w-40 items-center justify-center">
+                  <img
+                    src={groupIcon}
+                    alt=""
+                    className="h-[165px] w-[248px] max-w-none object-contain"
+                  />
+                </div>
                 {/* 선택이 있으면 'N명 선택 중', 없으면 '총 N명' (시안 기준) */}
                 {selectedIds.length > 0 ? (
-                  <p className="mt-2 text-2xl">
+                  <p className="text-2xl">
                     <span className="text-brand">{selectedIds.length}</span>
                     <span className="text-ink">명 선택 중</span>
                   </p>
                 ) : (
-                  <p className="mt-2 text-2xl">
+                  <p className="text-2xl">
                     <span className="text-ink">총 </span>
                     <span className="text-brand">{members.length}</span>
                     <span className="text-ink">명</span>
                   </p>
                 )}
               </div>
+              <h1 className="text-4xl font-bold text-ink">부원관리</h1>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={handleRegister}
-                className="rounded-md bg-brand px-5 py-3 text-xl font-bold text-white"
+                className="rounded-md bg-brand px-5 py-3 text-xl text-white"
               >
                 + 부원 등록
               </button>
@@ -188,7 +197,7 @@ function MemberPage() {
                   <span>{member.grade}</span>
                   <span>{member.age}</span>
                   <span>{member.phone}</span>
-                  <span className="flex justify-center">
+                  <span className="flex justify-center ">
                     <StatusBadge status={member.status} />
                   </span>
                 </div>
