@@ -1,66 +1,64 @@
 import { NavLink } from 'react-router-dom';
-
 import { ROUTES } from '@/constants/routes';
-import { COLORS } from '@/constants/theme';
-import calendarBlackIcon from '@/assets/images/Date_today_duotone_line1.svg';    //검정 아이콘
-import calendarOrangeIcon from '@/assets/images/Date_today_duotone_line2.svg';  //주황 아이콘
 
-import userBlackIcon from '@/assets/images/User1.svg';  //검정 아이콘
-import userOrangeIcon from '@/assets/images/User2.svg'; //주황 아이콘
+import styles from './Header.module.css';
 
 function Header() {
   return (
-    <header className="w-full bg-white shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
-      <nav className="flex items-center justify-center gap-20 px-6 py-6">
-        <NavLink to={ROUTES.SCHEDULE}>
-  {({ isActive }) => (
-    <div className="flex items-center gap-3">
-      <img
-        src={
-          isActive
-            ? calendarOrangeIcon
-            : calendarBlackIcon
-        }
-        alt=""
-        className="h-10 w-10 object-contain"
-      />
+    <header className={styles.header}>
+      {/* 로고 클릭 시 메인 페이지로 이동 */}      
+      <NavLink to={ROUTES.HOME} className={styles.title}>
+        ONE
+      </NavLink>
 
-      <span
-        className="text-xl font-medium"
-        style={{
-          color: isActive ? COLORS.orange : '#000000',
-        }}
-      >
-        연간 계획
-      </span>
-    </div>
-  )}
-</NavLink>
+      <nav className={styles.nav} aria-label="주요 메뉴">
+        <NavLink
+          to={ROUTES.SCHEDULE}
+          className={({ isActive }) =>
+            isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+          }
+        >
+          <svg
+            className={styles.icon}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M7 2v3" />
+            <path d="M17 2v3" />
+            <path d="M4 8h16" />
+            <rect x="4" y="5" width="16" height="17" rx="2" />
+          </svg>
+          <span>연간 계획</span>
+        </NavLink>
 
-        <NavLink to={ROUTES.RECRUIT}>
-  {({ isActive }) => (
-    <div className="flex items-center gap-3">
-      <img
-        src={
-          isActive
-            ? userOrangeIcon
-            : userBlackIcon
-        }
-        alt=""
-        className="h-10 w-10 object-contain"
-      />
+        <NavLink
+          to={ROUTES.RECRUIT}
+          className={({ isActive }) =>
+            isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+          }
+        >
+          <svg
+            className={styles.icon}
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle cx="12" cy="7" r="4" />
+            <path d="M5 22a7 7 0 0 1 14 0" />
+          </svg>
+          <span>신입 부원 모집</span>
+        </NavLink>
 
-      <span
-        className="text-xl font-medium"
-        style={{
-          color: isActive ? COLORS.orange : '#000000',
-        }}
-      >
-        신입 부원 모집
-      </span>
-    </div>
-  )}
-</NavLink>
+        {/* 관리자 확인용 임시 메뉴 */}
+        <NavLink
+          to={ROUTES.ADMIN_APPLICANTS}
+          className={({ isActive }) =>
+            isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+          }
+        >
+
+        </NavLink>
       </nav>
     </header>
   );
