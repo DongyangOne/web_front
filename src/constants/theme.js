@@ -17,6 +17,23 @@ export const COLORS = {
   success: '#10B981',
 };
 
+/**
+ * ONE 동아리 공식 브랜드 색상.
+ * tailwind.config.js의 colors와 값이 동일해야 한다.
+ */
+export const BRAND_COLORS = {
+  brand: '#FF6B00', // 메인
+  brandSoft: '#FFF1E7', // 서브
+  tag: '#FFE0CC', // 태그
+  section: '#F5F5F7', // 섹션
+  ink: '#1A1A1A', // 메인 텍스트
+  inkSub: '#666666', // 서브 텍스트
+  // 공식 팔레트 외 기능용 보조색.
+  line: '#EEEEEE',
+  fieldBorder: '#CCCCCC',
+  error: '#F94700',
+};
+
 export const FONT_FAMILY = {
   base: "'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   heading: "'Pretendard', sans-serif",
