@@ -4,7 +4,7 @@ import { ROUTES } from '@/constants/routes';
 
 function RecruitCompleteCard() {
   return (
-    <div className="mx-auto flex min-h-[620px] w-full max-w-[1253px] items-center justify-center rounded-[28px] bg-white px-5 py-12 shadow-[0_6px_18px_rgba(52,39,31,0.22)] sm:min-h-[700px] sm:rounded-[38px] sm:px-8 lg:min-h-[802px] lg:rounded-[50px]">
+    <div className="mx-auto flex min-h-[620px] w-full max-w-[1253px] items-center justify-center rounded-[28px] bg-white px-5 py-12 shadow-recruit-complete sm:min-h-[700px] sm:rounded-[38px] sm:px-8 lg:min-h-[802px] lg:rounded-[50px]">
       <div className="w-full max-w-[1040px] text-center text-ink">
         <h2 className="whitespace-nowrap text-[clamp(32px,8vw,64px)] font-bold leading-tight">
           <span className="text-brand">신청</span>이 접수되었습니다!
@@ -18,7 +18,7 @@ function RecruitCompleteCard() {
           <p className="lg:whitespace-nowrap">
             <span className="font-normal text-brand">합격 통보: </span>
             2026년 4월 7일 예정{' '}
-            <span className="text-[clamp(13px,3.4vw,24px)] text-[#999999]">
+            <span className="text-[clamp(13px,3.4vw,24px)] text-ink-sub">
               (해당 일정은 변동될 수 있습니다.)
             </span>
           </p>
