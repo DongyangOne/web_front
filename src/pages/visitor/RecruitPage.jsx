@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { submitRecruit } from '@/apis/recruit';
+import { useNavigate } from 'react-router-dom';
 import Button from '@/components/common/Button';
+import { ROUTES } from '@/constants/routes';
 
 const INITIAL_FORM = {
   name: '',
@@ -10,10 +11,9 @@ const INITIAL_FORM = {
 };
 
 function RecruitPage() {
+  const navigate = useNavigate();
   // 1. 상태
   const [form, setForm] = useState(INITIAL_FORM);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(null);
 
   // 2. 핸들러
   const handleChange = (event) => {
@@ -21,21 +21,9 @@ function RecruitPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      await submitRecruit(form);
-      setForm(INITIAL_FORM);
-      alert('신청이 완료되었습니다.');
-    } catch (error) {
-      console.error('[RecruitPage] 신청 실패:', error);
-      setSubmitError('신청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmit = () => {
+    setForm(INITIAL_FORM);
+    navigate(ROUTES.RECRUIT_COMPLETE);
   };
 
   // 3. 파생 변수
@@ -66,10 +54,8 @@ function RecruitPage() {
         <textarea name="motivation" value={form.motivation} onChange={handleChange} />
       </label>
 
-      {submitError && <p role="alert">{submitError}</p>}
-
-      <Button onClick={handleSubmit} disabled={!isFormValid || isSubmitting}>
-        {isSubmitting ? '제출 중...' : '신청하기'}
+      <Button onClick={handleSubmit} disabled={!isFormValid}>
+        신청하기
       </Button>
     </section>
   );

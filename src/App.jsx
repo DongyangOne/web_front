@@ -4,6 +4,7 @@ import { ROUTES } from '@/constants/routes';
 import Layout from '@/components/layout/Layout';
 import HomePage from '@/pages/visitor/HomePage';
 import RecruitPage from '@/pages/visitor/RecruitPage';
+import RecruitCompletePage from '@/pages/visitor/RecruitCompletePage';
 import SchedulePage from '@/pages/visitor/SchedulePage';
 import AboutPage from '@/pages/visitor/AboutPage';
 import AdminPage from '@/pages/admin/AdminPage';
@@ -19,6 +20,7 @@ function App() {
       <Route element={<Layout />}>
         <Route path={ROUTES.HOME} element={<HomePage />} />
         <Route path={ROUTES.RECRUIT} element={<RecruitPage />} />
+        <Route path={ROUTES.RECRUIT_COMPLETE} element={<RecruitCompletePage />} />
         <Route path={ROUTES.SCHEDULE} element={<SchedulePage />} />
         <Route path={ROUTES.ABOUT} element={<AboutPage />} />
         <Route path={ROUTES.ADMIN} element={<AdminPage />} />
