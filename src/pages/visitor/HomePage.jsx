@@ -1,12 +1,15 @@
-import HeroScene from '@/three/scenes/HeroScene';
+import HeroSection from './main/HeroSection';
+import ActivitiesSection from './main/ActivitiesSection';
+import TimelineSection from './main/TimelineSection';
+import RecruitSection from './main/RecruitSection';
 
-function HomePage() {
+export default function HomePage() {
   return (
-    <section>
-      <h1>ONE</h1>
-      <HeroScene />
-    </section>
+    <>
+      <HeroSection />
+      <ActivitiesSection />
+      <TimelineSection />
+      <RecruitSection />
+    </>
   );
 }
-
-export default HomePage;
