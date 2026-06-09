@@ -11,6 +11,8 @@ import {
   SupportTextarea,
 } from '@/components/recruit/RecruitFormFields';
 import { RecruitConfirmModal } from '@/components/recruit/RecruitConfirmModal';
+import radioOffIcon from '@/assets/images/radio_n.svg';
+import radioOnIcon from '@/assets/images/radio_y.svg';
 
 const TEXT = {
   titleAccent: '신입 부원',
@@ -38,6 +40,27 @@ const INITIAL_FORM = {
 };
 
 const majorOptions = ['웹응용소프트웨어공학과'];
+
+function PrivacyAgreementOption({ label, value, checked, onChange }) {
+  return (
+    <label className="inline-flex min-w-fit items-center gap-[6px] whitespace-nowrap text-[14px] font-normal text-ink">
+      <input
+        type="radio"
+        name="privacyAgreement"
+        value={value}
+        checked={checked}
+        onChange={onChange}
+        className="peer sr-only"
+      />
+      <img
+        src={checked ? radioOnIcon : radioOffIcon}
+        alt=""
+        className="h-4 w-4 rounded-full peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand"
+      />
+      {label}
+    </label>
+  );
+}
 
 const fieldValidators = [
   {
@@ -288,7 +311,7 @@ function RecruitPage() {
                 error={hasSubmitted ? errors.motivation : ''}
               />
               <SupportInput
-                label="사용해봤거나 흥미를 가진 라이브러리"
+                label="사용해봤거나 들어본 언어 및 라이브러리"
                 name="portfolio"
                 value={form.portfolio}
                 onChange={handleChange}
@@ -322,7 +345,7 @@ function RecruitPage() {
         </div>
 
         <div className="pt-[100px]">
-          <div className="min-h-[660px] rounded-[30px] bg-white px-0 py-7 shadow-[0_3px_0_rgba(0,0,0,0.18)]">
+          <div className="min-h-[660px] rounded-[50px] bg-white px-0 py-7 shadow-recruit-card">
             <div className="mx-4 mt-[37px] sm:mx-6 lg:ml-[145px] lg:mr-[159px]">
               <h2 className="text-[25px] font-bold text-ink">개인 정보 수집 및 이용 동의</h2>
 
@@ -339,16 +362,14 @@ function RecruitPage() {
               </div>
 
               <div className="relative mt-[45px] flex justify-center gap-[110px]">
-                <RadioOption
+                <PrivacyAgreementOption
                   label="동의"
-                  name="privacyAgreement"
                   value="agree"
                   checked={form.privacyAgreement === 'agree'}
                   onChange={handleChange}
                 />
-                <RadioOption
+                <PrivacyAgreementOption
                   label="비동의"
-                  name="privacyAgreement"
                   value="disagree"
                   checked={form.privacyAgreement === 'disagree'}
                   onChange={handleChange}

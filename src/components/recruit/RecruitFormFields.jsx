@@ -8,7 +8,7 @@ import checkBoxOnIcon from '@/assets/images/checkBox_y.svg';
 export function InfoCard({ title, className = 'mt-5', headerClassName = '', children }) {
   return (
     <div
-      className={`min-h-[660px] rounded-[30px] bg-white px-0 py-7 shadow-[0_3px_0_rgba(0,0,0,0.18)] ${className}`}
+      className={`min-h-[660px] rounded-[50px] bg-white px-0 py-7 shadow-recruit-card ${className}`}
     >
       <div
         className={`ml-[10px] flex items-center gap-[10px] lg:ml-[30px] lg:mr-[159px] ${headerClassName}`}
@@ -106,7 +106,7 @@ export function FormSelect({
           name={name}
           value={value}
           onChange={onChange}
-          className="h-[46px] w-full appearance-none rounded-[3px] border border-field-border bg-white px-3 pr-10 text-[14px] font-normal text-[#777777] outline-none transition focus:border-brand"
+          className="h-[46px] w-full appearance-none rounded-[3px] border border-field-border bg-white px-3 pr-10 text-[14px] font-normal text-ink-sub outline-none transition focus:border-brand"
         >
           <option value="">학과를 선택해 주세요.</option>
           {options.map((option) => (

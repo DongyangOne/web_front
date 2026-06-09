@@ -11,7 +11,7 @@ export function RecruitConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 px-4">
-      <div className="relative flex h-[505px] w-full max-w-[746px] flex-col overflow-hidden rounded-[8px] bg-white shadow-[0_16px_40px_rgba(0,0,0,0.25)]">
+      <div className="relative flex h-[505px] w-full max-w-[746px] flex-col overflow-hidden rounded-[8px] bg-white shadow-recruit-modal">
         <div className="flex h-[40px] items-center justify-end bg-brand pr-[23px]">
           <button
             type="button"
@@ -47,7 +47,7 @@ export function RecruitConfirmModal({
           type="button"
           onClick={onConfirm}
           disabled={isSubmitting}
-          className="absolute bottom-[28px] right-[51px] h-[34px] min-w-[66px] rounded-[6px] bg-brand px-5 text-[13px] font-bold text-white disabled:cursor-not-allowed disabled:bg-[#b8b8b8]"
+          className="absolute bottom-[28px] right-[51px] h-[34px] min-w-[66px] rounded-[6px] bg-brand px-5 text-[13px] font-bold text-white disabled:cursor-not-allowed"
         >
           {isSubmitting ? submittingLabel : '확인'}
         </button>
