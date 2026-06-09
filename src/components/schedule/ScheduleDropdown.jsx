@@ -50,12 +50,12 @@ function ScheduleDropdown({
 
       {isOpen && (
         <div
-          className="absolute left-0 top-[36px] z-20 h-[404px] w-[424px] rounded-[14px] border border-line bg-white shadow-[0_14px_30px_rgba(0,0,0,0.10)]"
+          className="absolute left-0 top-[36px] z-20 h-[404px] w-[calc(100vw-36px)] max-w-[424px] rounded-[14px] border border-line bg-white shadow-[0_14px_30px_rgba(0,0,0,0.10)] sm:w-[424px]"
           style={{ borderStyle: 'solid', borderWidth: '1px' }}
         >
           <ul
             ref={listRef}
-            className="schedule-native-scrollbar-hidden absolute bottom-[26px] left-[22px] top-[22px] w-[376px] overflow-y-auto"
+            className="schedule-native-scrollbar-hidden absolute bottom-[26px] left-[22px] right-[22px] top-[22px] overflow-y-auto"
             onScroll={onScroll}
             role="listbox"
             aria-label={`${label} 목록`}
@@ -65,7 +65,7 @@ function ScheduleDropdown({
                 <button
                   type="button"
                   className={[
-                    `${itemHeightClass} w-[376px] border border-solid border-line px-3 text-left ${itemTextClass}`,
+                    `${itemHeightClass} w-full border border-solid border-line px-3 text-left ${itemTextClass}`,
                     option === value || itemLabel(option) === value
                       ? 'bg-brand font-medium text-white'
                       : 'text-ink-sub hover:bg-brand-soft',

@@ -71,7 +71,7 @@ function CalendarScheduleView({
         </div>
 
         <div
-          className="grid h-auto grid-cols-7 items-center justify-items-center gap-y-[18px] sm:gap-y-[23px] xl:h-[364px] xl:grid-rows-[34px_repeat(5,minmax(0,1fr))] xl:gap-y-0"
+          className="grid h-auto grid-cols-7 items-center justify-items-center gap-y-[18px] sm:gap-y-[23px] xl:h-[364px] xl:grid-rows-[34px_repeat(6,minmax(0,1fr))] xl:gap-y-0"
           aria-label={`${year}년 ${month + 1}월 달력`}
         >
           {WEEKDAYS.map((weekday) => (
@@ -89,16 +89,18 @@ function CalendarScheduleView({
               type="button"
               className={[
                 'relative grid h-[31px] w-[34px] place-items-center text-[18px] font-normal leading-none text-ink sm:w-10 xl:h-[52px] xl:w-[52px]',
-                date.isCurrentMonth ? '' : 'text-[#9F9F9F]',
                 date.key === todayKey
                   ? 'h-[38px] w-[39px] rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-[58px] xl:w-[58px]'
                   : '',
-                scheduleDateKeys.has(date.key) && date.key !== todayKey
+                date.isCurrentMonth && scheduleDateKeys.has(date.key) && date.key !== todayKey
                   ? 'after:absolute after:left-1/2 after:top-[33px] after:h-2.5 after:w-2.5 after:-translate-x-1/2 after:rounded-full after:bg-brand after:content-[""] xl:after:top-[54px]'
                   : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
+              style={
+                !date.isCurrentMonth && date.key !== todayKey ? { color: '#9F9F9F' } : undefined
+              }
             >
               <span>{date.day}</span>
             </button>
@@ -110,9 +112,9 @@ function CalendarScheduleView({
 
       <div className="min-w-0 pt-[64px]">
         <ol className="flex min-w-0 list-none flex-col gap-[26px] p-0" aria-label="주요 일정">
-          {visibleSchedules.map((schedule) => (
+          {visibleSchedules.map((schedule, index) => (
             <li
-              key={`${schedule.startDate}-${schedule.endDate}`}
+              key={`${schedule.startDate}-${schedule.endDate}-${schedule.title}-${index}`}
               className="grid min-w-0 grid-cols-1 items-center gap-x-2 gap-y-1.5 text-[16px] leading-[1.3] sm:grid-cols-[170px_minmax(0,1fr)]"
             >
               <time className="font-bold text-ink">

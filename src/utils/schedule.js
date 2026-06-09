@@ -1,3 +1,8 @@
+export const parseLocalDate = (dateStr) => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
 export const formatDateKey = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -7,7 +12,7 @@ export const formatDateKey = (date) => {
 };
 
 export const formatScheduleDate = (dateKey) => {
-  const date = new Date(dateKey);
+  const date = parseLocalDate(dateKey);
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   const weekday = new Intl.DateTimeFormat('ko-KR', { weekday: 'short' }).format(date);
@@ -33,7 +38,7 @@ export const getCalendarDates = (year, month) => {
   const startDate = new Date(firstDate);
   startDate.setDate(firstDate.getDate() - getMondayBasedDay(firstDate));
 
-  return Array.from({ length: 35 }, (_, index) => {
+  return Array.from({ length: 42 }, (_, index) => {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + index);
 
@@ -48,8 +53,8 @@ export const getCalendarDates = (year, month) => {
 export const getScheduleDateKeys = (scheduleList) =>
   new Set(
     scheduleList.flatMap(({ startDate, endDate }) => {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
+      const start = parseLocalDate(startDate);
+      const end = parseLocalDate(endDate);
       const keys = [];
 
       for (const date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
@@ -63,18 +68,18 @@ export const getScheduleDateKeys = (scheduleList) =>
 export const isScheduleInMonth = ({ startDate, endDate }, year, month) => {
   const monthStart = new Date(year, month, 1);
   const monthEnd = new Date(year, month + 1, 0);
-  const scheduleStart = new Date(startDate);
-  const scheduleEnd = new Date(endDate);
+  const scheduleStart = parseLocalDate(startDate);
+  const scheduleEnd = parseLocalDate(endDate);
 
   return scheduleStart <= monthEnd && scheduleEnd >= monthStart;
 };
 
 export const sortByStartDate = (firstSchedule, secondSchedule) =>
-  new Date(firstSchedule.startDate) - new Date(secondSchedule.startDate);
+  firstSchedule.startDate.localeCompare(secondSchedule.startDate);
 
 export const groupSchedulesByMonth = (scheduleList) =>
   scheduleList.reduce((groups, schedule) => {
-    const scheduleMonth = new Date(schedule.startDate).getMonth() + 1;
+    const scheduleMonth = parseInt(schedule.startDate.split('-')[1], 10);
     const key = `${scheduleMonth}월`;
 
     return {

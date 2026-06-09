@@ -10,6 +10,7 @@ import {
   getScheduleDateKeys,
   groupSchedulesByMonth,
   isScheduleInMonth,
+  parseLocalDate,
   sortByStartDate,
   updateScrollThumb,
 } from '@/utils/schedule';
@@ -43,7 +44,7 @@ function SchedulePage() {
   const visibleSchedules = useMemo(() => {
     const filteredSchedules =
       viewMode === 'all'
-        ? schedules.filter((schedule) => new Date(schedule.startDate).getFullYear() === year)
+        ? schedules.filter((schedule) => parseLocalDate(schedule.startDate).getFullYear() === year)
         : schedules.filter((schedule) => isScheduleInMonth(schedule, year, month));
 
     return [...filteredSchedules].sort(sortByStartDate);
@@ -78,15 +79,21 @@ function SchedulePage() {
   };
 
   useEffect(() => {
+    const rafIds = [];
+
     if (isMonthDropdownOpen) {
-      requestAnimationFrame(() => handleMonthScroll());
+      rafIds.push(requestAnimationFrame(() => handleMonthScroll()));
     }
     if (isYearDropdownOpen) {
-      requestAnimationFrame(() => handleYearScroll());
+      rafIds.push(requestAnimationFrame(() => handleYearScroll()));
     }
     if (viewMode === 'all') {
-      requestAnimationFrame(() => handleAllScheduleScroll());
+      rafIds.push(requestAnimationFrame(() => handleAllScheduleScroll()));
     }
+
+    return () => {
+      rafIds.forEach(cancelAnimationFrame);
+    };
   }, [isMonthDropdownOpen, isYearDropdownOpen, viewMode, scheduleMonthEntries]);
 
   return (
