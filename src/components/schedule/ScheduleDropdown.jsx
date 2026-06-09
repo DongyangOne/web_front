@@ -1,41 +1,21 @@
-const ACTIVE_BORDER_STYLE = {
-  borderColor: '#FF6B00',
-  borderStyle: 'solid',
-  borderWidth: '1px',
-};
-
-const INACTIVE_BORDER_STYLE = {
-  borderColor: 'transparent',
-  borderStyle: 'solid',
-  borderWidth: '1px',
-};
-
-function ScheduleDropdown({
-  label,
-  value,
-  isOpen,
-  onToggle,
-  options,
-  onSelect,
-  listRef,
-  trackRef,
-  thumbRef,
-  onScroll,
-  buttonWidthClass,
-  itemHeightClass,
-  itemTextClass,
-  itemLabel,
-}) {
+function ScheduleDropdown({ config, state, handlers, scrollRefs, classNames }) {
+  const { label, options, itemLabel } = config;
+  const { value, isOpen } = state;
+  const { onToggle, onSelect, onScroll } = handlers;
+  const { listRef, trackRef, thumbRef } = scrollRefs;
+  const { buttonWidthClass, itemHeightClass, itemTextClass } = classNames;
   return (
     <div className="relative">
       <button
         type="button"
         className={[
-          `inline-flex h-[34px] ${buttonWidthClass} items-center justify-between rounded-[7px] border px-2 text-[13px] font-medium leading-none text-ink`,
+          `inline-flex h-[34px] ${buttonWidthClass} items-center justify-between rounded-[7px] !bg-white px-2 text-[18px] font-Regular leading-none text-ink`,
+          isOpen
+            ? '!border !border-solid !border-brand'
+            : '!border !border-solid !border-transparent',
         ]
           .filter(Boolean)
           .join(' ')}
-        style={isOpen ? ACTIVE_BORDER_STYLE : INACTIVE_BORDER_STYLE}
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
@@ -50,7 +30,7 @@ function ScheduleDropdown({
 
       {isOpen && (
         <div
-          className="absolute left-0 top-[36px] z-20 h-[404px] w-[calc(100vw-36px)] max-w-[424px] rounded-[14px] border border-line bg-white shadow-[0_14px_30px_rgba(0,0,0,0.10)] sm:w-[424px]"
+          className="absolute left-0 top-[36px] z-20 h-[404px] w-[calc(100vw-36px)] max-w-[424px] rounded-[14px] border border-line bg-white shadow-schedule-dropdown sm:w-[424px]"
           style={{ borderStyle: 'solid', borderWidth: '1px' }}
         >
           <ul
@@ -65,10 +45,10 @@ function ScheduleDropdown({
                 <button
                   type="button"
                   className={[
-                    `${itemHeightClass} w-full border border-solid border-line px-3 text-left ${itemTextClass}`,
+                    `${itemHeightClass} w-full !border !border-solid !border-line px-3 text-left ${itemTextClass}`,
                     option === value || itemLabel(option) === value
-                      ? 'bg-brand font-medium text-white'
-                      : 'text-ink-sub hover:bg-brand-soft',
+                      ? '!bg-brand font-medium text-white'
+                      : 'text-ink-sub hover:!bg-brand-soft',
                   ]
                     .filter(Boolean)
                     .join(' ')}
@@ -84,12 +64,12 @@ function ScheduleDropdown({
           </ul>
           <div
             ref={trackRef}
-            className="absolute bottom-[26px] right-3 top-[22px] w-3 rounded-full bg-[#F0F0F0]"
+            className="absolute bottom-[26px] right-3 top-[22px] w-3 rounded-full bg-schedule-scroll-track"
             aria-hidden="true"
           >
             <div
               ref={thumbRef}
-              className="absolute left-0 w-3 rounded-full bg-[#888888] transition-opacity duration-200"
+              className="absolute left-0 h-9 w-3 rounded-full bg-schedule-scroll-thumb opacity-100 transition-opacity duration-200"
             />
           </div>
         </div>

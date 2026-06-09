@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,jsx}'],
+  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
       fontFamily: {
@@ -19,6 +19,17 @@ export default {
         'field-border': '#CCCCCC', // 입력칸 테두리
         'scroll-track': '#EDEDED',
         'scroll-thumb': '#8A8A8A',
+        'schedule-divider': '#FFE3D1',
+        'schedule-inactive': '#9F9F9F',
+        'schedule-scroll-track': '#F0F0F0',
+        'schedule-scroll-thumb': '#888888',
+        'schedule-mark-red': '#F04438',
+        'schedule-mark-orange': '#F79009',
+        'schedule-mark-green': '#12B76A',
+        'schedule-mark-blue': '#2E90FA',
+        'schedule-mark-violet': '#7A5AF8',
+        'schedule-mark-purple': '#D444F1',
+        'schedule-mark-pink': '#F63D68',
         error: '#F94700', // 필수 표시(*)·오류 메시지(brand보다 붉은 톤)
       },
       // 명부 관리/부원 등록 화면 모서리 토큰(시안 실측).
@@ -32,6 +43,7 @@ export default {
       boxShadow: {
         schedule: '0 6px 7px rgba(52, 39, 31, 0.24)',
         'schedule-day': '0 4px 9px rgba(255, 107, 0, 0.34)',
+        'schedule-dropdown': '0 14px 30px rgba(0, 0, 0, 0.1)',
       },
       // 부원 상태 배지 너비(시안 실측 150px).
       minWidth: {

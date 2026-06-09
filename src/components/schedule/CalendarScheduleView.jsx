@@ -1,73 +1,51 @@
-import { MONTH_OPTIONS, WEEKDAYS } from '@/constants/schedule';
+﻿import { MONTH_OPTIONS, WEEKDAYS } from '@/constants/schedule';
 import { formatScheduleDate } from '@/utils/schedule';
 
 import ScheduleDropdown from './ScheduleDropdown';
 import ScheduleTabs from './ScheduleTabs';
 
-function CalendarScheduleView({
-  year,
-  month,
-  yearOptions,
-  viewMode,
-  onViewModeChange,
-  calendarDates,
-  todayKey,
-  scheduleDateKeys,
-  visibleSchedules,
-  isMonthDropdownOpen,
-  isYearDropdownOpen,
-  onToggleMonth,
-  onToggleYear,
-  onSelectMonth,
-  onSelectYear,
-  monthListRef,
-  monthTrackRef,
-  monthThumbRef,
-  yearListRef,
-  yearTrackRef,
-  yearThumbRef,
-  onMonthScroll,
-  onYearScroll,
-}) {
+function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDropdown }) {
+  const { year, month, yearOptions, calendarDates, todayKey } = calendar;
+  const { viewMode, onViewModeChange } = view;
+  const { scheduleDateKeys, visibleSchedules } = schedules;
+
   return (
     <div className="grid grid-cols-1 items-start gap-y-8 px-[18px] py-11 sm:px-11 sm:py-[72px] xl:grid-cols-[505px_24px_1fr] xl:gap-x-6 xl:gap-y-0 xl:px-[60px] xl:py-0 xl:pt-[135px]">
       <div className="h-auto w-full max-w-[505px] xl:h-[412px]">
         <div className="mb-[14px] flex items-center gap-2" aria-label="달력 기간 선택">
           <ScheduleDropdown
-            label="월 선택"
-            value={`${month + 1}월`}
-            isOpen={isMonthDropdownOpen}
-            onToggle={onToggleMonth}
-            options={MONTH_OPTIONS}
-            onSelect={onSelectMonth}
-            listRef={monthListRef}
-            trackRef={monthTrackRef}
-            thumbRef={monthThumbRef}
-            onScroll={onMonthScroll}
-            buttonWidthClass="w-[58px]"
-            itemHeightClass="h-[33px] leading-[33px]"
-            itemTextClass="text-[20px]"
-            itemLabel={(monthOption) => `${monthOption + 1}월`}
+            config={{
+              label: '월 선택',
+              options: MONTH_OPTIONS,
+              itemLabel: (monthOption) => `${monthOption + 1}월`,
+            }}
+            state={{ value: `${month + 1}월`, isOpen: monthDropdown.isOpen }}
+            handlers={monthDropdown.handlers}
+            scrollRefs={monthDropdown.scrollRefs}
+            classNames={{
+              buttonWidthClass: 'w-[58px]',
+              itemHeightClass: 'h-[33px] leading-[33px]',
+              itemTextClass: 'text-[20px]',
+            }}
           />
 
           <ScheduleDropdown
-            label="연도 선택"
-            value={year}
-            isOpen={isYearDropdownOpen}
-            onToggle={onToggleYear}
-            options={yearOptions.slice().reverse()}
-            onSelect={onSelectYear}
-            listRef={yearListRef}
-            trackRef={yearTrackRef}
-            thumbRef={yearThumbRef}
-            onScroll={onYearScroll}
-            buttonWidthClass="w-[70px]"
-            itemHeightClass="h-[73px] leading-[73px]"
-            itemTextClass="text-[18px]"
-            itemLabel={(yearOption) => yearOption}
+            config={{
+              label: '연도 선택',
+              options: yearOptions.slice().reverse(),
+              itemLabel: (yearOption) => yearOption,
+            }}
+            state={{ value: year, isOpen: yearDropdown.isOpen }}
+            handlers={yearDropdown.handlers}
+            scrollRefs={yearDropdown.scrollRefs}
+            classNames={{
+              buttonWidthClass: 'w-[70px]',
+              itemHeightClass: 'h-[73px] leading-[73px]',
+              itemTextClass: 'text-[18px]',
+            }}
           />
 
-          <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-auto" />
+          <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-[140px]" />
         </div>
 
         <div
@@ -88,19 +66,18 @@ function CalendarScheduleView({
               key={date.key}
               type="button"
               className={[
-                'relative grid h-[31px] w-[34px] place-items-center text-[18px] font-normal leading-none text-ink sm:w-10 xl:h-[52px] xl:w-[52px]',
+                'relative grid h-[31px] w-[34px] place-items-center text-[18px] font-normal leading-none sm:w-10 xl:h-[52px] xl:w-[52px]',
                 date.key === todayKey
-                  ? 'h-[38px] w-[39px] rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-[58px] xl:w-[58px]'
+                  ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10'
                   : '',
                 date.isCurrentMonth && scheduleDateKeys.has(date.key) && date.key !== todayKey
                   ? 'after:absolute after:left-1/2 after:top-[33px] after:h-2.5 after:w-2.5 after:-translate-x-1/2 after:rounded-full after:bg-brand after:content-[""] xl:after:top-[54px]'
                   : '',
+                date.key !== todayKey && !date.isCurrentMonth ? 'text-schedule-inactive' : '',
+                date.key !== todayKey && date.isCurrentMonth ? 'text-ink' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
-              style={
-                !date.isCurrentMonth && date.key !== todayKey ? { color: '#9F9F9F' } : undefined
-              }
             >
               <span>{date.day}</span>
             </button>
@@ -120,7 +97,7 @@ function CalendarScheduleView({
               <time className="font-bold text-ink">
                 {formatScheduleDate(schedule.startDate)} ~ {formatScheduleDate(schedule.endDate)}
               </time>
-              <span className="min-w-0 truncate font-normal text-[#666666]">{schedule.title}</span>
+              <span className="min-w-0 truncate font-normal text-ink-sub">{schedule.title}</span>
             </li>
           ))}
         </ol>

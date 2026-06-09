@@ -1,55 +1,48 @@
 import { formatAllScheduleDate } from '@/utils/schedule';
+import tailwindConfig from '../../../tailwind.config';
 
 import ScheduleDropdown from './ScheduleDropdown';
 import ScheduleTabs from './ScheduleTabs';
 
+const colors = tailwindConfig.theme.extend.colors;
+
 const SCHEDULE_MARK_COLORS = [
-  '#F04438',
-  '#FF6B00',
-  '#F79009',
-  '#12B76A',
-  '#2E90FA',
-  '#7A5AF8',
-  '#D444F1',
-  '#F63D68',
+  colors['schedule-mark-red'],
+  colors.brand,
+  colors['schedule-mark-orange'],
+  colors['schedule-mark-green'],
+  colors['schedule-mark-blue'],
+  colors['schedule-mark-violet'],
+  colors['schedule-mark-purple'],
+  colors['schedule-mark-pink'],
 ];
 
-function AllScheduleView({
-  year,
-  yearOptions,
-  viewMode,
-  onViewModeChange,
-  scheduleMonthEntries,
-  isYearDropdownOpen,
-  onToggleYear,
-  onSelectYear,
-  yearListRef,
-  yearTrackRef,
-  yearThumbRef,
-  onYearScroll,
-  allScheduleListRef,
-  allScheduleTrackRef,
-  allScheduleThumbRef,
-  onAllScheduleScroll,
-}) {
+function AllScheduleView({ yearDropdown, view, scheduleMonthEntries, scheduleScroll }) {
+  const { year, yearOptions } = yearDropdown;
+  const { viewMode, onViewModeChange } = view;
+  const {
+    listRef: allScheduleListRef,
+    trackRef: allScheduleTrackRef,
+    thumbRef: allScheduleThumbRef,
+    onScroll: onAllScheduleScroll,
+  } = scheduleScroll;
   return (
     <div className="pb-8 pl-[18px] pr-0 pt-[50px] sm:pl-9 xl:pl-[60px]">
       <div className="flex items-center gap-2">
         <ScheduleDropdown
-          label="연도 선택"
-          value={year}
-          isOpen={isYearDropdownOpen}
-          onToggle={onToggleYear}
-          options={yearOptions.slice().reverse()}
-          onSelect={onSelectYear}
-          listRef={yearListRef}
-          trackRef={yearTrackRef}
-          thumbRef={yearThumbRef}
-          onScroll={onYearScroll}
-          buttonWidthClass="w-[70px]"
-          itemHeightClass="h-[73px] leading-[73px]"
-          itemTextClass="text-[18px]"
-          itemLabel={(yearOption) => yearOption}
+          config={{
+            label: '일정이 없습니다.',
+            options: yearOptions.slice().reverse(),
+            itemLabel: (yearOption) => yearOption,
+          }}
+          state={{ value: year, isOpen: yearDropdown.isOpen }}
+          handlers={yearDropdown.handlers}
+          scrollRefs={yearDropdown.scrollRefs}
+          classNames={{
+            buttonWidthClass: 'w-[70px]',
+            itemHeightClass: 'h-[73px] leading-[73px]',
+            itemTextClass: 'text-[18px]',
+          }}
         />
 
         <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-[92px]" />
@@ -62,7 +55,7 @@ function AllScheduleView({
           onScroll={onAllScheduleScroll}
         >
           {scheduleMonthEntries.length === 0 ? (
-            <div className="grid min-h-[520px] place-items-center text-[16px] font-bold text-[#666666]">
+            <div className="grid min-h-[520px] place-items-center text-[16px] font-bold text-ink-sub">
               일정이 없습니다.
             </div>
           ) : (
@@ -74,13 +67,13 @@ function AllScheduleView({
                   key={monthLabel}
                   className={[
                     'w-full py-4',
-                    isLastMonth ? '' : 'border-b border-solid border-[#FFE3D1]',
+                    isLastMonth ? '' : 'border-b border-solid border-schedule-divider',
                   ]
                     .filter(Boolean)
                     .join(' ')}
                 >
                   <div className="w-full pl-[18px] sm:pl-9 xl:w-[1044px] xl:pl-[60px]">
-                    <h3 className="mb-3 text-[22px] font-extrabold text-[#FF6B00]">{monthLabel}</h3>
+                    <h3 className="mb-3 text-[22px] font-extrabold text-brand">{monthLabel}</h3>
                     <ol className="flex flex-col">
                       {monthSchedules.map((schedule, scheduleIndex) => {
                         const isLastSchedule = scheduleIndex === monthSchedules.length - 1;
@@ -95,13 +88,13 @@ function AllScheduleView({
                             key={`${schedule.startDate}-${schedule.endDate}-${schedule.title}`}
                             className={[
                               'grid h-[35.6px] grid-cols-[3px_210px_minmax(0,1fr)] items-center gap-x-3 text-[15px] font-bold text-ink',
-                              isLastSchedule ? '' : 'border-b border-solid border-[#FFE3D1]',
+                              isLastSchedule ? '' : 'border-b border-solid border-schedule-divider',
                             ]
                               .filter(Boolean)
                               .join(' ')}
                           >
                             <span
-                              className="h-[9px] w-[3px]"
+                              className="block h-[9px] w-[3px] shrink-0 rounded-[1px]"
                               style={{ backgroundColor: markerColor }}
                               aria-hidden="true"
                             />
@@ -121,12 +114,12 @@ function AllScheduleView({
         </div>
         <div
           ref={allScheduleTrackRef}
-          className="absolute bottom-0 right-0 top-0 w-3 rounded-full bg-[#F0F0F0]"
+          className="absolute bottom-[10px] right-0 top-[-10px] w-3 rounded-full bg-schedule-scroll-track"
           aria-hidden="true"
         >
           <div
             ref={allScheduleThumbRef}
-            className="absolute left-0 w-3 rounded-full bg-[#888888] transition-opacity duration-200"
+            className="absolute left-0 h-9 w-3 rounded-full bg-schedule-scroll-thumb opacity-100 transition-opacity duration-200"
           />
         </div>
       </div>

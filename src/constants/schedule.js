@@ -1,4 +1,4 @@
-export const schedules = [
+export const SCHEDULES = [
   { startDate: '2026-03-01', endDate: '2026-03-01', title: '삼일절' },
   { startDate: '2026-03-02', endDate: '2026-03-02', title: '삼일절 대체휴일' },
   { startDate: '2026-03-03', endDate: '2026-03-03', title: '[2026학년도 1학기] 개강' },

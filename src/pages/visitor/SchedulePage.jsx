@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import AllScheduleView from '@/components/schedule/AllScheduleView';
 import CalendarScheduleView from '@/components/schedule/CalendarScheduleView';
-import ScheduleStyles from '@/components/schedule/ScheduleStyles';
-import { DROPDOWN_TYPE, schedules } from '@/constants/schedule';
+import ScheduleStyles from '@/styles/ScheduleStyles';
+import { DROPDOWN_TYPE, SCHEDULES } from '@/constants/schedule';
 import {
   formatDateKey,
   getCalendarDates,
@@ -40,12 +40,12 @@ function SchedulePage() {
   const [viewMode, setViewMode] = useState('calendar');
 
   const calendarDates = useMemo(() => getCalendarDates(year, month), [year, month]);
-  const scheduleDateKeys = useMemo(() => getScheduleDateKeys(schedules), []);
+  const scheduleDateKeys = useMemo(() => getScheduleDateKeys(SCHEDULES), []);
   const visibleSchedules = useMemo(() => {
     const filteredSchedules =
       viewMode === 'all'
-        ? schedules.filter((schedule) => parseLocalDate(schedule.startDate).getFullYear() === year)
-        : schedules.filter((schedule) => isScheduleInMonth(schedule, year, month));
+        ? SCHEDULES.filter((schedule) => parseLocalDate(schedule.startDate).getFullYear() === year)
+        : SCHEDULES.filter((schedule) => isScheduleInMonth(schedule, year, month));
 
     return [...filteredSchedules].sort(sortByStartDate);
   }, [month, viewMode, year]);
@@ -124,59 +124,73 @@ function SchedulePage() {
       >
         {viewMode === 'all' ? (
           <AllScheduleView
-            year={year}
-            yearOptions={yearOptions}
-            viewMode={viewMode}
-            onViewModeChange={handleViewModeChange}
-            scheduleMonthEntries={scheduleMonthEntries}
-            isYearDropdownOpen={isYearDropdownOpen}
-            onToggleYear={() => setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR)}
-            onSelectYear={(yearOption) => {
-              setYear(yearOption);
-              setOpenedDropdown(null);
+            yearDropdown={{
+              year,
+              yearOptions,
+              isOpen: isYearDropdownOpen,
+              handlers: {
+                onToggle: () =>
+                  setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR),
+                onSelect: (yearOption) => {
+                  setYear(yearOption);
+                  setOpenedDropdown(null);
+                },
+                onScroll: handleYearScroll,
+              },
+              scrollRefs: {
+                listRef: yearListRef,
+                trackRef: yearTrackRef,
+                thumbRef: yearThumbRef,
+              },
             }}
-            yearListRef={yearListRef}
-            yearTrackRef={yearTrackRef}
-            yearThumbRef={yearThumbRef}
-            onYearScroll={handleYearScroll}
-            allScheduleListRef={allScheduleListRef}
-            allScheduleTrackRef={allScheduleTrackRef}
-            allScheduleThumbRef={allScheduleThumbRef}
-            onAllScheduleScroll={handleAllScheduleScroll}
+            view={{ viewMode, onViewModeChange: handleViewModeChange }}
+            scheduleMonthEntries={scheduleMonthEntries}
+            scheduleScroll={{
+              listRef: allScheduleListRef,
+              trackRef: allScheduleTrackRef,
+              thumbRef: allScheduleThumbRef,
+              onScroll: handleAllScheduleScroll,
+            }}
           />
         ) : (
           <CalendarScheduleView
-            year={year}
-            month={month}
-            yearOptions={yearOptions}
-            viewMode={viewMode}
-            onViewModeChange={handleViewModeChange}
-            calendarDates={calendarDates}
-            todayKey={todayKey}
-            scheduleDateKeys={scheduleDateKeys}
-            visibleSchedules={visibleSchedules}
-            isMonthDropdownOpen={isMonthDropdownOpen}
-            isYearDropdownOpen={isYearDropdownOpen}
-            onToggleMonth={() =>
-              setOpenedDropdown(isMonthDropdownOpen ? null : DROPDOWN_TYPE.MONTH)
-            }
-            onToggleYear={() => setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR)}
-            onSelectMonth={(monthOption) => {
-              setMonth(monthOption);
-              setOpenedDropdown(null);
+            calendar={{ year, month, yearOptions, calendarDates, todayKey }}
+            view={{ viewMode, onViewModeChange: handleViewModeChange }}
+            schedules={{ scheduleDateKeys, visibleSchedules }}
+            monthDropdown={{
+              isOpen: isMonthDropdownOpen,
+              handlers: {
+                onToggle: () =>
+                  setOpenedDropdown(isMonthDropdownOpen ? null : DROPDOWN_TYPE.MONTH),
+                onSelect: (monthOption) => {
+                  setMonth(monthOption);
+                  setOpenedDropdown(null);
+                },
+                onScroll: handleMonthScroll,
+              },
+              scrollRefs: {
+                listRef: monthListRef,
+                trackRef: monthTrackRef,
+                thumbRef: monthThumbRef,
+              },
             }}
-            onSelectYear={(yearOption) => {
-              setYear(yearOption);
-              setOpenedDropdown(null);
+            yearDropdown={{
+              isOpen: isYearDropdownOpen,
+              handlers: {
+                onToggle: () =>
+                  setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR),
+                onSelect: (yearOption) => {
+                  setYear(yearOption);
+                  setOpenedDropdown(null);
+                },
+                onScroll: handleYearScroll,
+              },
+              scrollRefs: {
+                listRef: yearListRef,
+                trackRef: yearTrackRef,
+                thumbRef: yearThumbRef,
+              },
             }}
-            monthListRef={monthListRef}
-            monthTrackRef={monthTrackRef}
-            monthThumbRef={monthThumbRef}
-            yearListRef={yearListRef}
-            yearTrackRef={yearTrackRef}
-            yearThumbRef={yearThumbRef}
-            onMonthScroll={handleMonthScroll}
-            onYearScroll={handleYearScroll}
           />
         )}
       </div>

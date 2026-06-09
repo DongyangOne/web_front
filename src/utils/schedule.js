@@ -95,7 +95,9 @@ export const updateScrollThumb = (scrollElement, trackElement, thumbElement) => 
   const trackHeight = trackElement.clientHeight;
 
   if (scrollHeight <= clientHeight) {
-    thumbElement.style.opacity = '0';
+    thumbElement.style.opacity = '1';
+    thumbElement.style.height = `${trackHeight}px`;
+    thumbElement.style.transform = 'translateY(0)';
     return;
   }
 
