@@ -17,6 +17,8 @@ export default {
         // 공식 팔레트 외 기능용 보조색.
         line: '#EEEEEE', // 구분선
         'field-border': '#CCCCCC', // 입력칸 테두리
+        'scroll-track': '#EDEDED',
+        'scroll-thumb': '#8A8A8A',
         error: '#F94700', // 필수 표시(*)·오류 메시지(brand보다 붉은 톤)
       },
       // 명부 관리/부원 등록 화면 모서리 토큰(시안 실측).
@@ -26,6 +28,10 @@ export default {
         button: '25px',
         // 신청 부원 목록 모달.
         modal: '30px',
+      },
+      boxShadow: {
+        schedule: '0 6px 7px rgba(52, 39, 31, 0.24)',
+        'schedule-day': '0 4px 9px rgba(255, 107, 0, 0.34)',
       },
       // 부원 상태 배지 너비(시안 실측 150px).
       minWidth: {
