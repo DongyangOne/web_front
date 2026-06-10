@@ -66,9 +66,9 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
               key={date.key}
               type="button"
               className={[
-                'relative grid h-[31px] w-[34px] place-items-center text-[18px] font-normal leading-none sm:w-10 xl:h-[52px] xl:w-[52px]',
+                'relative grid h-[31px] w-[34px] place-items-center text-[18px] font-normal leading-none sm:w-10 xl:h-[40px] xl:w-[40px]',
                 date.key === todayKey
-                  ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10'
+                  ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10 shadow-schedule-day'
                   : '',
                 date.isCurrentMonth && scheduleDateKeys.has(date.key) && date.key !== todayKey
                   ? 'after:absolute after:left-1/2 after:top-[33px] after:h-2.5 after:w-2.5 after:-translate-x-1/2 after:rounded-full after:bg-brand after:content-[""] xl:after:top-[54px]'
