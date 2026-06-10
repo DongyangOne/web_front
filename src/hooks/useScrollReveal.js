@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 
 /**
  * IntersectionObserver로 요소가 뷰포트에 진입하면 'revealed' 클래스를 추가한다.
@@ -12,7 +12,10 @@ export default function useScrollReveal() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('revealed');
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
         });
       },
       { threshold: 0.1 }
@@ -22,7 +25,9 @@ export default function useScrollReveal() {
     return () => observer.disconnect();
   }, []);
 
-  return (el) => {
-    if (el && !revealRefs.current.includes(el)) revealRefs.current.push(el);
-  };
+  return useCallback((el) => {
+    if (el && !revealRefs.current.includes(el)) {
+      revealRefs.current.push(el);
+    }
+  }, []);
 }

@@ -1,6 +1,5 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
 
 const SPHERE_CONFIGS = [
   { position: [-3.8, 1.8, -1.0], radius: 1.4, color: '#D4956A', opacity: 0.88 },
@@ -16,32 +15,12 @@ const SPHERE_CONFIGS = [
   { position: [4.0, -2.8, -2.5], radius: 0.65, color: '#EDD5B8', opacity: 0.58 },
   { position: [-2.8, 0.2, -3.5], radius: 0.95, color: '#F0C8A0', opacity: 0.38 },
   { position: [1.8, 1.2, 0.5], radius: 0.22, color: '#C47840', opacity: 0.75 },
-  { position: [-0.9, 1.8, 0.8], radius: 0.18, color: '#E8A87C', opacity: 0.80 },
+  { position: [-0.9, 1.8, 0.8], radius: 0.18, color: '#E8A87C', opacity: 0.8 },
 ];
 
 function FloatingSphere({ position, radius, color, opacity, phaseOffset }) {
   const meshRef = useRef(null);
   const [px, py, pz] = position;
-
-  const geometry = useMemo(() => new THREE.SphereGeometry(radius, 32, 32), [radius]);
-  const material = useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color,
-        transparent: true,
-        opacity,
-        roughness: 0.2,
-        metalness: 0.05,
-      }),
-    [color, opacity]
-  );
-
-  useEffect(() => {
-    return () => {
-      geometry.dispose();
-      material.dispose();
-    };
-  }, [geometry, material]);
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return;
@@ -52,7 +31,18 @@ function FloatingSphere({ position, radius, color, opacity, phaseOffset }) {
     meshRef.current.rotation.z += 0.001;
   });
 
-  return <mesh ref={meshRef} position={[px, py, pz]} geometry={geometry} material={material} />;
+  return (
+    <mesh ref={meshRef} position={[px, py, pz]}>
+      <sphereGeometry args={[radius, 32, 32]} />
+      <meshStandardMaterial
+        color={color}
+        transparent
+        opacity={opacity}
+        roughness={0.2}
+        metalness={0.05}
+      />
+    </mesh>
+  );
 }
 
 export default function FloatingSpheres() {
