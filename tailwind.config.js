@@ -44,6 +44,10 @@ export default {
         schedule: '0 6px 7px rgba(52, 39, 31, 0.24)',
         'schedule-day': '0 4px 9px rgba(255, 107, 0, 0.34)',
         'schedule-dropdown': '0 14px 30px rgba(0, 0, 0, 0.1)',
+        'app-md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'app-xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        'recruit-card': '0 3px 0 rgb(0 0 0 / 0.18)',
+        'recruit-modal': '0 16px 40px rgb(0 0 0 / 0.25)',
       },
       // 부원 상태 배지 너비(시안 실측 150px).
       minWidth: {

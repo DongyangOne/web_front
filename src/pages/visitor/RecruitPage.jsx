@@ -1,76 +1,94 @@
-import { useState } from 'react';
-import { submitRecruit } from '@/apis/recruit';
-import Button from '@/components/common/Button';
+import { RecruitApplyInfoSection } from '@/components/recruit/RecruitApplyInfoSection';
+import { RecruitBasicInfoSection } from '@/components/recruit/RecruitBasicInfoSection';
+import { RecruitConfirmModal } from '@/components/recruit/RecruitConfirmModal';
+import { RecruitPrivacyAgreementSection } from '@/components/recruit/RecruitPrivacyAgreementSection';
+import { useRecruitForm } from '@/hooks/useRecruitForm';
 
-const INITIAL_FORM = {
-  name: '',
-  studentId: '',
-  major: '',
-  motivation: '',
+const TEXT = {
+  titleAccent: '신입 부원',
+  titleRest: '모집',
+  description: '신입 부원 모집을 위해 정보를 작성해 주세요.',
+  basicInfo: '기본 정보',
+  applyInfo: '지원 정보',
+  submit: '제출하기',
+  submitting: '제출 중',
 };
 
+const majorOptions = ['웹응용소프트웨어공학과'];
+
 function RecruitPage() {
-  // 1. 상태
-  const [form, setForm] = useState(INITIAL_FORM);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState(null);
+  const {
+    form,
+    submitError,
+    errors,
+    hasSubmitted,
+    isConfirmOpen,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    handleConfirmSubmit,
+    closeConfirm,
+  } = useRecruitForm();
 
-  // 2. 핸들러
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      await submitRecruit(form);
-      setForm(INITIAL_FORM);
-      alert('신청이 완료되었습니다.');
-    } catch (error) {
-      console.error('[RecruitPage] 신청 실패:', error);
-      setSubmitError('신청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // 3. 파생 변수
-  const isFormValid = form.name.trim() !== '' && form.studentId.trim() !== '';
-
-  // 4. 렌더링
   return (
-    <section>
-      <h2>신입부원 모집 신청</h2>
+    <section className="min-h-screen min-w-[320px] bg-brand-soft px-4 py-10 sm:px-8">
+      <div className="mx-auto w-full max-w-[1253px]">
+        <header>
+          <h1 className="text-[48px] font-bold leading-tight text-ink sm:text-[64px] lg:text-[80px]">
+            <span className="text-brand">{TEXT.titleAccent}</span> {TEXT.titleRest}
+          </h1>
+          <p className="mt-4 text-[20px] font-light text-ink-sub sm:text-[26px] lg:text-[32px]">
+            {TEXT.description}
+          </p>
+        </header>
 
-      <label>
-        이름
-        <input name="name" value={form.name} onChange={handleChange} />
-      </label>
+        <RecruitBasicInfoSection
+          title={TEXT.basicInfo}
+          form={form}
+          errors={errors}
+          hasSubmitted={hasSubmitted}
+          onChange={handleChange}
+          options={majorOptions}
+        />
 
-      <label>
-        학번
-        <input name="studentId" value={form.studentId} onChange={handleChange} />
-      </label>
+        <RecruitApplyInfoSection
+          title={TEXT.applyInfo}
+          form={form}
+          errors={errors}
+          hasSubmitted={hasSubmitted}
+          onChange={handleChange}
+        />
 
-      <label>
-        전공
-        <input name="major" value={form.major} onChange={handleChange} />
-      </label>
+        <RecruitPrivacyAgreementSection
+          form={form}
+          errors={errors}
+          hasSubmitted={hasSubmitted}
+          isSubmitting={isSubmitting}
+          submitLabel={TEXT.submit}
+          submittingLabel={TEXT.submitting}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
 
-      <label>
-        지원 동기
-        <textarea name="motivation" value={form.motivation} onChange={handleChange} />
-      </label>
+        {submitError && (
+          <p
+            className="mx-4 mt-5 rounded-[8px] bg-red-50 px-4 py-3 text-sm font-medium text-error sm:mx-6 lg:ml-[145px] lg:mr-[159px]"
+            role="alert"
+          >
+            {submitError}
+          </p>
+        )}
+      </div>
 
-      {submitError && <p role="alert">{submitError}</p>}
-
-      <Button onClick={handleSubmit} disabled={!isFormValid || isSubmitting}>
-        {isSubmitting ? '제출 중...' : '신청하기'}
-      </Button>
+      {isConfirmOpen && (
+        <RecruitConfirmModal
+          form={form}
+          onClose={closeConfirm}
+          onConfirm={handleConfirmSubmit}
+          isSubmitting={isSubmitting}
+          submittingLabel={TEXT.submitting}
+        />
+      )}
     </section>
   );
 }
