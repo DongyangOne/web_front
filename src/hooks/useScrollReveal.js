@@ -21,13 +21,13 @@ export default function useScrollReveal() {
       { threshold: 0.1 }
     );
 
-    revealRefs.current.forEach((el) => el && observer.observe(el));
+    revealRefs.current.forEach((element) => element && observer.observe(element));
     return () => observer.disconnect();
   }, []);
 
-  return useCallback((el) => {
-    if (el && !revealRefs.current.includes(el)) {
-      revealRefs.current.push(el);
+  return useCallback((element) => {
+    if (element && !revealRefs.current.includes(element)) {
+      revealRefs.current.push(element);
     }
   }, []);
 }

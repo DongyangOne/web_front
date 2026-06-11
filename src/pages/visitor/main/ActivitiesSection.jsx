@@ -5,7 +5,7 @@ export default function ActivitiesSection() {
   const revealRef = useScrollReveal();
 
   return (
-    <section className="py-20 px-6" style={{ background: '#FFF1E7' }}>
+    <section className="py-20 px-6 bg-brand-soft">
       <div className="max-w-[960px] mx-auto">
         {/* 섹션 헤더 */}
         <div ref={revealRef} className="reveal-up text-center mb-14">
@@ -23,19 +23,16 @@ export default function ActivitiesSection() {
               style={{ transitionDelay: `${index * 80}ms` }}
             >
               {/* 원형 아이콘 컨테이너 */}
-              <div
-                className="w-24 h-24 rounded-full flex items-center justify-center mb-7"
-                style={{ background: '#FFF1E7' }}
-              >
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mb-7 bg-brand-soft">
                 <img
                   src={activity.icon}
                   alt={activity.title}
-                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                  className="w-[100px] h-[100px] object-cover"
                 />
               </div>
               <h3 className="text-lg font-bold text-ink mb-5">{activity.title}</h3>
               <p className="text-sm text-ink-sub leading-7 m-0 whitespace-pre-line">
-                {activity.desc}
+                {activity.description}
               </p>
             </div>
           ))}

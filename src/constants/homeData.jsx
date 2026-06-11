@@ -7,22 +7,22 @@ export const ACTIVITY_LIST = [
   {
     icon: mainProject,
     title: '프로젝트',
-    desc: '매년마다 동양미래 EXPO 및 다양한 대회에 출전하며\n프로젝트를 진행합니다.',
+    description: '매년마다 동양미래 EXPO 및 다양한 대회에 출전하며\n프로젝트를 진행합니다.',
   },
   {
     icon: mainStudy,
     title: '스터디',
-    desc: '전공 지식과 최신 기술을 함께 공부하며\n꾸준한 성장을 목표로 합니다.',
+    description: '전공 지식과 최신 기술을 함께 공부하며\n꾸준한 성장을 목표로 합니다.',
   },
   {
     icon: mainTutoring,
     title: '세미나 및 튜터링',
-    desc: '선후배 간 지식 공유와 튜터링을 통해\n함께 배우는 문화를 만들어갑니다.',
+    description: '선후배 간 지식 공유와 튜터링을 통해\n함께 배우는 문화를 만들어갑니다.',
   },
   {
     icon: mainPlaying,
     title: 'MT 및 회식',
-    desc: '다양한 친목 활동을 통해\n즐겁고 편안한 동아리 분위기를 만들어갑니다.',
+    description: '다양한 친목 활동을 통해\n즐겁고 편안한 동아리 분위기를 만들어갑니다.',
   },
 ];
 

@@ -20,19 +20,19 @@ const SPHERE_CONFIGS = [
 
 function FloatingSphere({ position, radius, color, opacity, phaseOffset }) {
   const meshRef = useRef(null);
-  const [px, py, pz] = position;
+  const [positionX, positionY, positionZ] = position;
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return;
-    const t = clock.getElapsedTime() * 0.45 + phaseOffset;
-    meshRef.current.position.y = py + Math.sin(t) * 0.18;
-    meshRef.current.position.x = px + Math.cos(t * 0.7) * 0.08;
+    const time = clock.getElapsedTime() * 0.45 + phaseOffset;
+    meshRef.current.position.y = positionY + Math.sin(time) * 0.18;
+    meshRef.current.position.x = positionX + Math.cos(time * 0.7) * 0.08;
     meshRef.current.rotation.y += 0.002;
     meshRef.current.rotation.z += 0.001;
   });
 
   return (
-    <mesh ref={meshRef} position={[px, py, pz]}>
+    <mesh ref={meshRef} position={[positionX, positionY, positionZ]}>
       <sphereGeometry args={[radius, 32, 32]} />
       <meshStandardMaterial
         color={color}
@@ -48,8 +48,8 @@ function FloatingSphere({ position, radius, color, opacity, phaseOffset }) {
 export default function FloatingSpheres() {
   return (
     <>
-      {SPHERE_CONFIGS.map((config, i) => (
-        <FloatingSphere key={i} {...config} phaseOffset={i * 0.85} />
+      {SPHERE_CONFIGS.map((config, index) => (
+        <FloatingSphere key={index} {...config} phaseOffset={index * 0.85} />
       ))}
     </>
   );

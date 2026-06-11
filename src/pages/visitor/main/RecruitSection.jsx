@@ -8,15 +8,14 @@ export default function RecruitSection() {
   const revealRef = useScrollReveal();
 
   return (
-    <section className="pb-28 px-6" style={{ background: '#FFF1E7' }}>
+    <section className="pb-28 px-6 bg-brand-soft">
       {/* 타임라인에서 이어지는 점선 */}
       <div className="flex justify-center pt-0 mb-20">
         <div
-          className="w-[1.5px] h-24"
+          className="w-[1.5px] h-24 opacity-50"
           style={{
             background:
               'repeating-linear-gradient(to bottom, #FF6B00 0px, #FF6B00 6px, transparent 6px, transparent 12px)',
-            opacity: 0.5,
           }}
         />
       </div>
