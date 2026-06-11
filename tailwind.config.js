@@ -19,11 +19,6 @@ export default {
         'field-border': '#CCCCCC', // 입력칸 테두리
         error: '#F94700', // 필수 표시(*)·오류 메시지(brand보다 붉은 톤)
       },
-      boxShadow: {
-        'app-md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-        'app-xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-        'recruit-complete': '0 6px 18px rgb(52 39 31 / 0.22)',
-      },
       // 명부 관리/부원 등록 화면 모서리 토큰(시안 실측).
       borderRadius: {
         card: '50px',
@@ -35,6 +30,7 @@ export default {
       boxShadow: {
         'app-md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
         'app-xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        'recruit-complete': '0 6px 18px rgb(52 39 31 / 0.22)',
         'recruit-card': '0 3px 0 rgb(0 0 0 / 0.18)',
         'recruit-modal': '0 16px 40px rgb(0 0 0 / 0.25)',
       },
