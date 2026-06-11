@@ -12,7 +12,7 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
   return (
     <div className="grid grid-cols-1 items-start gap-y-8 px-[18px] py-11 sm:px-11 sm:py-[72px] xl:grid-cols-[505px_24px_1fr] xl:gap-x-6 xl:gap-y-0 xl:px-[60px] xl:py-0 xl:pt-[135px]">
       <div className="h-auto w-full max-w-[505px] xl:h-[412px]">
-        <div className="mb-[14px] flex items-center gap-2" aria-label="달력 기간 선택">
+        <div className="mb-[14px] flex w-full items-center gap-2" aria-label="달력 기간 선택">
           <ScheduleDropdown
             config={{
               label: '월 선택',
@@ -45,7 +45,7 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
             }}
           />
 
-          <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-[140px]" />
+          <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-auto mr-8" />
         </div>
 
         <div
@@ -92,7 +92,7 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
           {visibleSchedules.map((schedule, index) => (
             <li
               key={`${schedule.startDate}-${schedule.endDate}-${schedule.title}-${index}`}
-              className="grid min-w-0 grid-cols-1 items-center gap-x-2 gap-y-1.5 text-[16px] leading-[1.3] sm:grid-cols-[170px_minmax(0,1fr)]"
+              className="grid min-w-0 grid-cols-1 items-center gap-x-5 gap-y-1.5 text-[16px] leading-[1.3] sm:grid-cols-[170px_minmax(0,1fr)]"
             >
               <time className="font-bold text-ink">
                 {formatScheduleDate(schedule.startDate)} ~ {formatScheduleDate(schedule.endDate)}

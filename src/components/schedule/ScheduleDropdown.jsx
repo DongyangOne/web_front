@@ -9,7 +9,7 @@ function ScheduleDropdown({ config, state, handlers, scrollRefs, classNames }) {
       <button
         type="button"
         className={[
-          `inline-flex h-[34px] ${buttonWidthClass} items-center justify-between rounded-[7px] !bg-white px-2 text-[18px] font-Regular leading-none text-ink`,
+          `inline-flex w-[80px] h-[48px] ${buttonWidthClass} items-center justify-between rounded-[7px] !bg-white px-2 text-[18px] font-Regular leading-none text-ink`,
           isOpen
             ? '!border !border-solid !border-brand'
             : '!border !border-solid !border-transparent',
@@ -30,7 +30,7 @@ function ScheduleDropdown({ config, state, handlers, scrollRefs, classNames }) {
 
       {isOpen && (
         <div
-          className="absolute left-0 top-[36px] z-20 h-[404px] w-[calc(100vw-36px)] max-w-[424px] rounded-[14px] border border-line bg-white shadow-schedule-dropdown sm:w-[424px]"
+          className="absolute left-0 top-[48px] z-20 h-[404px] w-[calc(100vw-36px)] max-w-[424px] rounded-[14px] border border-line bg-white shadow-schedule-dropdown sm:w-[424px]"
           style={{ borderStyle: 'solid', borderWidth: '1px' }}
         >
           <ul

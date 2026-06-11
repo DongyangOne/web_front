@@ -28,7 +28,7 @@ function AllScheduleView({ yearDropdown, view, scheduleMonthEntries, scheduleScr
   } = scheduleScroll;
   return (
     <div className="pb-8 pl-[18px] pr-0 pt-[50px] sm:pl-9 xl:pl-[60px]">
-      <div className="flex items-center gap-2">
+      <div className="flex w-full items-center gap-2 pr-[18px] sm:pr-9 xl:pr-[60px]">
         <ScheduleDropdown
           config={{
             label: '일정이 없습니다.',
@@ -45,7 +45,7 @@ function AllScheduleView({ yearDropdown, view, scheduleMonthEntries, scheduleScr
           }}
         />
 
-        <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-[92px]" />
+        <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-auto" />
       </div>
 
       <div className="relative -ml-[18px] mt-[14px] sm:-ml-9 xl:-ml-[60px] xl:w-[1253px]">
