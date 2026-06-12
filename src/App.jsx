@@ -7,6 +7,7 @@ import RecruitPage from '@/pages/visitor/RecruitPage';
 import SchedulePage from '@/pages/visitor/SchedulePage';
 import AboutPage from '@/pages/visitor/AboutPage';
 import AdminPage from '@/pages/admin/AdminPage';
+import RecruitManagePage from '@/pages/admin/RecruitManagePage';
 import MemberPage from '@/pages/admin/MemberPage';
 import MemberRegisterPage from '@/pages/admin/MemberRegisterPage';
 import MemberEditPage from '@/pages/admin/MemberEditPage';
@@ -21,6 +22,7 @@ function App() {
         <Route path={ROUTES.SCHEDULE} element={<SchedulePage />} />
         <Route path={ROUTES.ABOUT} element={<AboutPage />} />
         <Route path={ROUTES.ADMIN} element={<AdminPage />} />
+        <Route path={ROUTES.ADMIN_RECRUIT} element={<RecruitManagePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       {/* admin 명부 관리: 방문자 Layout(Header/Footer) 없이 렌더 */}
