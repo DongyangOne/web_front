@@ -7,7 +7,6 @@ export const COLORS = {
   primary: '#3B82F6',
   primaryDark: '#1E40AF',
   secondary: '#F59E0B',
-  orange: '#FF6B00', // 상단바 및 주요 액션 색상 (Figma 추출)
   background: '#FFFFFF',
   surface: '#F3F4F6',
   textPrimary: '#1F2937',
