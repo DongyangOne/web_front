@@ -14,7 +14,7 @@ const TEXT = {
   submitting: '제출 중',
 };
 
-const majorOptions = ['웹응용소프트웨어공학과'];
+const majorOptions = ['응용소프트웨어공학과'];
 
 function RecruitPage() {
   const {
