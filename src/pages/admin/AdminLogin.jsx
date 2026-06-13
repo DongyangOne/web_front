@@ -13,8 +13,8 @@ function AdminLogin() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setError('');
 
     if (!id.trim()) {
@@ -58,7 +58,7 @@ function AdminLogin() {
               id="admin-id"
               type="text"
               value={id}
-              onChange={(e) => setId(e.target.value)}
+              onChange={(event) => setId(event.target.value)}
               placeholder="아이디를 입력해 주세요."
               autoComplete="username"
               className="w-full rounded-md border border-solid border-field-border bg-white px-3.5 py-3 text-sm text-ink placeholder:text-ink-sub focus:border-ink focus:outline-none"
@@ -74,7 +74,7 @@ function AdminLogin() {
               id="admin-password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
               placeholder="비밀번호를 입력해 주세요."
               autoComplete="current-password"
               className="w-full rounded-md border border-solid border-field-border bg-white px-3.5 py-3 text-sm text-ink placeholder:text-ink-sub focus:border-ink focus:outline-none"
