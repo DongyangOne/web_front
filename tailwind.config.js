@@ -27,6 +27,10 @@ export default {
         // 신청 부원 목록 모달.
         modal: '30px',
       },
+      boxShadow: {
+        // 명부 관리/신청 부원 카드 그림자 (시안 실측).
+        card: '0 4px 4px rgba(0,0,0,0.25)',
+      },
       // 부원 상태 배지 너비(시안 실측 150px).
       minWidth: {
         badge: '150px',
