@@ -36,7 +36,11 @@ function RecruitPage() {
     closeConfirm,
   } = useRecruitForm();
 
+  const isDirty = Object.values(form).some((value) => value !== '');
+
   useEffect(() => {
+    if (!isDirty) return;
+
     const handleLeavePage = (event) => {
       const link = event.target.closest('a[href]');
 
@@ -49,9 +53,19 @@ function RecruitPage() {
       }
     };
 
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
     document.addEventListener('click', handleLeavePage, true);
-    return () => document.removeEventListener('click', handleLeavePage, true);
-  }, []);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('click', handleLeavePage, true);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isDirty]);
 
   return (
     <section className="min-h-screen min-w-[320px] bg-brand-soft px-4 py-10 sm:px-8">
