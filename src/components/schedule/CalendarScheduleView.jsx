@@ -70,10 +70,10 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
                 key={date.key}
                 type="button"
                 className={[
-                  'relative grid h-[31px] w-[34px] place-items-center text-[18px] font-normal leading-none sm:w-10 xl:h-[40px] xl:w-[40px]',
+                  'relative grid place-items-center text-[18px] font-normal leading-none',
                   date.key === todayKey
-                    ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10 shadow-schedule-day'
-                    : '',
+                    ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10'
+                    : 'h-[31px] w-[34px] sm:w-10 xl:h-[40px] xl:w-[40px]',
                   date.key !== todayKey && !date.isCurrentMonth ? 'text-schedule-inactive' : '',
                   date.key !== todayKey && date.isCurrentMonth ? 'text-ink' : '',
                 ]
