@@ -20,7 +20,15 @@ export function useRecruitForm() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    const nextValue = name === 'phone' ? formatPhoneNumber(value) : value;
+    let nextValue = value;
+
+    if (name === 'phone') {
+      nextValue = formatPhoneNumber(value);
+    }
+
+    if (name === 'name') {
+      nextValue = value.replace(/[^ㄱ-ㅎㅏ-ㅣ가-힣]/g, '').slice(0, 8);
+    }
 
     setForm((prevForm) => ({ ...prevForm, [name]: nextValue }));
     setErrors((prevErrors) => ({

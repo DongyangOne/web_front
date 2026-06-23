@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
+
 import { RecruitApplyInfoSection } from '@/components/recruit/RecruitApplyInfoSection';
 import { RecruitBasicInfoSection } from '@/components/recruit/RecruitBasicInfoSection';
 import { RecruitConfirmModal } from '@/components/recruit/RecruitConfirmModal';
 import { RecruitPrivacyAgreementSection } from '@/components/recruit/RecruitPrivacyAgreementSection';
 import { useRecruitForm } from '@/hooks/useRecruitForm';
+import { ROUTES } from '@/constants/routes';
 
 const TEXT = {
   titleAccent: '신입 부원',
@@ -15,6 +18,9 @@ const TEXT = {
 };
 
 const majorOptions = ['응용소프트웨어공학과'];
+
+const LEAVE_CONFIRM_MESSAGE =
+  '입력하신 정보는 저장되지 않습니다.\n페이지를 이동하시겠습니까?';
 
 function RecruitPage() {
   const {
@@ -29,6 +35,23 @@ function RecruitPage() {
     handleConfirmSubmit,
     closeConfirm,
   } = useRecruitForm();
+
+  useEffect(() => {
+    const handleLeavePage = (event) => {
+      const link = event.target.closest('a[href]');
+
+      if (!link || link.pathname === ROUTES.RECRUIT || link.pathname === ROUTES.RECRUIT_COMPLETE) {
+        return;
+      }
+
+      if (!window.confirm(LEAVE_CONFIRM_MESSAGE)) {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('click', handleLeavePage, true);
+    return () => document.removeEventListener('click', handleLeavePage, true);
+  }, []);
 
   return (
     <section className="min-h-screen min-w-[320px] bg-brand-soft px-4 py-10 sm:px-8">
