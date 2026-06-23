@@ -129,10 +129,10 @@ function RecruitManagePage() {
               {APPLICANTS.map((applicant) => (
                 <tr key={applicant.id}>
                   <td className={TD_CLASS}>
-                    <span className="relative inline-flex items-center justify-center">
-                      <span>{applicant.id}</span>
+                    <span className="relative inline-block">
+                      {applicant.id}
                       {applicant.isNew && (
-                        <span className="absolute left-full ml-2 inline-flex h-[18px] w-[19px] items-center justify-center rounded-sm bg-brand text-[14px] font-bold text-white">
+                        <span className="absolute left-full top-1/2 ml-3 -translate-y-1/2 inline-flex h-[18px] w-[19px] items-center justify-center rounded-sm bg-brand text-[14px] font-bold text-white">
                           N
                         </span>
                       )}
