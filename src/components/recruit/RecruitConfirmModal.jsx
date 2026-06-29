@@ -7,7 +7,7 @@ export function RecruitConfirmModal({
   isSubmitting,
   submittingLabel = '제출 중',
 }) {
-  const genderLabel = form.gender === 'male' ? '남자' : '여자';
+  const genderLabel = form.gender === 'MALE' ? '남자' : form.gender === 'FEMALE' ? '여자' : '';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 px-4">
@@ -26,19 +26,19 @@ export function RecruitConfirmModal({
 
           <div className="mt-6">
             <p>이름: {form.name}</p>
-            <p>학과: {form.major}</p>
+            <p>학과: {form.department}</p>
             <p>학번: {form.studentId}</p>
-            <p>생년월일: {form.birthdate}</p>
+            <p>생년월일: {form.birthday}</p>
             <p>학년: {form.grade}학년</p>
-            <p>전화번호: {form.phone}</p>
+            <p>전화번호: {form.phoneNumber}</p>
             <p>성별: {genderLabel}</p>
           </div>
 
           <div className="mt-6">
             <p>지원 동기: {form.motivation}</p>
-            <p>사용해봤거나 들어본 언어 및 라이브러리: {form.portfolio}</p>
-            <p>동아리에서 해 보고 싶은 것: {form.interests}</p>
-            {form.finalMessage && <p>마지막으로 하고 싶은 말: {form.finalMessage}</p>}
+            <p>사용해봤거나 들어본 언어 및 라이브러리: {form.techStack}</p>
+            <p>동아리에서 해 보고 싶은 것: {form.desiredActivity}</p>
+            {form.finalWords && <p>마지막으로 하고 싶은 말: {form.finalWords}</p>}
           </div>
 
           <p className="mt-6">개인 정보 수집 동의: 동의함</p>

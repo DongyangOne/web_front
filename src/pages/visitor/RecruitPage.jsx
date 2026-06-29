@@ -17,10 +17,9 @@ const TEXT = {
   submitting: '제출 중',
 };
 
-const majorOptions = ['응용소프트웨어공학과'];
+const majorOptions = ['웹응용소프트웨어공학과'];
 
-const LEAVE_CONFIRM_MESSAGE =
-  '입력하신 정보는 저장되지 않습니다.\n페이지를 이동하시겠습니까?';
+const LEAVE_CONFIRM_MESSAGE = '입력하신 정보는 저장되지 않습니다.\n페이지를 이동하시겠습니까?';
 
 function RecruitPage() {
   const {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { submitRecruit } from '@/apis/recruit';
 import { ROUTES } from '@/constants/routes';
 import {
   formatPhoneNumber,
@@ -20,12 +21,21 @@ export function useRecruitForm() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    const nextValue = name === 'phone' ? formatPhoneNumber(value) : value;
+    const nextValue =
+      name === 'phoneNumber'
+        ? formatPhoneNumber(value)
+        : name === 'grade'
+          ? value === ''
+            ? ''
+            : Number(value)
+          : name === 'privacyConsent'
+            ? value === 'true'
+            : value;
 
     setForm((prevForm) => ({ ...prevForm, [name]: nextValue }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: name === 'privacyAgreement' && value === 'disagree' ? PRIVACY_AGREEMENT_ERROR : '',
+      [name]: name === 'privacyConsent' && value === 'false' ? PRIVACY_AGREEMENT_ERROR : '',
     }));
   };
 
@@ -50,16 +60,23 @@ export function useRecruitForm() {
     setIsConfirmOpen(false);
   };
 
-  const handleConfirmSubmit = () => {
+  const handleConfirmSubmit = async () => {
     if (isSubmitting) return;
 
     setIsSubmitting(true);
     setSubmitError('');
-    window.setTimeout(() => {
+    try {
+      await submitRecruit(form);
       setIsConfirmOpen(false);
-      setIsSubmitting(false);
       navigate(ROUTES.RECRUIT_COMPLETE);
-    }, 0);
+    } catch (error) {
+      setIsConfirmOpen(false);
+      setSubmitError(
+        error.response?.data?.message || '모집 신청 제출에 실패했습니다. 잠시 후 다시 시도해 주세요.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return {

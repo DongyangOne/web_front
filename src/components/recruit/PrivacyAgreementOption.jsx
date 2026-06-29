@@ -6,9 +6,10 @@ export function PrivacyAgreementOption({ label, value, checked, onChange }) {
     <label className="inline-flex min-w-fit items-center gap-[6px] whitespace-nowrap text-[14px] font-normal text-ink">
       <input
         type="radio"
-        name="privacyAgreement"
+        name="privacyConsent"
         value={value}
         checked={checked}
+        autoComplete="off"
         onChange={onChange}
         className="peer sr-only"
       />
