@@ -62,8 +62,7 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
           ))}
 
           {calendarDates.map((date) => {
-            const hasSchedule =
-              date.isCurrentMonth && scheduleDateKeys.has(date.key) && date.key !== todayKey;
+            const hasSchedule = date.isCurrentMonth && scheduleDateKeys.has(date.key);
 
             return (
               <button
@@ -83,7 +82,7 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
                 {hasSchedule && (
                   <span
                     aria-hidden="true"
-                    className="absolute left-1/2 top-[-10px] h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-brand"
+                    className="absolute left-1/2 top-[-12px] h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-brand"
                   />
                 )}
                 <span className="relative z-10">{date.day}</span>

@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import AllScheduleView from '@/components/schedule/AllScheduleView';
 import CalendarScheduleView from '@/components/schedule/CalendarScheduleView';
 import ScheduleStyles from '@/styles/ScheduleStyles';
-import { DROPDOWN_TYPE, SCHEDULES } from '@/constants/schedule';
+import { getVisitorCalendar, getVisitorCalendarMonth } from '@/apis/calendar';
+import { DROPDOWN_TYPE } from '@/constants/schedule';
 import {
   formatDateKey,
   getCalendarDates,
@@ -38,17 +39,21 @@ function SchedulePage() {
   const [month, setMonth] = useState(today.getMonth());
   const [openedDropdown, setOpenedDropdown] = useState(null);
   const [viewMode, setViewMode] = useState('calendar');
+  const [yearSchedules, setYearSchedules] = useState([]);
+  const [monthSchedules, setMonthSchedules] = useState([]);
 
   const calendarDates = useMemo(() => getCalendarDates(year, month), [year, month]);
-  const scheduleDateKeys = useMemo(() => getScheduleDateKeys(SCHEDULES), []);
+  const scheduleDateKeys = useMemo(() => getScheduleDateKeys(monthSchedules), [monthSchedules]);
   const visibleSchedules = useMemo(() => {
     const filteredSchedules =
       viewMode === 'all'
-        ? SCHEDULES.filter((schedule) => parseLocalDate(schedule.startDate).getFullYear() === year)
-        : SCHEDULES.filter((schedule) => isScheduleInMonth(schedule, year, month));
+        ? yearSchedules.filter(
+            (schedule) => parseLocalDate(schedule.startDate).getFullYear() === year
+          )
+        : monthSchedules.filter((schedule) => isScheduleInMonth(schedule, year, month));
 
     return [...filteredSchedules].sort(sortByStartDate);
-  }, [month, viewMode, year]);
+  }, [month, monthSchedules, viewMode, year, yearSchedules]);
   const scheduleMonthEntries = useMemo(
     () => Object.entries(groupSchedulesByMonth(visibleSchedules)),
     [visibleSchedules]
@@ -77,6 +82,58 @@ function SchedulePage() {
     setViewMode(nextViewMode);
     setOpenedDropdown(null);
   };
+
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchYearSchedules = async () => {
+      if (viewMode !== 'all') return;
+
+      try {
+        const scheduleList = await getVisitorCalendar(year);
+
+        if (!ignore) {
+          setYearSchedules(scheduleList);
+        }
+      } catch {
+        if (!ignore) {
+          setYearSchedules([]);
+        }
+      }
+    };
+
+    fetchYearSchedules();
+
+    return () => {
+      ignore = true;
+    };
+  }, [viewMode, year]);
+
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchMonthSchedules = async () => {
+      if (viewMode !== 'calendar') return;
+
+      try {
+        const scheduleList = await getVisitorCalendarMonth({ year, month: month + 1 });
+
+        if (!ignore) {
+          setMonthSchedules(scheduleList);
+        }
+      } catch {
+        if (!ignore) {
+          setMonthSchedules([]);
+        }
+      }
+    };
+
+    fetchMonthSchedules();
+
+    return () => {
+      ignore = true;
+    };
+  }, [month, viewMode, year]);
 
   useEffect(() => {
     const rafIds = [];
@@ -129,8 +186,7 @@ function SchedulePage() {
               yearOptions,
               isOpen: isYearDropdownOpen,
               handlers: {
-                onToggle: () =>
-                  setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR),
+                onToggle: () => setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR),
                 onSelect: (yearOption) => {
                   setYear(yearOption);
                   setOpenedDropdown(null);
@@ -160,8 +216,7 @@ function SchedulePage() {
             monthDropdown={{
               isOpen: isMonthDropdownOpen,
               handlers: {
-                onToggle: () =>
-                  setOpenedDropdown(isMonthDropdownOpen ? null : DROPDOWN_TYPE.MONTH),
+                onToggle: () => setOpenedDropdown(isMonthDropdownOpen ? null : DROPDOWN_TYPE.MONTH),
                 onSelect: (monthOption) => {
                   setMonth(monthOption);
                   setOpenedDropdown(null);
@@ -177,8 +232,7 @@ function SchedulePage() {
             yearDropdown={{
               isOpen: isYearDropdownOpen,
               handlers: {
-                onToggle: () =>
-                  setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR),
+                onToggle: () => setOpenedDropdown(isYearDropdownOpen ? null : DROPDOWN_TYPE.YEAR),
                 onSelect: (yearOption) => {
                   setYear(yearOption);
                   setOpenedDropdown(null);
