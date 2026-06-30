@@ -3,13 +3,18 @@ function ScheduleDropdown({ config, state, handlers, scrollRefs, classNames }) {
   const { value, isOpen } = state;
   const { onToggle, onSelect, onScroll } = handlers;
   const { listRef, trackRef, thumbRef } = scrollRefs;
-  const { buttonWidthClass, itemHeightClass, itemTextClass } = classNames;
+  const {
+    buttonWidthClass,
+    itemHeightClass,
+    itemTextClass,
+    buttonPaddingClass = 'px-2',
+  } = classNames;
   return (
     <div className="relative">
       <button
         type="button"
         className={[
-          `inline-flex w-[80px] h-[48px] ${buttonWidthClass} items-center justify-between rounded-[7px] !bg-white px-2 text-[18px] font-Regular leading-none text-ink`,
+          `inline-flex w-[80px] h-[48px] ${buttonWidthClass} ${buttonPaddingClass} items-center justify-between rounded-[7px] !bg-white text-[18px] font-Regular leading-none text-ink`,
           isOpen
             ? '!border !border-solid !border-brand'
             : '!border !border-solid !border-transparent',

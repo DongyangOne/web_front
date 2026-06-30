@@ -40,6 +40,7 @@ function AllScheduleView({ yearDropdown, view, scheduleMonthEntries, scheduleScr
           scrollRefs={yearDropdown.scrollRefs}
           classNames={{
             buttonWidthClass: 'w-[70px]',
+            buttonPaddingClass: 'pr-4',
             itemHeightClass: 'h-[73px] leading-[73px]',
             itemTextClass: 'text-[18px]',
           }}
