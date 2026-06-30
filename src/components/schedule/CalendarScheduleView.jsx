@@ -61,27 +61,35 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
             </div>
           ))}
 
-          {calendarDates.map((date) => (
-            <button
-              key={date.key}
-              type="button"
-              className={[
-                'relative grid h-[31px] w-[34px] place-items-center text-[18px] font-normal leading-none sm:w-10 xl:h-[40px] xl:w-[40px]',
-                date.key === todayKey
-                  ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10 shadow-schedule-day'
-                  : '',
-                date.isCurrentMonth && scheduleDateKeys.has(date.key) && date.key !== todayKey
-                  ? 'after:absolute after:left-1/2 after:top-[33px] after:h-2.5 after:w-2.5 after:-translate-x-1/2 after:rounded-full after:bg-brand after:content-[""] xl:after:top-[54px]'
-                  : '',
-                date.key !== todayKey && !date.isCurrentMonth ? 'text-schedule-inactive' : '',
-                date.key !== todayKey && date.isCurrentMonth ? 'text-ink' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              <span>{date.day}</span>
-            </button>
-          ))}
+          {calendarDates.map((date) => {
+            const hasSchedule =
+              date.isCurrentMonth && scheduleDateKeys.has(date.key) && date.key !== todayKey;
+
+            return (
+              <button
+                key={date.key}
+                type="button"
+                className={[
+                  'relative grid place-items-center text-[18px] font-normal leading-none',
+                  date.key === todayKey
+                    ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10'
+                    : 'h-[31px] w-[34px] sm:w-10 xl:h-[40px] xl:w-[40px]',
+                  date.key !== todayKey && !date.isCurrentMonth ? 'text-schedule-inactive' : '',
+                  date.key !== todayKey && date.isCurrentMonth ? 'text-ink' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {hasSchedule && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute left-1/2 top-[-10px] h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-brand"
+                  />
+                )}
+                <span className="relative z-10">{date.day}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
