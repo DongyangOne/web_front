@@ -12,7 +12,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
-    const isVisitorApi = config.url?.startsWith('/api/v1/visitor/');
+    const isVisitorApi = config.url?.includes('api/v1/visitor/');
 
     if (token && !isVisitorApi) {
       config.headers.Authorization = `Bearer ${token}`;

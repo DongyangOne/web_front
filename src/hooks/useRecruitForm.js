@@ -25,9 +25,7 @@ export function useRecruitForm() {
       name === 'phoneNumber'
         ? formatPhoneNumber(value)
         : name === 'grade'
-          ? value === ''
-            ? ''
-            : Number(value)
+          ? value.replace(/\D/g, '')
           : name === 'privacyConsent'
             ? value === 'true'
             : value;
@@ -66,7 +64,7 @@ export function useRecruitForm() {
     setIsSubmitting(true);
     setSubmitError('');
     try {
-      await submitRecruit(form);
+      await submitRecruit({ ...form, grade: Number(form.grade) });
       setIsConfirmOpen(false);
       navigate(ROUTES.RECRUIT_COMPLETE);
     } catch (error) {

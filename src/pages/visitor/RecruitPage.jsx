@@ -43,7 +43,12 @@ function RecruitPage() {
     const handleLeavePage = (event) => {
       const link = event.target.closest('a[href]');
 
-      if (!link || link.pathname === ROUTES.RECRUIT || link.pathname === ROUTES.RECRUIT_COMPLETE) {
+      if (
+        !link ||
+        link.target === '_blank' ||
+        link.pathname === ROUTES.RECRUIT ||
+        link.pathname === ROUTES.RECRUIT_COMPLETE
+      ) {
         return;
       }
 
