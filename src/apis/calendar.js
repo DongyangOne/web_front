@@ -1,16 +1,21 @@
 import instance from './instance';
 
-const flattenCalendarGroups = (calendarGroups) =>
-  calendarGroups.flatMap(({ yearMonth, schedules }) =>
-    schedules.map((schedule) => ({ ...schedule, yearMonth }))
-  );
+const flattenCalendarGroups = (calendarGroups) => {
+  if (!Array.isArray(calendarGroups)) return [];
+
+  return calendarGroups.flatMap(({ yearMonth, schedules }) => {
+    if (!Array.isArray(schedules)) return [];
+
+    return schedules.map((schedule) => ({ ...schedule, yearMonth }));
+  });
+};
 
 export const getVisitorCalendar = async (year) => {
   const response = await instance.get('/api/v1/visitor/calendar', {
     params: { year },
   });
 
-  return flattenCalendarGroups(response.data.data);
+  return flattenCalendarGroups(response.data?.data);
 };
 
 export const getVisitorCalendarMonth = async ({ year, month }) => {
@@ -19,7 +24,10 @@ export const getVisitorCalendarMonth = async ({ year, month }) => {
     params: { year, month: paddedMonth },
   });
 
-  return response.data.data.map((schedule) => ({
+  const schedules = response.data?.data;
+  if (!Array.isArray(schedules)) return [];
+
+  return schedules.map((schedule) => ({
     ...schedule,
     yearMonth: `${year}-${paddedMonth}`,
   }));
