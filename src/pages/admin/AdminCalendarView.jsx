@@ -70,6 +70,13 @@ function AdminCalendarView({
     setSelectedIndexes(new Set());
   };
 
+  const handleCancel = () => {
+    setIsAddingSchedule(false);
+    setNewScheduleTitle('');
+    setIsEditMode(false);
+    setEditedSchedules([]);
+  };
+
   const handleEditTitle = (index, value) => {
     setEditedSchedules((prev) => {
       const next = [...prev];
@@ -260,8 +267,17 @@ function AdminCalendarView({
             </div>
           </ol>
 
-          {/* 수정/완료 버튼: shrink-0 으로 항상 하단 고정 */}
-          <div className="flex shrink-0 justify-end pt-8">
+          {/* 취소/수정/완료 버튼: shrink-0 으로 항상 하단 고정 */}
+          <div className="flex shrink-0 justify-end gap-2 pt-8">
+            {(isEditMode || isAddingSchedule) && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="h-[32px] w-[96px] rounded-[6px] border border-brand bg-white px-[14px] py-[6px] text-[14px] text-brand transition-opacity hover:opacity-80"
+              >
+                취소
+              </button>
+            )}
             <button
               type="button"
               onClick={handleConfirm}

@@ -40,7 +40,7 @@ function ScheduleDropdown({ config, state, handlers, scrollRefs, classNames }) {
             <ul
               ref={listRef}
               onScroll={onScroll}
-              className="h-full w-[376px] divide-y divide-[#F1F3F7] overflow-y-auto"
+              className="h-full w-full divide-y divide-[#F1F3F7] overflow-y-auto"
               style={{ scrollbarWidth: 'none' }}
               role="listbox"
               aria-label={label}

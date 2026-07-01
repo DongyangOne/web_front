@@ -32,7 +32,7 @@ function AdminSchedulePage() {
   const todayKey = useMemo(() => formatDateKey(today), [today]);
   const currentYear = today.getFullYear();
   const yearOptions = useMemo(
-    () => Array.from({ length: currentYear - 2022 + 1 }, (_, index) => 2022 + index),
+    () => Array.from({ length: currentYear - 2022 + 2 }, (_, index) => 2022 + index),
     [currentYear]
   );
 
@@ -185,6 +185,7 @@ function AdminSchedulePage() {
             />
           ) : (
         <AdminCalendarView
+        key={`${year}-${month}`}
         calendar={{ year, month, yearOptions, calendarDates, todayKey }}
         view={{ viewMode, onViewModeChange: handleViewModeChange }}
         schedules={{ scheduleDateKeys, visibleSchedules }}

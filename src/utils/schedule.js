@@ -71,7 +71,7 @@ export function getScheduleDateKeys(schedules) {
     const start = parseLocalDate(startDate);
     const end = parseLocalDate(endDate);
     for (const current = new Date(start); current <= end; current.setDate(current.getDate() + 1)) {
-      keys.add(formatDateKey(new Date(current)));
+      keys.add(formatDateKey(current));
     }
   });
   return keys;
