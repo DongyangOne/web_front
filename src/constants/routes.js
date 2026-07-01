@@ -11,6 +11,8 @@ export const ROUTES = {
   ADMIN: '/admin',
   // 관리자 로그인: URL 직접 입력으로만 접근. 방문자 내비에 링크하지 않는다.
   ADMIN_LOGIN: '/admin/login',
+  // 관리자용 홈 화면 미리보기: 방문자 HomePage 섹션들을 그대로 재사용한다.
+  ADMIN_HOME: '/admin/home',
   // 명부 관리: 외부에 노출하지 않는 admin 히든 경로 하위에 둔다. 방문자 내비에 링크하지 않는다.
   ADMIN_MEMBER: '/admin/members',
   // 부원 등록: 명부 관리에서 '부원 등록' 클릭 시 이동하는 폼 화면.
