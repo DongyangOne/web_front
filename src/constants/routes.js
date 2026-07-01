@@ -5,6 +5,7 @@
 export const ROUTES = {
   HOME: '/',
   RECRUIT: '/recruit',
+  RECRUIT_COMPLETE: '/recruit/complete',
   SCHEDULE: '/schedule',
   ABOUT: '/about',
   ADMIN: '/admin',

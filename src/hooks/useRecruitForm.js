@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import { ROUTES } from '@/constants/routes';
 import {
   formatPhoneNumber,
   getRecruitFormValidationErrors,
@@ -8,6 +10,7 @@ import {
 } from '@/utils/recruitFormUtils';
 
 export function useRecruitForm() {
+  const navigate = useNavigate();
   const [form, setForm] = useState(INITIAL_RECRUIT_FORM);
   const [submitError, setSubmitError] = useState('');
   const [errors, setErrors] = useState({});
@@ -55,6 +58,7 @@ export function useRecruitForm() {
     window.setTimeout(() => {
       setIsConfirmOpen(false);
       setIsSubmitting(false);
+      navigate(ROUTES.RECRUIT_COMPLETE);
     }, 0);
   };
 

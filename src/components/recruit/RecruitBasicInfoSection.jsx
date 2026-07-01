@@ -18,6 +18,7 @@ export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onC
             value={form.name}
             onChange={onChange}
             required
+            maxLength={8}
             inputClassName="w-full max-w-[617px]"
             error={hasSubmitted ? errors.name : ''}
           />
