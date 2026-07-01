@@ -5,12 +5,12 @@ import searchIcon from '@/assets/images/search.svg';
 const APPLICANTS = [
   {
     id: 1,
-    name: '최현우',
+    name: '장한나',
     studentId: '20301234',
     department: '웹응용소프트웨어학과',
     birthDate: '2025.01.01',
     grade: '2',
-    gender: '남',
+    gender: '여',
     phone: '010-1111-2222',
     appliedAt: '2026.08.08',
     motivation: '동아리 활동을 하며 실무경험을 길러 보고 싶어 지원하게 되었습니다.',
@@ -21,12 +21,12 @@ const APPLICANTS = [
   },
   {
     id: 2,
-    name: '최현우',
+    name: '장한나',
     studentId: '20301234',
     department: '웹응용소프트웨어학과',
     birthDate: '2025.01.01',
     grade: '2',
-    gender: '남',
+    gender: '여',
     phone: '010-1111-2222',
     appliedAt: '2026.08.08',
     motivation: '프로젝트를 함께 진행하며 성장하고 싶습니다.',
@@ -37,12 +37,12 @@ const APPLICANTS = [
   },
   {
     id: 3,
-    name: '최현우',
+    name: '장한나',
     studentId: '20301234',
     department: '웹응용소프트웨어학과',
     birthDate: '2025.01.01',
     grade: '2',
-    gender: '남',
+    gender: '여',
     phone: '010-1111-2222',
     appliedAt: '2026.08.08',
     motivation: '프론트엔드 개발 경험을 쌓고 싶어 지원했습니다.',
@@ -53,12 +53,12 @@ const APPLICANTS = [
   },
   {
     id: 4,
-    name: '최현우',
+    name: '장한나',
     studentId: '20301234',
     department: '웹응용소프트웨어학과',
     birthDate: '2025.01.01',
     grade: '2',
-    gender: '남',
+    gender: '여',
     phone: '010-1111-2222',
     appliedAt: '2026.08.08',
     motivation: '팀 프로젝트에서 맡은 역할을 책임감 있게 수행하고 싶습니다.',
@@ -69,12 +69,12 @@ const APPLICANTS = [
   },
   {
     id: 5,
-    name: '최현우',
+    name: '장한나',
     studentId: '20301234',
     department: '웹응용소프트웨어학과',
     birthDate: '2025.01.01',
     grade: '2',
-    gender: '남',
+    gender: '여',
     phone: '010-1111-2222',
     appliedAt: '2026.08.08',
     motivation: '동아리 활동을 통해 협업과 개발 역량을 키우고 싶습니다.',
@@ -85,8 +85,7 @@ const APPLICANTS = [
   },
 ];
 
-const TD_CLASS =
-  'h-[89px] border-b border-line text-[20px] font-normal text-ink';
+const TD_CLASS = 'h-[89px] border-b border-line text-[20px] font-normal text-ink';
 
 function RecruitManagePage() {
   const [selectedApplicant, setSelectedApplicant] = useState(null);
@@ -99,32 +98,45 @@ function RecruitManagePage() {
       <div className="relative mx-auto min-h-[842px] max-w-[1254px] rounded-card bg-white px-[60px] pt-[52px] pb-[28px] shadow-card">
         <div className="mb-6 flex items-start justify-between gap-8 max-lg:flex-col">
           <div className="flex items-center gap-3">
-            {/* 아이콘 + 총 N명을 세로로 묶기 */}
             <div className="flex flex-col items-center">
-              <img src={memberGroupIcon} alt="" className="flex-shrink-0" />
-              <p className="-mt-2 text-[24px] font-[350] text-ink whitespace-nowrap">
+              <div className="flex h-28 w-40 items-center justify-center">
+                <img
+                  src={memberGroupIcon}
+                  alt=""
+                  className="h-[165px] w-[248px] max-w-none object-contain"
+                />
+              </div>
+              <p className="-mt-2 whitespace-nowrap text-[24px] font-[350] text-ink">
                 총 <span className="text-brand">{APPLICANTS.length}</span>명
               </p>
             </div>
             <h1 className="text-[40px] font-bold text-ink">신청 부원 조회</h1>
           </div>
           <p className="self-end text-[18px] text-ink-sub max-lg:self-auto">
-            최근 1년 동안 신청한 부원의 정보만 조회가능합니다
+            최근 1년 동안 신청한 부원의 정보만 조회 가능합니다
           </p>
         </div>
 
         <div className="overflow-hidden rounded-card border border-tag max-lg:overflow-x-auto">
-          <table className="w-full min-w-[900px] border-collapse text-center text-[20px] text-ink">
+          <table className="w-full min-w-[900px] table-fixed border-collapse text-center text-[20px] text-ink">
+            <colgroup>
+              <col className="w-[15%]" />
+              <col className="w-[10%]" />
+              <col className="w-[14%]" />
+              <col className="w-[20%]" />
+              <col className="w-[20%]" />
+              <col className="w-[21%]" />
+            </colgroup>
             <thead className="bg-brand-soft">
               <tr>
-                {['NO', '이름', '학번', '전화번호', '신청날짜', '정보조회'].map((col) => (
-                  <th key={col} className="h-16 text-[24px] font-[350]">
-                    {col}
-                  </th>
-                ))}
+                <th className="h-16 text-[24px] font-[350]">NO</th>
+                <th className="h-16 text-[24px] font-[350]">이름</th>
+                <th className="h-16 text-[24px] font-[350]">학번</th>
+                <th className="h-16 text-[24px] font-[350]">전화번호</th>
+                <th className="h-16 text-[24px] font-[350]">신청날짜</th>
+                <th className="h-16 text-[24px] font-[350]">정보조회</th>
               </tr>
             </thead>
-
             <tbody>
               {APPLICANTS.map((applicant) => (
                 <tr key={applicant.id}>
@@ -138,7 +150,6 @@ function RecruitManagePage() {
                       )}
                     </span>
                   </td>
-
                   <td className={TD_CLASS}>{applicant.name}</td>
                   <td className={TD_CLASS}>{applicant.studentId}</td>
                   <td className={TD_CLASS}>{applicant.phone}</td>
@@ -161,16 +172,36 @@ function RecruitManagePage() {
         <nav className="mt-8 flex items-center justify-center gap-9">
           <button type="button" aria-label="이전 페이지" className="text-ink">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M15 18l-6-6 6-6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
-          <button type="button" className="text-[20px] text-brand">1</button>
-          <button type="button" className="text-[20px]">2</button>
-          <button type="button" className="text-[20px]">3</button>
-          <button type="button" className="text-[20px]">4</button>
+          <button type="button" className="text-[20px] text-brand">
+            1
+          </button>
+          <button type="button" className="text-[20px]">
+            2
+          </button>
+          <button type="button" className="text-[20px]">
+            3
+          </button>
+          <button type="button" className="text-[20px]">
+            4
+          </button>
           <button type="button" aria-label="다음 페이지" className="text-ink">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M9 18l6-6-6-6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </nav>
@@ -208,7 +239,7 @@ function RecruitManagePage() {
                 ['마지막으로 하고 싶은 말', selectedApplicant.lastWord],
               ].map(([label, value]) => (
                 <div key={label} className="grid grid-cols-[8.5rem_1fr] gap-6 max-sm:grid-cols-1">
-                  <dt className="text-[24px] font-bold text-brand/70">{label}</dt>
+                  <dt className="text-[18px] font-bold text-brand/70">{label}</dt>
                   <dd className="m-0 text-[20px] leading-[1.5] text-ink">{value}</dd>
                 </div>
               ))}
