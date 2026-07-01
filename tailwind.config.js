@@ -18,6 +18,7 @@ export default {
         line: '#EEEEEE', // 구분선
         'field-border': '#CCCCCC', // 입력칸 테두리
         error: '#F94700', // 필수 표시(*)·오류 메시지(brand보다 붉은 톤)
+        'schedule-inactive': '#9F9F9F', // 달력 비활성 날짜
       },
       // 명부 관리/부원 등록 화면 모서리 토큰(시안 실측).
       borderRadius: {
@@ -32,6 +33,9 @@ export default {
         'app-xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         'recruit-card': '0 3px 0 rgb(0 0 0 / 0.18)',
         'recruit-modal': '0 16px 40px rgb(0 0 0 / 0.25)',
+        schedule: '0 4px 40px rgb(0 0 0 / 0.08)',
+        'schedule-day': '0 2px 8px rgb(255 107 0 / 0.4)',
+        header: '0 4px 24px rgba(0,0,0,0.35)',
       },
       // 부원 상태 배지 너비(시안 실측 150px).
       minWidth: {

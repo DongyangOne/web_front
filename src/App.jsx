@@ -12,6 +12,7 @@ import MemberPage from '@/pages/admin/MemberPage';
 import MemberRegisterPage from '@/pages/admin/MemberRegisterPage';
 import MemberEditPage from '@/pages/admin/MemberEditPage';
 import NotFoundPage from '@/pages/visitor/NotFoundPage';
+import AdminSchedulePage from '@/pages/admin/AdminSchedulePage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
       <Route path={ROUTES.ADMIN_MEMBER} element={<MemberPage />} />
       <Route path={ROUTES.ADMIN_MEMBER_REGISTER} element={<MemberRegisterPage />} />
       <Route path={ROUTES.ADMIN_MEMBER_EDIT} element={<MemberEditPage />} />
+      <Route path={ROUTES.ADMIN_SCHEDULE} element={<AdminSchedulePage />} />
     </Routes>
   );
 }
