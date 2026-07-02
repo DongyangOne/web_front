@@ -3,9 +3,20 @@ import useScrollReveal from '@/hooks/useScrollReveal';
 import { TIMELINE_LIST } from '@/constants/homeData';
 
 function TimelineCard({ event, isRight, isExpanded, onToggle }) {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onToggle();
+    }
+  };
+
   return (
     <div
       onClick={onToggle}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-expanded={isExpanded}
       className={`bg-white rounded-2xl px-9 py-6 border cursor-pointer select-none transition-all duration-300 ${
         isExpanded ? 'border-brand shadow-md' : 'border-[#EDCFBC] hover:border-brand hover:shadow-sm'
       } ${isRight ? 'text-left' : 'text-right'}`}
