@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import { getMemberDetail, updateMember } from '@/apis/member';
 import { ROUTES } from '@/constants/routes';
+import { formatPhoneNumber } from '@/utils/memberFormUtils';
 import MemberForm from '@/components/admin/MemberForm';
 
 /**
@@ -37,7 +38,7 @@ function MemberEditPage() {
             grade: String(detail.grade ?? ''),
             studentId: detail.studentId ?? '',
             age: String(detail.age ?? ''),
-            phone: detail.phoneNum ?? '',
+            phone: formatPhoneNumber(detail.phoneNum ?? ''),
           });
         }
       } catch (error) {

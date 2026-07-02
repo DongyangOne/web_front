@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react';
 
 import { getApplicantList, getApplicantRegistrationForm } from '@/apis/applicant';
 import { APPLICANT_PAGE_SIZE } from '@/constants/member';
+import {
+  formatAge,
+  formatPhoneNumber,
+  formatStudentId,
+  getMemberFormErrors,
+} from '@/utils/memberFormUtils';
 import FormField from '@/components/admin/FormField';
 import SuccessModal from '@/components/admin/SuccessModal';
 import ApplicantListModal from '@/components/admin/ApplicantListModal';
@@ -9,40 +15,21 @@ import ApplicantListModal from '@/components/admin/ApplicantListModal';
 // 학년 선택지 (시안 드롭다운 기준: 선택/1/2/3/4). '선택'(초기화)은 FormField가 직접 렌더한다.
 const GRADE_OPTIONS = ['1', '2', '3', '4'];
 
-// 입력 필드 정의. 미입력 상태로 제출하면 각 error 문구가 해당 필드 아래에 표시된다.
+// 입력 필드 정의. 렌더 메타데이터만 담고, 검증은 memberFormUtils에서 일괄 처리한다.
 const FIELDS = [
-  {
-    name: 'name',
-    label: '이름',
-    placeholder: '이름을 입력해 주세요.',
-    error: '이름을 입력해주세요',
-  },
-  {
-    name: 'grade',
-    label: '학년',
-    placeholder: '학년을 선택해주세요.',
-    options: GRADE_OPTIONS,
-    error: '학년을 선택해주세요',
-  },
-  {
-    name: 'studentId',
-    label: '학번',
-    placeholder: '학번을 입력해 주세요.',
-    error: '학번을 입력해주세요',
-  },
-  {
-    name: 'age',
-    label: '나이',
-    placeholder: '나이를 입력해 주세요.',
-    error: '나이를 입력해주세요',
-  },
-  {
-    name: 'phone',
-    label: '전화번호',
-    placeholder: '전화번호를 입력해 주세요.',
-    error: '전화번호를 입력해주세요',
-  },
+  { name: 'name', label: '이름', placeholder: '이름을 입력해 주세요.' },
+  { name: 'grade', label: '학년', placeholder: '학년을 선택해주세요.', options: GRADE_OPTIONS },
+  { name: 'studentId', label: '학번', placeholder: '학번을 입력해 주세요.' },
+  { name: 'age', label: '나이', placeholder: '나이를 입력해 주세요.' },
+  { name: 'phone', label: '전화번호', placeholder: '전화번호를 입력해 주세요.' },
 ];
+
+// 입력 즉시 형식을 맞추는 필드별 정규화 함수. 없으면 원본 값을 그대로 쓴다.
+const FIELD_FORMATTERS = {
+  studentId: formatStudentId,
+  age: formatAge,
+  phone: formatPhoneNumber,
+};
 
 // 빈 폼 기본값. 입력 전에는 빈 문자열로 두어 placeholder를 노출한다.
 const EMPTY_FORM = {
@@ -65,6 +52,7 @@ const EMPTY_FORM = {
  */
 function MemberForm({ texts, initialForm = EMPTY_FORM, onSubmit, onComplete }) {
   const { title, subtitle, submitLabel, successMessage } = texts;
+
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
@@ -103,9 +91,12 @@ function MemberForm({ texts, initialForm = EMPTY_FORM, onSubmit, onComplete }) {
   }, [isImportOpen]);
 
   // 필드별 onChange 핸들러를 생성한다. FormField는 이벤트가 아닌 '값'을 전달한다.
-  // 값을 입력하면 해당 필드의 미입력 오류는 즉시 해제한다.
+  // 학번/나이/전화번호는 입력 즉시 형식을 정규화하고, 해당 필드의 오류는 즉시 해제한다.
   const handleChange = (field) => (value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    const format = FIELD_FORMATTERS[field];
+    const nextValue = format ? format(value) : value;
+
+    setForm((prev) => ({ ...prev, [field]: nextValue }));
     setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
@@ -120,9 +111,9 @@ function MemberForm({ texts, initialForm = EMPTY_FORM, onSubmit, onComplete }) {
       setForm({
         name: detail.name ?? '',
         grade: String(detail.grade ?? ''),
-        studentId: detail.studentId ?? '',
-        age: String(detail.age ?? ''),
-        phone: detail.phoneNumber ?? '',
+        studentId: formatStudentId(detail.studentId ?? ''),
+        age: formatAge(detail.age ?? ''),
+        phone: formatPhoneNumber(detail.phoneNumber ?? ''),
       });
       setErrors({});
       setIsImportOpen(false);
@@ -133,14 +124,11 @@ function MemberForm({ texts, initialForm = EMPTY_FORM, onSubmit, onComplete }) {
     }
   };
 
-  // 제출: 미입력 필드가 있으면 각 오류 문구를 표시하고 중단, 모두 채워졌으면 API를 호출한다.
+  // 제출: 형식 검증에 걸리면 각 오류를 표시하고 중단, 통과하면 API를 호출한다.
   const handleSubmit = async () => {
     if (isSubmitting) return;
 
-    const nextErrors = {};
-    FIELDS.forEach((field) => {
-      if (!String(form[field.name]).trim()) nextErrors[field.name] = field.error;
-    });
+    const nextErrors = getMemberFormErrors(form);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
