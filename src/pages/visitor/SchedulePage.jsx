@@ -193,7 +193,7 @@ function SchedulePage() {
 
       <div
         className={[
-          'mx-auto h-auto min-h-[683px] w-full rounded-[28px] bg-white shadow-schedule lg:rounded-[46px] xl:h-[683px]',
+          'mx-auto h-auto min-h-[683px] w-full rounded-[28px] bg-white shadow-recruit-card lg:rounded-[46px] xl:h-[683px] ',
           viewMode === VIEW_MODE.ALL ? 'xl:w-[1253px]' : 'xl:w-[1068px]',
         ]
           .filter(Boolean)

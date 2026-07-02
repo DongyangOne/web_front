@@ -49,11 +49,9 @@ export default {
         'recruit-complete': '0 6px 18px rgb(52 39 31 / 0.22)',
         'recruit-card': '0 3px 0 rgb(0 0 0 / 0.18)',
         'recruit-modal': '0 16px 40px rgb(0 0 0 / 0.25)',
-      },
-      // 부원 상태 배지 너비(시안 실측 150px).
-      boxShadow: {
         header: '0 4px 24px rgba(0,0,0,0.35)',
       },
+      // 부원 상태 배지 너비(시안 실측 150px).
       minWidth: {
         badge: '150px',
       },
