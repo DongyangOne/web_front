@@ -1,56 +1,84 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { deleteMembers, getMemberList } from '@/apis/member';
 import { ROUTES } from '@/constants/routes';
-import StatusBadge from '@/components/admin/StatusBadge';
-import SortDropdown from '@/components/admin/SortDropdown';
-import RowCheckbox from '@/components/admin/RowCheckbox';
+import { MEMBER_PAGE_SIZE, MEMBER_SORT, SORT_DIRECTION } from '@/constants/member';
+import MemberTable from '@/components/admin/MemberTable';
 import Pagination from '@/components/admin/Pagination';
 import AlertModal from '@/components/admin/AlertModal';
 import ConfirmModal from '@/components/admin/ConfirmModal';
+
 import groupIcon from '@/assets/images/member-group.svg';
 
-// TODO: 디자인 확정/백엔드 연동 후 getMemberList API 응답으로 교체 (탁진우, 2026.06.02)
-// 현재는 시안 재현용 임시 목업 데이터다.
-const INITIAL_MEMBERS = Array.from({ length: 20 }, (_, index) => ({
-  id: index + 1,
-  no: index + 1,
-  name: '장한나',
-  studentId: '20301234',
-  grade: 2,
-  age: 22,
-  phone: '010-1111-2222',
-  status: '재학 중',
-}));
-
-const PAGE_SIZE = 6;
+// 정렬 기준별 기본 방향: 등록순은 최신순(DESC), 학년순은 오름차순(ASC).
+const getSortDirection = (sort) =>
+  sort === MEMBER_SORT.GRADE ? SORT_DIRECTION.ASC : SORT_DIRECTION.DESC;
 
 /**
  * 명부 관리 페이지.
- * admin 히든 경로(/admin/members) 하위에서 동작하는 부원 목록 CRUD 화면이다.
+ * admin 히든 경로(/admin/members) 하위에서 동작하는 부원 목록 조회/삭제 화면이다.
+ * 목록은 서버 페이지네이션(page 0부터, size 15 고정)으로 조회한다.
  */
 function MemberPage() {
   const navigate = useNavigate();
-  const [members, setMembers] = useState(INITIAL_MEMBERS);
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState(MEMBER_SORT.CREATED_AT);
+  const [selectedIds, setSelectedIds] = useState([]);
   const [alertMessage, setAlertMessage] = useState(null);
   const [confirmState, setConfirmState] = useState(null);
 
-  // 파생 값: 페이지네이션과 선택 상태
-  const totalPages = Math.max(1, Math.ceil(members.length / PAGE_SIZE));
-  const safePage = Math.min(currentPage, totalPages);
-  const pagedMembers = members.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const isAllSelected = members.length > 0 && selectedIds.length === members.length;
+  // 명부 목록 조회. 페이지/정렬이 바뀔 때마다 서버에서 다시 받아온다.
+  const fetchMembers = useCallback(async () => {
+    try {
+      const paging = await getMemberList({
+        page: currentPage - 1,
+        size: MEMBER_PAGE_SIZE,
+        sort,
+        direction: getSortDirection(sort),
+      });
+
+      setMembers(paging?.content ?? []);
+      setTotalElements(paging?.totalElements ?? 0);
+      setTotalPages(Math.max(1, paging?.totalPages ?? 1));
+    } catch (error) {
+      console.error('[MemberPage] 명부 목록 조회 실패', error);
+      setMembers([]);
+      setTotalElements(0);
+      setTotalPages(1);
+      setAlertMessage('명부를 불러오지 못했습니다.\n잠시 후 다시 시도해주세요.');
+    }
+  }, [currentPage, sort]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
   const handleToggleAll = () => {
-    setSelectedIds(isAllSelected ? [] : members.map((member) => member.id));
+    const isAllSelected =
+      members.length > 0 && members.every((member) => selectedIds.includes(member.memberId));
+    setSelectedIds(isAllSelected ? [] : members.map((member) => member.memberId));
   };
 
-  const handleToggleRow = (id) => {
+  const handleToggleRow = (memberId) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id]
+      prev.includes(memberId) ? prev.filter((id) => id !== memberId) : [...prev, memberId]
     );
+  };
+
+  // 페이지/정렬 변경 시 선택은 현재 페이지 기준이므로 초기화한다.
+  const handlePageChange = (nextPage) => {
+    setSelectedIds([]);
+    setCurrentPage(nextPage);
+  };
+
+  const handleSortChange = (nextSort) => {
+    setSelectedIds([]);
+    setCurrentPage(1);
+    setSort(nextSort);
   };
 
   // 부원 등록: 선택이 있으면 안내. 등록은 선택과 무관한 메뉴다.
@@ -62,7 +90,7 @@ function MemberPage() {
     navigate(ROUTES.ADMIN_MEMBER_REGISTER);
   };
 
-  // 정보 수정: 정확히 1명만 가능. 선택한 부원 정보를 들고 수정 페이지로 이동한다.
+  // 정보 수정: 정확히 1명만 가능. memberId를 넘겨 수정 페이지에서 상세를 조회한다.
   const handleEdit = () => {
     if (selectedIds.length === 0) {
       setAlertMessage('메뉴를 실행할 부원을\n선택해주세요.');
@@ -72,11 +100,10 @@ function MemberPage() {
       setAlertMessage('정보 수정은 복수 선택이 불가능합니다.\n한명만 선택해주세요.');
       return;
     }
-    const member = members.find((item) => item.id === selectedIds[0]);
-    navigate(ROUTES.ADMIN_MEMBER_EDIT, { state: { member } });
+    navigate(ROUTES.ADMIN_MEMBER_EDIT, { state: { memberId: selectedIds[0] } });
   };
 
-  // 삭제: 1명 이상 선택 시 확인 후 제거
+  // 삭제: 1명 이상 선택 시 확인 후 서버에 삭제 요청하고 목록을 재조회한다.
   const handleDelete = () => {
     if (selectedIds.length === 0) {
       setAlertMessage('메뉴를 실행할 부원을\n선택해주세요.');
@@ -85,10 +112,17 @@ function MemberPage() {
     setConfirmState({
       message: '선택한 부원을\n삭제하시겠습니까?',
       confirmLabel: '삭제',
-      onConfirm: () => {
-        setMembers((prev) => prev.filter((member) => !selectedIds.includes(member.id)));
-        setSelectedIds([]);
-        setConfirmState(null);
+      onConfirm: async () => {
+        try {
+          await deleteMembers(selectedIds);
+          setSelectedIds([]);
+          setConfirmState(null);
+          await fetchMembers();
+        } catch (error) {
+          console.error('[MemberPage] 부원 삭제 실패', error);
+          setConfirmState(null);
+          setAlertMessage('부원 삭제에 실패했습니다.\n잠시 후 다시 시도해주세요.');
+        }
       },
     });
   };
@@ -120,7 +154,7 @@ function MemberPage() {
                 ) : (
                   <p className="text-2xl">
                     <span className="text-ink">총 </span>
-                    <span className="text-brand">{members.length}</span>
+                    <span className="text-brand">{totalElements}</span>
                     <span className="text-ink">명</span>
                   </p>
                 )}
@@ -153,59 +187,22 @@ function MemberPage() {
             </div>
           </div>
 
-          {/* 부원 목록 테이블: 둥근 베이지 헤더 배너 + 테두리 흰 카드 (시안 구조).
-              overflow-hidden을 쓰지 않는 이유: 상태 드롭다운이 행 밖으로 펼쳐질 때 잘리지 않게 하기 위함.
-              대신 헤더와 마지막 행에 모서리 라운드를 직접 준다. */}
-          <div className="mt-8 rounded-card border border-brand-soft">
-            {/* 헤더 배너: 데이터 행과 열별 가운데 정렬을 맞춘다 */}
-            <div className="grid grid-cols-members items-center rounded-t-card bg-brand-soft px-6 py-4 text-center text-2xl text-ink">
-              <span className="flex justify-center">
-                <RowCheckbox checked={isAllSelected} onChange={handleToggleAll} />
-              </span>
-              <span className="flex justify-center">
-                <SortDropdown />
-              </span>
-              <span>이름</span>
-              <span>학번</span>
-              <span>학년</span>
-              <span>나이</span>
-              <span>전화번호</span>
-              <span>부원상태</span>
-            </div>
-
-            {/* 본문 행 */}
-            <div className="divide-y divide-line">
-              {pagedMembers.map((member, index) => (
-                <div
-                  key={member.id}
-                  className={`grid grid-cols-members items-center bg-white px-6 py-6 text-center text-xl text-ink ${
-                    index === pagedMembers.length - 1 ? 'rounded-b-card' : ''
-                  }`}
-                >
-                  <span className="flex justify-center">
-                    <RowCheckbox
-                      checked={selectedIds.includes(member.id)}
-                      onChange={() => handleToggleRow(member.id)}
-                    />
-                  </span>
-                  <span>{member.no}</span>
-                  <span>{member.name}</span>
-                  <span>{member.studentId}</span>
-                  <span>{member.grade}</span>
-                  <span>{member.age}</span>
-                  <span>{member.phone}</span>
-                  <span className="flex justify-center ">
-                    <StatusBadge status={member.status} />
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <MemberTable
+            members={members}
+            selectedIds={selectedIds}
+            currentPage={currentPage}
+            sort={sort}
+            handlers={{
+              onToggleAll: handleToggleAll,
+              onToggleRow: handleToggleRow,
+              onSortChange: handleSortChange,
+            }}
+          />
 
           <Pagination
-            currentPage={safePage}
+            currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
           />
         </div>
       </main>
