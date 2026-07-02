@@ -1,21 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { getApplicantList, getApplicantRegistrationForm } from '@/apis/applicant';
+import { APPLICANT_PAGE_SIZE } from '@/constants/member';
 import FormField from '@/components/admin/FormField';
 import SuccessModal from '@/components/admin/SuccessModal';
 import ApplicantListModal from '@/components/admin/ApplicantListModal';
 
 // 학년 선택지 (시안 드롭다운 기준: 선택/1/2/3/4). '선택'(초기화)은 FormField가 직접 렌더한다.
 const GRADE_OPTIONS = ['1', '2', '3', '4'];
-
-// TODO: getApplicantList API 응답으로 교체 (백엔드 연동 후). 현재는 시안 재현용 목업.
-const INITIAL_APPLICANTS = Array.from({ length: 12 }, (_, index) => ({
-  id: index + 1,
-  name: '홍길동',
-  studentId: '20771234',
-  grade: '1',
-  age: '20',
-  phone: '010-7777-1234',
-}));
 
 // 입력 필드 정의. 미입력 상태로 제출하면 각 error 문구가 해당 필드 아래에 표시된다.
 const FIELDS = [
@@ -63,27 +55,52 @@ const EMPTY_FORM = {
 
 /**
  * 부원 등록/수정 공통 폼.
- * 레이아웃은 동일하며 제목/부제/제출 버튼/완료 모달 문구만 props로 달라진다.
+ * 레이아웃은 동일하며 화면 문구(texts)와 제출/완료 동작만 props로 달라진다.
+ * 실제 등록·수정 API 호출은 onSubmit으로 주입받아 처리한다.
  * @param {Object} props
- * @param {string} props.title - 카드 제목
- * @param {string} props.subtitle - 카드 부제(안내 문구)
- * @param {string} props.submitLabel - 제출 버튼 라벨 (등록하기/저장하기)
- * @param {string} props.successMessage - 완료 모달 문구
+ * @param {Object} props.texts - 화면 문구 { title, subtitle, submitLabel, successMessage }
  * @param {Object} [props.initialForm=EMPTY_FORM] - 초기 폼 값 (수정 시 기존 부원 정보)
+ * @param {Function} props.onSubmit - 제출 시 호출. 서버 요청 payload를 받아 Promise를 반환한다.
  * @param {Function} props.onComplete - 완료 모달 '확인' 시 호출 (보통 명부 목록으로 이동)
  */
-function MemberForm({
-  title,
-  subtitle,
-  submitLabel,
-  successMessage,
-  initialForm = EMPTY_FORM,
-  onComplete,
-}) {
+function MemberForm({ texts, initialForm = EMPTY_FORM, onSubmit, onComplete }) {
+  const { title, subtitle, submitLabel, successMessage } = texts;
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [applicants, setApplicants] = useState([]);
+
+  // 신청 정보 가져오기 모달이 열릴 때 신청 부원 목록을 조회한다.
+  useEffect(() => {
+    if (!isImportOpen) return undefined;
+
+    let ignore = false;
+
+    const fetchApplicants = async () => {
+      try {
+        const paging = await getApplicantList({ page: 0, size: APPLICANT_PAGE_SIZE });
+
+        if (!ignore) {
+          setApplicants(paging?.content ?? []);
+        }
+      } catch (error) {
+        console.error('[MemberForm] 신청 부원 목록 조회 실패', error);
+
+        if (!ignore) {
+          setApplicants([]);
+        }
+      }
+    };
+
+    fetchApplicants();
+
+    return () => {
+      ignore = true;
+    };
+  }, [isImportOpen]);
 
   // 필드별 onChange 핸들러를 생성한다. FormField는 이벤트가 아닌 '값'을 전달한다.
   // 값을 입력하면 해당 필드의 미입력 오류는 즉시 해제한다.
@@ -95,29 +112,58 @@ function MemberForm({
   // 신청 부원 목록 모달을 연다.
   const handleImport = () => setIsImportOpen(true);
 
-  // 목록에서 부원 '선택' 시 해당 정보를 폼에 채우고 오류를 지운 뒤 모달을 닫는다.
-  const handleSelectApplicant = (applicant) => {
-    setForm({
-      name: applicant.name,
-      grade: applicant.grade,
-      studentId: applicant.studentId,
-      age: applicant.age,
-      phone: applicant.phone,
-    });
-    setErrors({});
-    setIsImportOpen(false);
+  // 목록에서 부원 '선택' 시 등록 폼 정보를 조회해 폼을 채우고 모달을 닫는다.
+  const handleSelectApplicant = async (applicant) => {
+    try {
+      const detail = await getApplicantRegistrationForm(applicant.applicantId);
+
+      setForm({
+        name: detail.name ?? '',
+        grade: String(detail.grade ?? ''),
+        studentId: detail.studentId ?? '',
+        age: String(detail.age ?? ''),
+        phone: detail.phoneNumber ?? '',
+      });
+      setErrors({});
+      setIsImportOpen(false);
+    } catch (error) {
+      console.error('[MemberForm] 신청 부원 정보 조회 실패', error);
+      setIsImportOpen(false);
+      setSubmitError('신청 부원 정보를 불러오지 못했습니다.');
+    }
   };
 
-  // 제출: 미입력 필드가 있으면 각 오류 문구를 표시하고 중단, 모두 채워졌으면 완료 모달을 연다.
-  // TODO: 부원 등록/수정 API 연동 (백엔드 연동 후).
-  const handleSubmit = () => {
+  // 제출: 미입력 필드가 있으면 각 오류 문구를 표시하고 중단, 모두 채워졌으면 API를 호출한다.
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     const nextErrors = {};
     FIELDS.forEach((field) => {
-      if (!form[field.name].trim()) nextErrors[field.name] = field.error;
+      if (!String(form[field.name]).trim()) nextErrors[field.name] = field.error;
     });
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
-    setIsSuccessOpen(true);
+
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      await onSubmit({
+        name: form.name.trim(),
+        grade: Number(form.grade),
+        studentId: form.studentId.trim(),
+        age: Number(form.age),
+        phoneNum: form.phone.trim(),
+      });
+      setIsSuccessOpen(true);
+    } catch (error) {
+      console.error('[MemberForm] 부원 저장 실패', error);
+      setSubmitError(
+        error.response?.data?.message ||
+          '저장에 실패했습니다. 입력값을 확인 후 다시 시도해주세요.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -157,12 +203,14 @@ function MemberForm({
             ))}
           </div>
 
-          {/* 제출 버튼: 폼 하단 가운데 정렬 */}
-          <div className="mt-20 flex justify-center">
+          {/* 제출 버튼: 폼 하단 가운데 정렬. 서버 오류는 버튼 위에 표시한다. */}
+          <div className="mt-20 flex flex-col items-center gap-4">
+            {submitError && <p className="text-xl text-error">{submitError}</p>}
             <button
               type="button"
               onClick={handleSubmit}
-              className="rounded-button bg-brand px-[99px] py-5 text-2xl font-bold text-white shadow-md"
+              disabled={isSubmitting}
+              className="rounded-button bg-brand px-[99px] py-5 text-2xl font-bold text-white shadow-md disabled:opacity-50"
             >
               {submitLabel}
             </button>
@@ -172,7 +220,7 @@ function MemberForm({
 
       {isImportOpen && (
         <ApplicantListModal
-          applicants={INITIAL_APPLICANTS}
+          applicants={applicants}
           onSelect={handleSelectApplicant}
           onClose={() => setIsImportOpen(false)}
         />
