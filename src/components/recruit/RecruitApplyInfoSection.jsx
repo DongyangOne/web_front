@@ -1,6 +1,6 @@
 import { InfoCard, SupportInput, SupportTextarea } from '@/components/recruit/RecruitFormFields';
 
-export function RecruitApplyInfoSection({ title, form, errors, hasSubmitted, onChange }) {
+function RecruitApplyInfoSection({ title, form, errors, hasSubmitted, onChange }) {
   return (
     <div className="pt-[100px]">
       <InfoCard title={title} className="mt-0" headerClassName="mt-[9px]">
@@ -19,30 +19,30 @@ export function RecruitApplyInfoSection({ title, form, errors, hasSubmitted, onC
           />
           <SupportInput
             label="사용해봤거나 들어본 언어 및 라이브러리"
-            name="portfolio"
-            value={form.portfolio}
+            name="techStack"
+            value={form.techStack}
             onChange={onChange}
             placeholder="예) C언어, 파이썬 등"
             required
             inputClassName="lg:ml-[235px]"
             errorClassName="lg:ml-[235px]"
-            error={hasSubmitted ? errors.portfolio : ''}
+            error={hasSubmitted ? errors.techStack : ''}
           />
           <SupportInput
             label="동아리에서 해 보고 싶은 것"
-            name="interests"
-            value={form.interests}
+            name="desiredActivity"
+            value={form.desiredActivity}
             onChange={onChange}
             placeholder="예) MT, 각종 축제 등"
             required
             inputClassName="lg:ml-[235px]"
             errorClassName="lg:ml-[235px]"
-            error={hasSubmitted ? errors.interests : ''}
+            error={hasSubmitted ? errors.desiredActivity : ''}
           />
           <SupportInput
             label="마지막으로 하고 싶은 말"
-            name="finalMessage"
-            value={form.finalMessage}
+            name="finalWords"
+            value={form.finalWords}
             onChange={onChange}
             placeholder="자유롭게 작성해 주세요."
             inputClassName="lg:ml-[235px]"
@@ -52,3 +52,5 @@ export function RecruitApplyInfoSection({ title, form, errors, hasSubmitted, onC
     </div>
   );
 }
+
+export default RecruitApplyInfoSection;
