@@ -1,4 +1,6 @@
-﻿function ScheduleTabs({ viewMode, onChange, className = '' }) {
+import { VIEW_MODE } from '@/constants/schedule';
+
+function ScheduleTabs({ viewMode, onChange, className = '' }) {
   return (
     <div
       className={`flex justify-start gap-2 ${className}`}
@@ -9,15 +11,15 @@
         type="button"
         className={[
           'h-8 min-w-[77px] rounded-[6px] px-[18px] text-center text-[14px] font-normal leading-[28px]',
-          viewMode === 'calendar'
+          viewMode === VIEW_MODE.CALENDAR
             ? '!border-0 !bg-brand text-white'
             : '!border-[1px] !border-solid !border-brand !bg-section text-black',
         ]
           .filter(Boolean)
           .join(' ')}
-        onClick={() => onChange('calendar')}
+        onClick={() => onChange(VIEW_MODE.CALENDAR)}
         role="tab"
-        aria-selected={viewMode === 'calendar'}
+        aria-selected={viewMode === VIEW_MODE.CALENDAR}
       >
         캘린더
       </button>
@@ -25,15 +27,15 @@
         type="button"
         className={[
           'h-8 min-w-[77px] rounded-[6px] px-[18px] text-center text-[14px] font-normal leading-[28px]',
-          viewMode === 'all'
+          viewMode === VIEW_MODE.ALL
             ? '!border-0 !bg-brand text-white'
             : '!border-[1px] !border-solid !border-brand !bg-section text-black',
         ]
           .filter(Boolean)
           .join(' ')}
-        onClick={() => onChange('all')}
+        onClick={() => onChange(VIEW_MODE.ALL)}
         role="tab"
-        aria-selected={viewMode === 'all'}
+        aria-selected={viewMode === VIEW_MODE.ALL}
       >
         전체일정
       </button>
