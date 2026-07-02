@@ -62,7 +62,9 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
           ))}
 
           {calendarDates.map((date) => {
-            const hasSchedule = date.isCurrentMonth && scheduleDateKeys.has(date.key);
+            const isCurrentMonthDate = date.isCurrentMonth;
+            const isToday = isCurrentMonthDate && date.key === todayKey;
+            const hasSchedule = scheduleDateKeys.has(date.key);
 
             return (
               <button
@@ -70,11 +72,11 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
                 type="button"
                 className={[
                   'relative grid place-items-center text-[18px] font-normal leading-none',
-                  date.key === todayKey
+                  isToday
                     ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10'
                     : 'h-[31px] w-[34px] sm:w-10 xl:h-[40px] xl:w-[40px]',
-                  date.key !== todayKey && !date.isCurrentMonth ? 'text-schedule-inactive' : '',
-                  date.key !== todayKey && date.isCurrentMonth ? 'text-ink' : '',
+                  !isToday && !isCurrentMonthDate ? 'text-schedule-inactive' : '',
+                  !isToday && isCurrentMonthDate ? 'text-ink' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
@@ -82,7 +84,12 @@ function CalendarScheduleView({ calendar, view, schedules, monthDropdown, yearDr
                 {hasSchedule && (
                   <span
                     aria-hidden="true"
-                    className="absolute left-1/2 top-[-12px] h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-brand"
+                    className={[
+                      'absolute left-1/2 top-[-12px] h-2.5 w-2.5 -translate-x-1/2 rounded-full',
+                      isCurrentMonthDate ? 'bg-brand' : 'bg-tag',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                   />
                 )}
                 <span className="relative z-10">{date.day}</span>

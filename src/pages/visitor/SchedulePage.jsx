@@ -4,7 +4,7 @@ import AllScheduleView from '@/components/schedule/AllScheduleView';
 import CalendarScheduleView from '@/components/schedule/CalendarScheduleView';
 import ScheduleStyles from '@/styles/ScheduleStyles';
 import { getVisitorCalendar, getVisitorCalendarMonth } from '@/apis/calendar';
-import { DROPDOWN_TYPE } from '@/constants/schedule';
+import { CLUB_START_YEAR, DROPDOWN_TYPE, VIEW_MODE } from '@/constants/schedule';
 import {
   formatDateKey,
   getCalendarDates,
@@ -31,14 +31,18 @@ function SchedulePage() {
   const todayKey = useMemo(() => formatDateKey(today), [today]);
   const currentYear = today.getFullYear();
   const yearOptions = useMemo(
-    () => Array.from({ length: currentYear - 2022 + 1 }, (_, index) => 2022 + index),
+    () =>
+      Array.from(
+        { length: currentYear - CLUB_START_YEAR + 1 },
+        (_, index) => CLUB_START_YEAR + index
+      ),
     [currentYear]
   );
 
   const [year, setYear] = useState(currentYear);
   const [month, setMonth] = useState(today.getMonth());
   const [openedDropdown, setOpenedDropdown] = useState(null);
-  const [viewMode, setViewMode] = useState('calendar');
+  const [viewMode, setViewMode] = useState(VIEW_MODE.CALENDAR);
   const [yearSchedules, setYearSchedules] = useState([]);
   const [monthSchedules, setMonthSchedules] = useState([]);
 
@@ -46,7 +50,7 @@ function SchedulePage() {
   const scheduleDateKeys = useMemo(() => getScheduleDateKeys(monthSchedules), [monthSchedules]);
   const visibleSchedules = useMemo(() => {
     const filteredSchedules =
-      viewMode === 'all'
+      viewMode === VIEW_MODE.ALL
         ? yearSchedules.filter(
             (schedule) => parseLocalDate(schedule.startDate).getFullYear() === year
           )
@@ -78,6 +82,22 @@ function SchedulePage() {
     );
   };
 
+  const handleAllScheduleWheel = (event) => {
+    const scrollElement = allScheduleListRef.current;
+
+    if (!scrollElement) return;
+
+    const { deltaY } = event;
+    const { scrollTop, scrollHeight, clientHeight } = scrollElement;
+    const isAtTop = scrollTop <= 0;
+    const isAtBottom = Math.ceil(scrollTop + clientHeight) >= scrollHeight;
+
+    if ((deltaY > 0 && isAtBottom) || (deltaY < 0 && isAtTop)) {
+      event.preventDefault();
+      window.scrollBy({ top: deltaY, left: 0, behavior: 'auto' });
+    }
+  };
+
   const handleViewModeChange = (nextViewMode) => {
     setViewMode(nextViewMode);
     setOpenedDropdown(null);
@@ -87,7 +107,7 @@ function SchedulePage() {
     let ignore = false;
 
     const fetchYearSchedules = async () => {
-      if (viewMode !== 'all') return;
+      if (viewMode !== VIEW_MODE.ALL) return;
 
       try {
         const scheduleList = await getVisitorCalendar(year);
@@ -113,7 +133,7 @@ function SchedulePage() {
     let ignore = false;
 
     const fetchMonthSchedules = async () => {
-      if (viewMode !== 'calendar') return;
+      if (viewMode !== VIEW_MODE.CALENDAR) return;
 
       try {
         const scheduleList = await getVisitorCalendarMonth({ year, month: month + 1 });
@@ -144,7 +164,7 @@ function SchedulePage() {
     if (isYearDropdownOpen) {
       rafIds.push(requestAnimationFrame(() => handleYearScroll()));
     }
-    if (viewMode === 'all') {
+    if (viewMode === VIEW_MODE.ALL) {
       rafIds.push(requestAnimationFrame(() => handleAllScheduleScroll()));
     }
 
@@ -157,7 +177,7 @@ function SchedulePage() {
     <section
       className={[
         'min-h-screen bg-brand-soft px-4 py-7 lg:px-6 lg:py-12 xl:min-h-[1024px] xl:py-[77px]',
-        viewMode === 'all'
+        viewMode === VIEW_MODE.ALL
           ? 'xl:px-[max(24px,calc((100vw-1253px)/2))]'
           : 'xl:px-[max(24px,calc((100vw-1068px)/2))]',
       ]
@@ -174,12 +194,12 @@ function SchedulePage() {
       <div
         className={[
           'mx-auto h-auto min-h-[683px] w-full rounded-[28px] bg-white shadow-schedule lg:rounded-[46px] xl:h-[683px]',
-          viewMode === 'all' ? 'xl:w-[1253px]' : 'xl:w-[1068px]',
+          viewMode === VIEW_MODE.ALL ? 'xl:w-[1253px]' : 'xl:w-[1068px]',
         ]
           .filter(Boolean)
           .join(' ')}
       >
-        {viewMode === 'all' ? (
+        {viewMode === VIEW_MODE.ALL ? (
           <AllScheduleView
             yearDropdown={{
               year,
@@ -206,6 +226,7 @@ function SchedulePage() {
               trackRef: allScheduleTrackRef,
               thumbRef: allScheduleThumbRef,
               onScroll: handleAllScheduleScroll,
+              onWheel: handleAllScheduleWheel,
             }}
           />
         ) : (

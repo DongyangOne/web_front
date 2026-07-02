@@ -25,6 +25,7 @@ function AllScheduleView({ yearDropdown, view, scheduleMonthEntries, scheduleScr
     trackRef: allScheduleTrackRef,
     thumbRef: allScheduleThumbRef,
     onScroll: onAllScheduleScroll,
+    onWheel: onAllScheduleWheel,
   } = scheduleScroll;
   return (
     <div className="pb-8 pl-[18px] pr-0 pt-[50px] sm:pl-9 xl:pl-[60px]">
@@ -54,6 +55,7 @@ function AllScheduleView({ yearDropdown, view, scheduleMonthEntries, scheduleScr
           ref={allScheduleListRef}
           className="schedule-native-scrollbar-hidden max-h-[560px] overflow-y-auto"
           onScroll={onAllScheduleScroll}
+          onWheel={onAllScheduleWheel}
         >
           {scheduleMonthEntries.length === 0 ? (
             <div className="grid min-h-[520px] place-items-center text-[16px] font-bold text-ink-sub">
