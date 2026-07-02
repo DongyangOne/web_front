@@ -76,7 +76,7 @@ export function FormInput({
               setInputType('text');
             }
           }}
-          className={`h-[46px] rounded-[6px] border border-field-border px-3 text-[14px] font-normal outline-none transition placeholder:text-gray-400 focus:border-brand ${
+          className={`h-[46px] rounded-[6px] border border-field-border px-3 text-[14px] font-normal outline-none transition placeholder:text-placeholder focus:border-brand ${
             isDateType ? 'date-input-without-icon' : ''
           } ${inputClassName}`}
         />
@@ -151,7 +151,7 @@ export function SupportInput({
         value={value}
         onChange={onChange}
         placeholder={placeholder || `${label}을 입력해 주세요.`}
-        className={`h-[46px] w-full rounded-[6px] border border-field-border px-3 text-[14px] font-normal outline-none transition placeholder:text-gray-400 focus:border-brand ${inputClassName}`}
+        className={`h-[46px] w-full rounded-[6px] border border-field-border px-3 text-[14px] font-normal outline-none transition placeholder:text-placeholder focus:border-brand ${inputClassName}`}
       />
       {error && <FieldError className={errorClassName} message={error} />}
     </div>
@@ -182,7 +182,7 @@ export function SupportTextarea({
         onChange={onChange}
         placeholder={placeholder || `${label}을 입력해 주세요.`}
         maxLength={500}
-        className="min-h-[132px] w-full resize-none rounded-[6pxs] border border-field-border px-3 py-3 text-[14px] font-normal outline-none transition placeholder:text-gray-400 focus:border-brand"
+        className="min-h-[132px] w-full resize-none rounded-[6px] border border-field-border px-3 py-3 text-[14px] font-normal outline-none transition placeholder:text-placeholder focus:border-brand"
       />
       {error && <FieldError className={errorClassName} message={error} />}
     </div>

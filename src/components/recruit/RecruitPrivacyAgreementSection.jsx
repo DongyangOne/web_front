@@ -30,20 +30,20 @@ export function RecruitPrivacyAgreementSection({
           <div className="relative mt-[45px] flex justify-center gap-[110px]">
             <PrivacyAgreementOption
               label="동의"
-              value="agree"
-              checked={form.privacyAgreement === 'agree'}
+              value="true"
+              checked={form.privacyConsent === true}
               onChange={onChange}
             />
             <PrivacyAgreementOption
               label="비동의"
-              value="disagree"
-              checked={form.privacyAgreement === 'disagree'}
+              value="false"
+              checked={form.privacyConsent === false}
               onChange={onChange}
             />
-            {hasSubmitted && errors.privacyAgreement && (
+            {hasSubmitted && errors.privacyConsent && (
               <FieldError
                 className="left-0 right-0 top-full mt-3 text-center"
-                message={errors.privacyAgreement}
+                message={errors.privacyConsent}
               />
             )}
           </div>
