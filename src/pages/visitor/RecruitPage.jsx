@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-import { RecruitApplyInfoSection } from '@/components/recruit/RecruitApplyInfoSection';
-import { RecruitBasicInfoSection } from '@/components/recruit/RecruitBasicInfoSection';
-import { RecruitConfirmModal } from '@/components/recruit/RecruitConfirmModal';
+import RecruitApplyInfoSection from '@/components/recruit/RecruitApplyInfoSection';
+import RecruitBasicInfoSection from '@/components/recruit/RecruitBasicInfoSection';
+import RecruitConfirmModal from '@/components/recruit/RecruitConfirmModal';
 import { RecruitPrivacyAgreementSection } from '@/components/recruit/RecruitPrivacyAgreementSection';
 import { useRecruitForm } from '@/hooks/useRecruitForm';
 import { ROUTES } from '@/constants/routes';
@@ -17,7 +17,7 @@ const TEXT = {
   submitting: '제출 중',
 };
 
-const majorOptions = ['웹응용소프트웨어공학과'];
+const MAJOR_OPTIONS = ['웹응용소프트웨어공학과'];
 
 const LEAVE_CONFIRM_MESSAGE = '입력하신 정보는 저장되지 않습니다.\n페이지를 이동하시겠습니까?';
 
@@ -89,7 +89,7 @@ function RecruitPage() {
           errors={errors}
           hasSubmitted={hasSubmitted}
           onChange={handleChange}
-          options={majorOptions}
+          options={MAJOR_OPTIONS}
         />
 
         <RecruitApplyInfoSection
@@ -113,7 +113,7 @@ function RecruitPage() {
 
         {submitError && (
           <p
-            className="mx-4 mt-5 rounded-[8px] bg-red-50 px-4 py-3 text-sm font-medium text-error sm:mx-6 lg:ml-[145px] lg:mr-[159px]"
+            className="mx-4 mt-5 rounded-[8px] bg-error-soft px-4 py-3 text-sm font-medium text-error sm:mx-6 lg:ml-[145px] lg:mr-[159px]"
             role="alert"
           >
             {submitError}

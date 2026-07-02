@@ -1,6 +1,6 @@
 import { InfoCard, SupportInput, SupportTextarea } from '@/components/recruit/RecruitFormFields';
 
-export function RecruitApplyInfoSection({ title, form, errors, hasSubmitted, onChange }) {
+function RecruitApplyInfoSection({ title, form, errors, hasSubmitted, onChange }) {
   return (
     <div className="pt-[100px]">
       <InfoCard title={title} className="mt-0" headerClassName="mt-[9px]">
@@ -52,3 +52,5 @@ export function RecruitApplyInfoSection({ title, form, errors, hasSubmitted, onC
     </div>
   );
 }
+
+export default RecruitApplyInfoSection;

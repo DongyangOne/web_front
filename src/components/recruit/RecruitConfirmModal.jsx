@@ -1,16 +1,38 @@
+import { useEffect } from 'react';
+
 import closeIcon from '@/assets/images/x.svg';
 
-export function RecruitConfirmModal({
+const GENDER_LABEL = {
+  MALE: '남자',
+  FEMALE: '여자',
+};
+
+function RecruitConfirmModal({
   form,
   onClose,
   onConfirm,
   isSubmitting,
   submittingLabel = '제출 중',
 }) {
-  const genderLabel = form.gender === 'MALE' ? '남자' : form.gender === 'FEMALE' ? '여자' : '';
+  const genderLabel = GENDER_LABEL[form.gender] ?? '';
+
+  useEffect(() => {
+    const { overflow } = document.body.style;
+
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = overflow;
+    };
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 px-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 shadow-recruit-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="recruit-confirm-title"
+    >
       <div className="relative flex h-[505px] w-full max-w-[746px] flex-col overflow-hidden rounded-[8px] bg-white shadow-recruit-modal">
         <div className="flex h-[40px] items-center justify-end bg-brand pr-[23px]">
           <button
@@ -22,7 +44,9 @@ export function RecruitConfirmModal({
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-[51px] pb-[78px] pt-5 text-[14px] font-normal leading-7 text-ink">
-          <p className="font-bold">입력하신 내용을 확인해 주세요.</p>
+          <p id="recruit-confirm-title" className="font-bold">
+            입력하신 내용을 확인해 주세요.
+          </p>
 
           <div className="mt-6">
             <p>이름: {form.name}</p>
@@ -55,3 +79,5 @@ export function RecruitConfirmModal({
     </div>
   );
 }
+
+export default RecruitConfirmModal;

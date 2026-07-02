@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { submitRecruit } from '@/apis/recruit';
@@ -10,8 +10,17 @@ import {
   PRIVACY_AGREEMENT_ERROR,
 } from '@/utils/recruitFormUtils';
 
+const FIELD_VALUE_FORMATTERS = {
+  phoneNumber: formatPhoneNumber,
+  grade: (value) => value.replace(/\D/g, ''),
+  privacyConsent: (value) => value === 'true',
+};
+
+const DEFAULT_FIELD_VALUE_FORMATTER = (value) => value;
+
 export function useRecruitForm() {
   const navigate = useNavigate();
+  const isMountedRef = useRef(true);
   const [form, setForm] = useState(INITIAL_RECRUIT_FORM);
   const [submitError, setSubmitError] = useState('');
   const [errors, setErrors] = useState({});
@@ -19,16 +28,16 @@ export function useRecruitForm() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
-    const nextValue =
-      name === 'phoneNumber'
-        ? formatPhoneNumber(value)
-        : name === 'grade'
-          ? value.replace(/\D/g, '')
-          : name === 'privacyConsent'
-            ? value === 'true'
-            : value;
+    const formatValue = FIELD_VALUE_FORMATTERS[name] ?? DEFAULT_FIELD_VALUE_FORMATTER;
+    const nextValue = formatValue(value);
 
     setForm((prevForm) => ({ ...prevForm, [name]: nextValue }));
     setErrors((prevErrors) => ({
@@ -65,15 +74,21 @@ export function useRecruitForm() {
     setSubmitError('');
     try {
       await submitRecruit({ ...form, grade: Number(form.grade) });
+      if (!isMountedRef.current) return;
+
       setIsConfirmOpen(false);
       navigate(ROUTES.RECRUIT_COMPLETE);
     } catch (error) {
+      if (!isMountedRef.current) return;
+
       setIsConfirmOpen(false);
       setSubmitError(
         error.response?.data?.message || '모집 신청 제출에 실패했습니다. 잠시 후 다시 시도해 주세요.'
       );
     } finally {
-      setIsSubmitting(false);
+      if (isMountedRef.current) {
+        setIsSubmitting(false);
+      }
     }
   };
 

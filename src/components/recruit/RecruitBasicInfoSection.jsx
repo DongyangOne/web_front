@@ -7,7 +7,7 @@ import {
   RequiredMark,
 } from '@/components/recruit/RecruitFormFields';
 
-export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onChange, options }) {
+function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onChange, options }) {
   return (
     <InfoCard title={title}>
       <div className="mx-4 mt-[56px] grid grid-cols-1 gap-x-[64px] gap-y-[51px] sm:mx-6 lg:ml-[145px] lg:mr-[159px] lg:grid-cols-2">
@@ -107,3 +107,5 @@ export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onC
     </InfoCard>
   );
 }
+
+export default RecruitBasicInfoSection;
