@@ -43,6 +43,8 @@ export default {
         modal: '30px',
       },
       boxShadow: {
+        // 명부 관리/신청 부원 카드 그림자 (시안 실측).
+        card: '0 4px 4px rgba(0,0,0,0.25)',
         schedule: '0 6px 7px rgba(52, 39, 31, 0.24)',
         'schedule-day': '0 4px 9px rgba(255, 107, 0, 0.34)',
         'schedule-dropdown': '0 14px 30px rgba(0, 0, 0, 0.1)',
