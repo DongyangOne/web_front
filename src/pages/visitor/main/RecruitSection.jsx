@@ -34,7 +34,7 @@ export default function RecruitSection() {
         {/* 모집 정보 – 카드 없이 텍스트 나열 */}
         <div className="mb-14 space-y-3">
           {RECRUIT_INFO_LIST.map(({ label, value }) => (
-            <p key={label} className="text-sm text-[#555] m-0">
+            <p key={label} className="text-base text-[#555] m-0">
               {label}: {value}
             </p>
           ))}

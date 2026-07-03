@@ -9,6 +9,7 @@ export const ROUTES = {
   SCHEDULE: '/schedule',
   ABOUT: '/about',
   ADMIN: '/admin',
+  ADMIN_RECRUIT: '/admin/Memberpage',
   // 관리자 로그인: URL 직접 입력으로만 접근. 방문자 내비에 링크하지 않는다.
   ADMIN_LOGIN: '/admin/login',
   // 관리자 캘린더: 연간 일정 관리 페이지

@@ -5,7 +5,7 @@ import instance from './instance';
  * @param {Object} data - 지원자 정보
  * @returns {Promise}
  */
-export const submitRecruit = (data) => instance.post('/recruit', data);
+export const submitRecruit = (data) => instance.post('/api/v1/visitor/applicantMembers', data);
 
 /**
  * (관리자) 지원자 목록 조회

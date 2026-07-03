@@ -3,7 +3,7 @@
  * 신청서를 제출한 부원 목록(이름/학번)을 보여주고, 행의 '선택'을 누르면
  * 해당 부원 정보를 등록 폼으로 가져온다. 세로 스크롤되며 우측 '선택' 열은 피치 배경이다.
  * @param {Object} props
- * @param {Array} props.applicants - 신청 부원 목록 ({ id, name, studentId, ... })
+ * @param {Array} props.applicants - 신청 부원 목록 ({ applicantId, name, studentId, ... })
  * @param {Function} props.onSelect - 행 '선택' 클릭 시 해당 부원 객체로 호출
  * @param {Function} props.onClose - 닫기(×) 또는 배경 클릭 시 호출
  */
@@ -43,7 +43,7 @@ function ApplicantListModal({ applicants, onSelect, onClose }) {
         <ul className="flex-1 overflow-y-auto border-t border-solid border-line">
           {applicants.map((applicant) => (
             <li
-              key={applicant.id}
+              key={applicant.applicantId}
               className="grid grid-cols-applicants items-stretch border-b border-solid border-line text-sm text-ink"
             >
               <span className="flex items-center justify-center py-3.5">{applicant.name}</span>
