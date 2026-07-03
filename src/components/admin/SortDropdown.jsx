@@ -1,14 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 
-// NO 열 정렬 기준 (시안 드롭다운 기준).
-const SORT_OPTIONS = ['학년순', '등록순'];
+import { MEMBER_SORT } from '@/constants/member';
+
+// NO 열 정렬 기준. label은 화면 표시, value는 서버 sort 파라미터다.
+const SORT_OPTIONS = [
+  { label: '학년순', value: MEMBER_SORT.GRADE },
+  { label: '등록순', value: MEMBER_SORT.CREATED_AT },
+];
 
 /**
  * NO 열 헤더의 정렬 드롭다운.
  * "NO" 왼쪽 셰브론을 누르면 정렬 기준(학년순/등록순)이 펼쳐진다.
- * 현재는 표시/선택 전용이며, 실제 정렬 로직은 추후 연동한다.
+ * @param {Object} props
+ * @param {string} props.value - 현재 정렬 기준 (MEMBER_SORT 값)
+ * @param {Function} props.onChange - 정렬 기준 변경 시 선택한 sort 값으로 호출
  */
-function SortDropdown() {
+function SortDropdown({ value, onChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -26,8 +33,10 @@ function SortDropdown() {
 
   const handleToggle = () => setIsOpen((prev) => !prev);
 
-  // TODO: 정렬 기준 선택 시 실제 목록 정렬 적용 (백엔드 연동 후)
-  const handleSelect = () => setIsOpen(false);
+  const handleSelect = (sortValue) => {
+    onChange(sortValue);
+    setIsOpen(false);
+  };
 
   return (
     <div ref={containerRef} className="relative inline-flex flex-col items-center">
@@ -39,13 +48,15 @@ function SortDropdown() {
       {isOpen && (
         <ul className="absolute top-10 z-10 w-32 divide-y divide-brand/20 overflow-hidden rounded-xl border border-solid border-brand/25 bg-brand-soft text-xl">
           {SORT_OPTIONS.map((option) => (
-            <li key={option}>
+            <li key={option.value}>
               <button
                 type="button"
-                onClick={handleSelect}
-                className="block w-full py-3 text-center text-brand hover:bg-brand/10"
+                onClick={() => handleSelect(option.value)}
+                className={`block w-full py-3 text-center hover:bg-brand/10 ${
+                  option.value === value ? 'font-bold text-brand' : 'text-brand'
+                }`}
               >
-                {option}
+                {option.label}
               </button>
             </li>
           ))}

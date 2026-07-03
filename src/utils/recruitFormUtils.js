@@ -1,16 +1,16 @@
 export const INITIAL_RECRUIT_FORM = {
   name: '',
-  major: '',
+  department: '',
   studentId: '',
-  birthdate: '',
+  birthday: '',
   grade: '',
-  phone: '',
+  phoneNumber: '',
   gender: '',
   motivation: '',
-  portfolio: '',
-  interests: '',
-  finalMessage: '',
-  privacyAgreement: '',
+  techStack: '',
+  desiredActivity: '',
+  finalWords: '',
+  privacyConsent: '',
 };
 
 export const PRIVACY_AGREEMENT_ERROR = '동의하지 않을 시 불이익이 있을 수 있습니다.';
@@ -22,7 +22,7 @@ export const fieldValidators = [
     message: '이름을 확인해 주세요.',
   },
   {
-    key: 'major',
+    key: 'department',
     validate: (value) => value.length > 0,
     message: '학과를 선택해 주세요.',
   },
@@ -32,7 +32,7 @@ export const fieldValidators = [
     message: '학번을 확인해 주세요.',
   },
   {
-    key: 'birthdate',
+    key: 'birthday',
     validate: (value) => /^\d{4}-\d{2}-\d{2}$/.test(value),
     message: '생년월일을 입력해 주세요.',
   },
@@ -42,7 +42,7 @@ export const fieldValidators = [
     message: '학년을 확인해 주세요.',
   },
   {
-    key: 'phone',
+    key: 'phoneNumber',
     validate: (value) => /^010-\d{4}-\d{4}$/.test(value),
     message: '전화번호를 확인해 주세요.',
   },
@@ -52,12 +52,12 @@ export const fieldValidators = [
     message: '지원 동기를 확인해 주세요.',
   },
   {
-    key: 'portfolio',
+    key: 'techStack',
     validate: (value) => value.length > 0,
     message: '사용해봤거나 들어본 언어 및 라이브러리를 확인해 주세요.',
   },
   {
-    key: 'interests',
+    key: 'desiredActivity',
     validate: (value) => value.length > 0,
     message: '동아리에서 해 보고 싶은 것을 확인해 주세요.',
   },
@@ -67,8 +67,8 @@ export const fieldValidators = [
     message: '성별을 확인해 주세요.',
   },
   {
-    key: 'privacyAgreement',
-    validate: (value) => value === 'agree',
+    key: 'privacyConsent',
+    validate: (value) => value === true,
     message: PRIVACY_AGREEMENT_ERROR,
   },
 ];
@@ -82,7 +82,7 @@ export function formatPhoneNumber(value) {
 
 export function getRecruitFormValidationErrors(form) {
   return fieldValidators.reduce((nextErrors, { key, validate, message }) => {
-    const value = String(form[key] || '').trim();
+    const value = typeof form[key] === 'boolean' ? form[key] : String(form[key] || '').trim();
     if (!validate(value)) {
       nextErrors[key] = message;
     }

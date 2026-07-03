@@ -17,6 +17,8 @@ export default {
         // 공식 팔레트 외 기능용 보조색.
         line: '#EEEEEE', // 구분선
         'field-border': '#CCCCCC', // 입력칸 테두리
+        placeholder: '#6F6F6F',
+        'error-soft': '#FEF2F2',
         'scroll-track': '#EDEDED',
         'scroll-thumb': '#8A8A8A',
         'schedule-divider': '#FFE3D1',
@@ -48,12 +50,11 @@ export default {
         'app-xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         'recruit-complete': '0 6px 18px rgb(52 39 31 / 0.22)',
         'recruit-card': '0 3px 0 rgb(0 0 0 / 0.18)',
+        'recruit-modal-overlay': 'inset 0 0 0 9999px rgb(0 0 0 / 0.35)',
         'recruit-modal': '0 16px 40px rgb(0 0 0 / 0.25)',
-      },
-      // 부원 상태 배지 너비(시안 실측 150px).
-      boxShadow: {
         header: '0 4px 24px rgba(0,0,0,0.35)',
       },
+      // 부원 상태 배지 너비(시안 실측 150px).
       minWidth: {
         badge: '150px',
       },

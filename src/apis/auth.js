@@ -2,7 +2,19 @@ import instance from './instance';
 
 /**
  * 관리자 로그인
- * @param {{ loginId: string, password: string }} credentials
+ * @param {{ username: string, password: string }} credentials
+ * @returns {Promise<Object>} { accessToken, refreshToken, tokenType }
+ */
+export const adminLogin = async (credentials) => {
+  const response = await instance.post('/api/v1/auth/login', credentials);
+
+  return response.data?.data;
+};
+
+/**
+ * 관리자 로그아웃 (서버의 Refresh Token 폐기)
+ * @param {string} refreshToken
  * @returns {Promise}
  */
-export const adminLogin = (credentials) => instance.post('/admin/login', credentials);
+export const adminLogout = (refreshToken) =>
+  instance.post('/api/v1/auth/logout', { refreshToken });
