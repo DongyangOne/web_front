@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '@/constants/routes';
+import Header from '@/components/layout/Header';
 import StatusBadge from '@/components/admin/StatusBadge';
 import SortDropdown from '@/components/admin/SortDropdown';
 import RowCheckbox from '@/components/admin/RowCheckbox';
@@ -95,6 +96,7 @@ function MemberPage() {
 
   return (
     <>
+      <Header />
       <main className="min-h-screen bg-brand-soft px-8 py-10">
         <div className="mx-auto max-w-6xl rounded-card bg-white p-10 shadow-md">
           {/* 카드 헤더: 제목 + 액션 버튼 */}
