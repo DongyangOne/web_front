@@ -5,10 +5,13 @@
 export const ROUTES = {
   HOME: '/',
   RECRUIT: '/recruit',
+  RECRUIT_COMPLETE: '/recruit/complete',
   SCHEDULE: '/schedule',
   ABOUT: '/about',
   ADMIN: '/admin',
   ADMIN_RECRUIT: '/admin/Memberpage',
+  // 관리자 로그인: URL 직접 입력으로만 접근. 방문자 내비에 링크하지 않는다.
+  ADMIN_LOGIN: '/admin/login',
   // 명부 관리: 외부에 노출하지 않는 admin 히든 경로 하위에 둔다. 방문자 내비에 링크하지 않는다.
   ADMIN_MEMBER: '/admin/members',
   // 부원 등록: 명부 관리에서 '부원 등록' 클릭 시 이동하는 폼 화면.

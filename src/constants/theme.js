@@ -31,6 +31,8 @@ export const BRAND_COLORS = {
   // 공식 팔레트 외 기능용 보조색.
   line: '#EEEEEE',
   fieldBorder: '#CCCCCC',
+  placeholder: '#6F6F6F',
+  errorSoft: '#FEF2F2',
   error: '#F94700',
 };
 

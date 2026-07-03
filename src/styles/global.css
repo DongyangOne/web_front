@@ -12,7 +12,13 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-width: 320px;
+  font-family:
+    'Noto Sans KR',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #1f2937;
@@ -21,6 +27,7 @@ body {
 
 #root {
   min-height: 100vh;
+  min-width: 320px;
 }
 
 a {
@@ -39,4 +46,45 @@ button {
 img {
   max-width: 100%;
   display: block;
+}
+
+/* ── 스크롤 reveal 애니메이션 ─────────────────────────── */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.reveal-up.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── 히어로 스크롤 인디케이터 ─────────────────────────── */
+@keyframes scroll-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.animate-scroll-pulse {
+  animation: scroll-pulse 1.8s ease-in-out infinite;
+}
+
+.date-input-without-icon::-webkit-calendar-picker-indicator {
+  display: none;
+  appearance: none;
+}
+
+.date-input-without-icon::-webkit-inner-spin-button,
+.date-input-without-icon::-webkit-clear-button {
+  display: none;
+}
+
+.date-input-without-icon {
+  appearance: textfield;
 }
