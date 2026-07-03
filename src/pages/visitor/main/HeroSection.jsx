@@ -47,8 +47,7 @@ export default function HeroSection() {
           className="flex items-center justify-center gap-2 font-medium text-[#7A4A28]"
           style={{ fontSize: 'clamp(1rem, 2.5vw, 1.4rem)' }}
         >
-          <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0" />
-          아이디어를 현실로 구현하는 공간,&nbsp;
+          아이디어를 현실로 구현하는 공간,
           <strong className="text-brand">ONE</strong>
         </p>
       </div>
