@@ -28,10 +28,11 @@ function AdminLogin() {
 
     setIsLoading(true);
     try {
-      const response = await adminLogin({ loginId: id, password });
-      login(response.data.user, response.data.token);
+      const tokens = await adminLogin({ username: id, password });
+      login(tokens);
       navigate(ROUTES.ADMIN_MEMBER);
     } catch (err) {
+      console.error('[AdminLogin] 관리자 로그인 실패', err);
       const status = err.response?.status;
       if (status === 404 || status === 401) {
         setError('아이디 또는 비밀번호가 일치하지 않습니다.');

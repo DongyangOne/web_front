@@ -23,6 +23,12 @@ export const SCHEDULES = [
 
 export const WEEKDAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 export const MONTH_OPTIONS = Array.from({ length: 12 }, (_, index) => index);
+export const CLUB_START_YEAR = 2022;
+
+export const VIEW_MODE = {
+  CALENDAR: 'calendar',
+  ALL: 'all',
+};
 
 export const DROPDOWN_TYPE = {
   MONTH: 'month',

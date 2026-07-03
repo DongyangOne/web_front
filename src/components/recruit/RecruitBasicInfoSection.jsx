@@ -7,7 +7,7 @@ import {
   RequiredMark,
 } from '@/components/recruit/RecruitFormFields';
 
-export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onChange, options }) {
+function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onChange, options }) {
   return (
     <InfoCard title={title}>
       <div className="mx-4 mt-[56px] grid grid-cols-1 gap-x-[64px] gap-y-[51px] sm:mx-6 lg:ml-[145px] lg:mr-[159px] lg:grid-cols-2">
@@ -25,12 +25,12 @@ export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onC
         </div>
         <FormSelect
           label="학과"
-          name="major"
-          value={form.major}
+          name="department"
+          value={form.department}
           onChange={onChange}
           options={options}
           inputClassName="w-full max-w-[347px]"
-          error={hasSubmitted ? errors.major : ''}
+          error={hasSubmitted ? errors.department : ''}
         />
         <FormInput
           label="학번"
@@ -44,14 +44,14 @@ export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onC
         />
         <FormInput
           label="생년월일"
-          name="birthdate"
+          name="birthday"
           type="date"
-          value={form.birthdate}
+          value={form.birthday}
           onChange={onChange}
           placeholder="생년월일을 입력해 주세요."
           required
           inputClassName="w-full max-w-[347px]"
-          error={hasSubmitted ? errors.birthdate : ''}
+          error={hasSubmitted ? errors.birthday : ''}
         />
         <FormInput
           label="학년"
@@ -67,15 +67,15 @@ export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onC
         <div className="lg:col-span-2">
           <FormInput
             label="전화번호"
-            name="phone"
+            name="phoneNumber"
             type="tel"
-            value={form.phone}
+            value={form.phoneNumber}
             onChange={onChange}
             placeholder="전화번호를 입력해 주세요."
             required
             maxLength={13}
             inputClassName="w-full max-w-[617px]"
-            error={hasSubmitted ? errors.phone : ''}
+            error={hasSubmitted ? errors.phoneNumber : ''}
           />
         </div>
         <fieldset className="relative mt-[19px] grid gap-2 text-[14px] font-normal text-ink sm:grid-cols-[64px_1fr] sm:items-center sm:gap-x-[45px] lg:col-span-2">
@@ -88,14 +88,14 @@ export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onC
           <div className="flex min-w-0 items-center gap-[35px]">
             <RadioOption
               label="남자"
-              value="male"
-              checked={form.gender === 'male'}
+              value="MALE"
+              checked={form.gender === 'MALE'}
               onChange={onChange}
             />
             <RadioOption
               label="여자"
-              value="female"
-              checked={form.gender === 'female'}
+              value="FEMALE"
+              checked={form.gender === 'FEMALE'}
               onChange={onChange}
             />
           </div>
@@ -107,3 +107,5 @@ export function RecruitBasicInfoSection({ title, form, errors, hasSubmitted, onC
     </InfoCard>
   );
 }
+
+export default RecruitBasicInfoSection;
