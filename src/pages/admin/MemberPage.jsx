@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { deleteMembers, getMemberList } from '@/apis/member';
 import { ROUTES } from '@/constants/routes';
+import Header from '@/components/layout/Header';
 import { MEMBER_PAGE_SIZE, MEMBER_SORT, SORT_DIRECTION } from '@/constants/member';
 import MemberTable from '@/components/admin/MemberTable';
 import Pagination from '@/components/admin/Pagination';
@@ -129,6 +130,7 @@ function MemberPage() {
 
   return (
     <>
+      <Header />
       <main className="min-h-screen bg-brand-soft px-8 py-10">
         <div className="mx-auto max-w-6xl rounded-card bg-white p-10 shadow-md">
           {/* 카드 헤더: 제목 + 액션 버튼 */}
