@@ -34,10 +34,10 @@ const useHomeContentStore = create((set) => ({
       timeline: [...state.timeline, item],
     })),
 
-  updateRecruitHeading: (heading) => set({ recruitHeading: heading }),
-  updateRecruitInfoItem: (index, value) =>
+  updateRecruitContent: (heading, values) =>
     set((state) => ({
-      recruitInfoList: state.recruitInfoList.map((item, i) => (i === index ? { ...item, value } : item)),
+      recruitHeading: heading,
+      recruitInfoList: state.recruitInfoList.map((item, i) => ({ ...item, value: values[i] })),
     })),
 }));
 

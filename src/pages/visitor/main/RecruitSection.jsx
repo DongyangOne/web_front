@@ -8,6 +8,7 @@ import useHomeContentStore from '@/stores/homeContentStore';
 import editIcon from '@/assets/images/editicon.svg';
 
 function highlightOne(text) {
+  if (typeof text !== 'string') return null;
   return text.split('\n').map((line, lineIndex) => (
     <span key={lineIndex}>
       {lineIndex > 0 && <br />}
@@ -73,14 +74,12 @@ export default function RecruitSection({ isEditable = false }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated) && isEditable;
   const recruitHeading = useHomeContentStore((state) => state.recruitHeading);
   const recruitInfoList = useHomeContentStore((state) => state.recruitInfoList);
-  const updateRecruitHeading = useHomeContentStore((state) => state.updateRecruitHeading);
-  const updateRecruitInfoItem = useHomeContentStore((state) => state.updateRecruitInfoItem);
+  const updateRecruitContent = useHomeContentStore((state) => state.updateRecruitContent);
 
   const [isEditing, setIsEditing] = useState(false);
 
   const handleSave = (heading, values) => {
-    updateRecruitHeading(heading);
-    values.forEach((value, index) => updateRecruitInfoItem(index, value));
+    updateRecruitContent(heading, values);
     setIsEditing(false);
   };
 

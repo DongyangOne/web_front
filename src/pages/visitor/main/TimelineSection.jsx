@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import useScrollReveal from '@/hooks/useScrollReveal';
 import useAuthStore from '@/stores/authStore';
 import useHomeContentStore from '@/stores/homeContentStore';
@@ -10,8 +10,25 @@ function toMonthInputValue(monthText) {
 }
 
 function parsePeriod(period) {
-  const [start, end] = (period || '').split('-').map((part) => part.trim());
+  const trimmed = (period || '').trim();
+  if (!trimmed) return { periodStart: '', periodEnd: '' };
+  if (trimmed.endsWith('-')) {
+    return { periodStart: toMonthInputValue(trimmed.slice(0, -1)), periodEnd: '' };
+  }
+  if (trimmed.startsWith('-')) {
+    return { periodStart: '', periodEnd: toMonthInputValue(trimmed.slice(1)) };
+  }
+  const [start, end] = trimmed.split('-').map((part) => part.trim());
   return { periodStart: toMonthInputValue(start), periodEnd: toMonthInputValue(end) };
+}
+
+function formatPeriod(periodStart, periodEnd) {
+  const start = periodStart ? periodStart.replace('-', '.') : '';
+  const end = periodEnd ? periodEnd.replace('-', '.') : '';
+  if (start && end) return `${start} - ${end}`;
+  if (start) return `${start} -`;
+  if (end) return `- ${end}`;
+  return '';
 }
 
 const EMPTY_EVENT = {
@@ -40,6 +57,14 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
   const [techStack, setTechStack] = useState(event.techStack.length > 0 ? [...event.techStack] : ['']);
   const [description, setDescription] = useState(event.description);
   const [images, setImages] = useState([...event.images]);
+  const createdObjectUrlsRef = useRef(new Set());
+
+  useEffect(() => {
+    const createdObjectUrls = createdObjectUrlsRef.current;
+    return () => {
+      createdObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
 
   const inputClass = 'w-full rounded-md border border-line px-3 py-2 text-sm text-ink';
 
@@ -74,11 +99,20 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
       alert('이미지 파일만 업로드할 수 있습니다.');
       return;
     }
-    setImages((previous) => [...previous, URL.createObjectURL(file)]);
+    const url = URL.createObjectURL(file);
+    createdObjectUrlsRef.current.add(url);
+    setImages((previous) => [...previous, url]);
   };
 
   const handleRemoveImage = (index) => {
-    setImages((previous) => previous.filter((_, i) => i !== index));
+    setImages((previous) => {
+      const removed = previous[index];
+      if (createdObjectUrlsRef.current.has(removed)) {
+        URL.revokeObjectURL(removed);
+        createdObjectUrlsRef.current.delete(removed);
+      }
+      return previous.filter((_, i) => i !== index);
+    });
   };
 
   const handleSave = () => {
@@ -93,15 +127,13 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
       return;
     }
 
+    createdObjectUrlsRef.current.clear();
     onSave({
       year,
       projectName,
       award,
       activity,
-      period:
-        periodStart && periodEnd
-          ? `${periodStart.replace('-', '.')} - ${periodEnd.replace('-', '.')}`
-          : '',
+      period: formatPeriod(periodStart, periodEnd),
       memberCount: memberCount === '' ? null : Number(memberCount),
       techStack: validTechStack,
       description,
@@ -285,8 +317,26 @@ function TimelineControls({ isRight, isEditing, onEdit, onDelete }) {
 }
 
 function TimelineCard({ event, isRight, isEditing, formRef, onSaveEdit, onCancelEdit }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsExpanded((prev) => !prev);
+    }
+  };
+
   return (
-    <div className={`relative bg-white rounded-2xl px-9 py-6 shadow-md ${isRight ? 'text-left' : 'text-right'}`}>
+    <div
+      onClick={() => !isEditing && setIsExpanded((prev) => !prev)}
+      onKeyDown={handleKeyDown}
+      role={isEditing ? undefined : 'button'}
+      tabIndex={isEditing ? undefined : 0}
+      aria-expanded={isExpanded}
+      className={`relative bg-white rounded-2xl px-9 py-6 border shadow-md transition-all duration-300 ${
+        isExpanded ? 'border-brand' : 'border-[#EDCFBC]'
+      } ${isRight ? 'text-left' : 'text-right'} ${isEditing ? '' : 'cursor-pointer select-none'}`}
+    >
       <span
         aria-hidden="true"
         className={`absolute top-6 h-3 w-3 rotate-45 bg-white ${isRight ? '-left-1.5' : '-right-1.5'}`}
@@ -295,14 +345,69 @@ function TimelineCard({ event, isRight, isEditing, formRef, onSaveEdit, onCancel
       {isEditing ? (
         <TimelineEditForm ref={formRef} event={event} onSave={onSaveEdit} onCancel={onCancelEdit} />
       ) : (
-        <div className={isRight ? '' : 'ml-auto'}>
-          <p className="text-sm text-brand font-bold m-0 mb-2">
-            {event.year}
-            {event.projectName ? `, ${event.projectName}` : ''}
-          </p>
-          <p className="text-base font-bold text-ink m-0 mb-2">{event.award}</p>
-          <p className="text-xs text-[#AAAAAA] m-0">{event.activity}</p>
-        </div>
+        <>
+          <div className={isRight ? '' : 'ml-auto'}>
+            <p className="text-sm text-brand font-bold m-0 mb-2">
+              {event.year}
+              {event.projectName ? `, ${event.projectName}` : ''}
+            </p>
+            <p className="text-base font-bold text-ink m-0 mb-2">{event.award}</p>
+            <p className="text-xs text-[#AAAAAA] m-0">{event.activity}</p>
+          </div>
+
+          <div
+            className={`overflow-hidden transition-all duration-400 ease-in-out ${
+              isExpanded ? 'max-h-[600px] opacity-100 mt-4' : 'max-h-0 opacity-0'
+            }`}
+          >
+            <hr className="border-[#EDCFBC] mb-4" />
+
+            <div className={`flex gap-6 mb-4 text-xs text-ink-sub ${isRight ? '' : 'justify-end'}`}>
+              <span className="flex items-center gap-1">
+                <span>📅</span> {event.period}
+              </span>
+              {event.memberCount && (
+                <span className="flex items-center gap-1">
+                  <span>👥</span> {event.memberCount}명
+                </span>
+              )}
+            </div>
+
+            {event.techStack && event.techStack.length > 0 && (
+              <div className={`mb-4 ${isRight ? '' : 'flex flex-col items-end'}`}>
+                <p className="text-xs text-[#AAAAAA] m-0 mb-2">기술 스택</p>
+                <div className={`flex flex-wrap gap-2 ${isRight ? '' : 'justify-end'}`}>
+                  {event.techStack.map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1 rounded-full bg-brand-soft text-brand text-xs font-medium"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className={`mb-4 ${isRight ? '' : 'text-right'}`}>
+              <p className="text-xs text-[#AAAAAA] m-0 mb-2">프로젝트 소개</p>
+              <p className="text-sm text-ink leading-6 m-0 whitespace-pre-line">{event.description}</p>
+            </div>
+
+            {event.images && event.images.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 mt-2">
+                {event.images.map((src, index) => (
+                  <img
+                    key={index}
+                    src={src}
+                    alt={`${event.projectName} 이미지 ${index + 1}`}
+                    className="w-full aspect-[4/3] object-cover rounded-lg bg-[#F0F0F0]"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
