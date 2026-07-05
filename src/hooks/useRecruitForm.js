@@ -88,7 +88,6 @@ export function useRecruitForm() {
         const errorMessage = response.data?.message ?? DEFAULT_SUBMIT_ERROR_MESSAGE;
         setIsConfirmOpen(false);
         setSubmitError(errorMessage);
-        alert(errorMessage);
         return;
       }
 
@@ -100,7 +99,6 @@ export function useRecruitForm() {
       setIsConfirmOpen(false);
       const errorMessage = getRecruitSubmitErrorMessage(error);
       setSubmitError(errorMessage);
-      alert(errorMessage);
     } finally {
       if (isMountedRef.current) {
         setIsSubmitting(false);

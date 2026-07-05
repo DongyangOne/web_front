@@ -9,22 +9,24 @@ const COMPLETE_MESSAGE = '회장의 연락을 통해 면접 일정이 조정될 
 const EMPTY_RECRUITMENT_NOTICE = '모집 공고 정보를 불러오지 못했습니다.';
 
 const formatKoreanDate = (dateText, shouldIncludeYear = true) => {
-  if (!dateText) return '';
+  if (typeof dateText !== 'string') return '';
 
   const [year, month, day] = dateText.split('-');
   if (!year || !month || !day) return dateText;
 
   const formattedMonth = Number(month);
   const formattedDay = Number(day);
+  if (Number.isNaN(formattedMonth) || Number.isNaN(formattedDay)) return dateText;
+
   const monthDayText = `${formattedMonth}월 ${formattedDay}일`;
 
   return shouldIncludeYear ? `${year}년 ${monthDayText}` : monthDayText;
 };
 
 const createDateRangeText = (startDate, endDate) => {
-  if (!startDate && !endDate) return '';
-  if (!startDate) return formatKoreanDate(endDate);
-  if (!endDate || startDate === endDate) return formatKoreanDate(startDate);
+  if (typeof startDate !== 'string' && typeof endDate !== 'string') return '';
+  if (typeof startDate !== 'string') return formatKoreanDate(endDate);
+  if (typeof endDate !== 'string' || startDate === endDate) return formatKoreanDate(startDate);
 
   const startYear = startDate.split('-')[0];
   const endYear = endDate.split('-')[0];
@@ -39,20 +41,32 @@ const RecruitCompleteCard = () => {
   const [hasRecruitmentError, setHasRecruitmentError] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchMainRecruitment = async () => {
       try {
         const response = await getMainRecruitment();
+        if (!isMounted) return;
+
         setRecruitment(response.data?.data ?? null);
         setHasRecruitmentError(false);
       } catch (error) {
+        if (!isMounted) return;
+
         console.error('[RecruitCompleteCard] 모집 공고 조회 실패', error);
         setHasRecruitmentError(true);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchMainRecruitment();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const interviewPeriod = createDateRangeText(
