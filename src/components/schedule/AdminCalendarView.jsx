@@ -21,6 +21,8 @@ function AdminCalendarView({
   const { scheduleDateKeys, visibleSchedules } = schedules;
 
   const [selectedDateKey, setSelectedDateKey] = useState(todayKey);
+  const [selectedEndDateKey, setSelectedEndDateKey] = useState(todayKey);
+  const [activeDateField, setActiveDateField] = useState('start');
   const [isAddingSchedule, setIsAddingSchedule] = useState(false);
   const [newScheduleTitle, setNewScheduleTitle] = useState('');
   const [selectedIndexes, setSelectedIndexes] = useState(new Set());
@@ -28,7 +30,24 @@ function AdminCalendarView({
   const [editedSchedules, setEditedSchedules] = useState([]);
 
   const handleDateClick = (dateKey) => {
-    setSelectedDateKey(dateKey);
+    if (!isAddingSchedule) {
+      setSelectedDateKey(dateKey);
+      return;
+    }
+
+    if (activeDateField === 'end') {
+      if (dateKey < selectedDateKey) {
+        setSelectedDateKey(dateKey);
+        setSelectedEndDateKey(selectedDateKey);
+      } else {
+        setSelectedEndDateKey(dateKey);
+      }
+      setActiveDateField('start');
+    } else {
+      setSelectedDateKey(dateKey);
+      setSelectedEndDateKey(dateKey);
+      setActiveDateField('end');
+    }
   };
 
   const handleAddClick = () => {
@@ -36,12 +55,18 @@ function AdminCalendarView({
     setEditedSchedules([]);
     setIsAddingSchedule(true);
     setNewScheduleTitle('');
+    setSelectedEndDateKey(selectedDateKey);
+    setActiveDateField('start');
   };
 
   const handleConfirm = () => {
     if (isAddingSchedule) {
       if (newScheduleTitle.trim()) {
-        onAddSchedule?.({ dateKey: selectedDateKey, title: newScheduleTitle });
+        onAddSchedule?.({
+          dateKey: selectedDateKey,
+          endDateKey: selectedEndDateKey,
+          title: newScheduleTitle,
+        });
       }
       setIsAddingSchedule(false);
       setNewScheduleTitle('');
@@ -75,6 +100,7 @@ function AdminCalendarView({
     setNewScheduleTitle('');
     setIsEditMode(false);
     setEditedSchedules([]);
+    setActiveDateField('start');
   };
 
   const handleEditTitle = (index, value) => {
@@ -90,10 +116,8 @@ function AdminCalendarView({
   return (
     /* h-full + flex-col: 카드 전체 높이를 채워 수정 버튼을 하단에 고정 */
     <div className="flex h-full flex-col px-[18px] py-11 sm:px-11 sm:py-[72px] xl:px-[60px] xl:pb-[60px] xl:pt-[52px]">
-
       {/* 콘텐츠 그리드: flex-1 로 남은 높이 전부 차지 */}
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-y-8 xl:grid-cols-[505px_24px_1fr] xl:items-stretch xl:gap-y-0">
-
         {/* 왼쪽: 드롭다운 + 탭 + 캘린더 */}
         <div className="h-auto w-full max-w-[505px] xl:self-start">
           <div className="mb-[14px] flex w-full items-center gap-2" aria-label="달력 기간 선택">
@@ -155,7 +179,16 @@ function AdminCalendarView({
             ))}
 
             {calendarDates.map((date) => {
-              const isSelected = date.key === selectedDateKey;
+              const isRangeStart = isAddingSchedule && date.key === selectedDateKey;
+              const isRangeEnd =
+                isAddingSchedule &&
+                date.key === selectedEndDateKey &&
+                selectedEndDateKey !== selectedDateKey;
+              const isInRange =
+                isAddingSchedule && date.key > selectedDateKey && date.key < selectedEndDateKey;
+              const isSelected = isAddingSchedule
+                ? isRangeStart || isRangeEnd
+                : date.key === selectedDateKey;
               const hasSchedule = date.isCurrentMonth && scheduleDateKeys.has(date.key);
 
               return (
@@ -168,6 +201,7 @@ function AdminCalendarView({
                     isSelected
                       ? 'h-10 w-10 rounded-[11px] bg-brand font-bold text-white shadow-schedule-day xl:h-10 xl:w-10'
                       : '',
+                    isInRange && !isSelected ? 'rounded-[11px] bg-brand/20' : '',
                     hasSchedule && !isSelected
                       ? 'after:absolute after:left-1/2 after:-top-3 after:h-2.5 after:w-2.5 after:-translate-x-1/2 after:rounded-full after:bg-brand after:content-[""]'
                       : '',
@@ -188,8 +222,7 @@ function AdminCalendarView({
 
         {/* 오른쪽: 일정 목록 + 수정 버튼 */}
         {/* h-full + flex-col: 그리드 셀 전체 높이를 채워 수정 버튼을 하단에 고정 */}
-        <div className="flex h-full min-w-0 flex-col xl:pt-[12px]">
-
+        <div className="flex h-full min-h-0 min-w-0 flex-col xl:pt-[12px]">
           {/* 추가 / 삭제 버튼 */}
           <div className="mb-4 flex shrink-0 justify-end gap-2">
             <button
@@ -237,7 +270,9 @@ function AdminCalendarView({
                         className="min-w-0 flex-1 border-b border-brand bg-transparent text-[16px] text-ink outline-none"
                       />
                     ) : (
-                      <span className="min-w-0 truncate font-normal text-ink-sub">{schedule.title}</span>
+                      <span className="min-w-0 truncate font-normal text-ink-sub">
+                        {schedule.title}
+                      </span>
                     )}
                   </li>
                 );
@@ -247,11 +282,16 @@ function AdminCalendarView({
                 <li className="flex min-w-0 items-center gap-4 text-[16px] leading-[1.3]">
                   <div className="flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full border border-brand bg-white">
                     <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
-                      <path d="M4.5 1V8M1 4.5H8" stroke="#FF6B00" strokeWidth="1.5" strokeLinecap="round" />
+                      <path
+                        d="M4.5 1V8M1 4.5H8"
+                        stroke="#FF6B00"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </div>
                   <time className="w-[190px] shrink-0 font-bold text-ink">
-                    {formatAdminDate(selectedDateKey)} ~
+                    {formatAdminDate(selectedDateKey)} ~ {formatAdminDate(selectedEndDateKey)}
                   </time>
                   <input
                     type="text"

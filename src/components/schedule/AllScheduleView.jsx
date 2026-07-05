@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ScheduleCheckbox from '@/components/schedule/ScheduleCheckbox';
 import ScheduleDropdown from '@/components/schedule/ScheduleDropdown';
 import ScheduleTabs from '@/components/schedule/ScheduleTabs';
+import { VIEW_MODE } from '@/constants/schedule';
 import { formatScheduleDate } from '@/utils/schedule';
 
 const ACCENT_COLORS = ['#FFBA88', '#D95D03', '#F96B03', '#953E00', '#6C3E1E'];
@@ -33,7 +34,7 @@ function AllScheduleView({
   };
 
   const handleAddClick = () => {
-    onViewModeChange('calendar');
+    onViewModeChange(VIEW_MODE.CALENDAR);
   };
 
   const handleDeleteClick = () => {
