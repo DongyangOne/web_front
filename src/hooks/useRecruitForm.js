@@ -18,6 +18,12 @@ const FIELD_VALUE_FORMATTERS = {
 
 const DEFAULT_FIELD_VALUE_FORMATTER = (value) => value;
 
+const DEFAULT_SUBMIT_ERROR_MESSAGE = '모집 신청 제출에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+
+const getRecruitSubmitErrorMessage = (error) => {
+  return error.response?.data?.message ?? DEFAULT_SUBMIT_ERROR_MESSAGE;
+};
+
 export function useRecruitForm() {
   const navigate = useNavigate();
   const isMountedRef = useRef(true);
@@ -29,6 +35,8 @@ export function useRecruitForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    isMountedRef.current = true;
+
     return () => {
       isMountedRef.current = false;
     };
@@ -73,8 +81,16 @@ export function useRecruitForm() {
     setIsSubmitting(true);
     setSubmitError('');
     try {
-      await submitRecruit({ ...form, grade: Number(form.grade) });
+      const response = await submitRecruit({ ...form, grade: Number(form.grade) });
       if (!isMountedRef.current) return;
+
+      if (response.data?.success === false) {
+        const errorMessage = response.data?.message ?? DEFAULT_SUBMIT_ERROR_MESSAGE;
+        setIsConfirmOpen(false);
+        setSubmitError(errorMessage);
+        alert(errorMessage);
+        return;
+      }
 
       setIsConfirmOpen(false);
       navigate(ROUTES.RECRUIT_COMPLETE);
@@ -82,9 +98,9 @@ export function useRecruitForm() {
       if (!isMountedRef.current) return;
 
       setIsConfirmOpen(false);
-      setSubmitError(
-        error.response?.data?.message || '모집 신청 제출에 실패했습니다. 잠시 후 다시 시도해 주세요.'
-      );
+      const errorMessage = getRecruitSubmitErrorMessage(error);
+      setSubmitError(errorMessage);
+      alert(errorMessage);
     } finally {
       if (isMountedRef.current) {
         setIsSubmitting(false);
