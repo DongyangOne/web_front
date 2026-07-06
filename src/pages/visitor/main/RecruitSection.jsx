@@ -39,6 +39,7 @@ function RecruitEditForm({ heading, infoList, onSave, onCancel }) {
         value={headingValue}
         onChange={(event) => setHeadingValue(event.target.value)}
         rows={2}
+        maxLength={100}
         className="resize-none rounded-md border border-line px-3 py-2 text-center text-base font-bold text-ink"
       />
 
@@ -48,6 +49,7 @@ function RecruitEditForm({ heading, infoList, onSave, onCancel }) {
           <input
             value={values[index]}
             onChange={(event) => handleValueChange(index, event.target.value)}
+            maxLength={50}
             className="flex-1 rounded-md border border-line px-3 py-2 text-sm text-ink"
           />
         </div>
@@ -114,7 +116,7 @@ export default function RecruitSection({ isEditable = false }) {
           <>
             {/* 메인 카피 */}
             <h2
-              className="font-bold text-ink leading-relaxed mb-12"
+              className="break-words font-bold text-ink leading-relaxed mb-12"
               style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)' }}
             >
               {highlightOne(recruitHeading)}
@@ -123,7 +125,7 @@ export default function RecruitSection({ isEditable = false }) {
             {/* 모집 정보 – 카드 없이 텍스트 나열 */}
             <div className="mb-14 space-y-3">
               {recruitInfoList.map(({ label, value }) => (
-                <p key={label} className="text-base text-[#555] m-0">
+                <p key={label} className="break-words text-base text-[#555] m-0">
                   {label}: {value}
                 </p>
               ))}

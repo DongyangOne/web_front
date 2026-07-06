@@ -146,20 +146,34 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
   return (
     <div className="flex flex-col gap-4 text-left" onClick={(e) => e.stopPropagation()}>
       <div className="grid grid-cols-2 gap-3">
-        <input className={inputClass} value={year} onChange={(e) => setYear(e.target.value)} placeholder="연도" />
+        <input
+          className={inputClass}
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder="연도"
+          maxLength={9}
+        />
         <input
           className={inputClass}
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
           placeholder="프로젝트명"
+          maxLength={30}
         />
       </div>
-      <input className={inputClass} value={award} onChange={(e) => setAward(e.target.value)} placeholder="수상 내역" />
+      <input
+        className={inputClass}
+        value={award}
+        onChange={(e) => setAward(e.target.value)}
+        placeholder="수상 내역"
+        maxLength={50}
+      />
       <input
         className={inputClass}
         value={activity}
         onChange={(e) => setActivity(e.target.value)}
         placeholder="주요 활동 요약"
+        maxLength={60}
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -168,14 +182,14 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
           <div className="flex items-center gap-2">
             <input
               type="month"
-              className={inputClass}
+              className={`${inputClass} min-w-0 flex-1`}
               value={periodStart}
               onChange={(e) => setPeriodStart(e.target.value)}
             />
-            <span className="text-ink-sub">-</span>
+            <span className="shrink-0 text-ink-sub">-</span>
             <input
               type="month"
-              className={inputClass}
+              className={`${inputClass} min-w-0 flex-1`}
               value={periodEnd}
               onChange={(e) => setPeriodEnd(e.target.value)}
             />
@@ -191,6 +205,7 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
               value={memberCount}
               onChange={(e) => handleMemberCountChange(e.target.value)}
               placeholder="숫자만 입력"
+              maxLength={3}
             />
             <span className="shrink-0 text-sm text-ink-sub">명</span>
           </div>
@@ -207,6 +222,7 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
                 onChange={(e) => handleTechStackChange(index, e.target.value)}
                 onKeyDown={(e) => handleTechStackKeyDown(index, e)}
                 placeholder="기술 스택"
+                maxLength={20}
                 className="w-24 bg-transparent text-xs text-brand outline-none"
               />
               <button
@@ -238,6 +254,7 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="프로젝트 소개를 입력해 주세요."
+          maxLength={300}
         />
       </div>
 
@@ -347,12 +364,12 @@ function TimelineCard({ event, isRight, isEditing, formRef, onSaveEdit, onCancel
       ) : (
         <>
           <div className={isRight ? '' : 'ml-auto'}>
-            <p className="text-sm text-brand font-bold m-0 mb-2">
+            <p className="text-sm text-brand font-bold m-0 mb-2 break-words">
               {event.year}
               {event.projectName ? `, ${event.projectName}` : ''}
             </p>
-            <p className="text-base font-bold text-ink m-0 mb-2">{event.award}</p>
-            <p className="text-xs text-[#AAAAAA] m-0">{event.activity}</p>
+            <p className="text-base font-bold text-ink m-0 mb-2 break-words">{event.award}</p>
+            <p className="text-xs text-[#AAAAAA] m-0 break-words">{event.activity}</p>
           </div>
 
           <div
@@ -380,7 +397,7 @@ function TimelineCard({ event, isRight, isEditing, formRef, onSaveEdit, onCancel
                   {event.techStack.map((tech) => (
                     <span
                       key={tech}
-                      className="px-3 py-1 rounded-full bg-brand-soft text-brand text-xs font-medium"
+                      className="max-w-full break-words px-3 py-1 rounded-full bg-brand-soft text-brand text-xs font-medium"
                     >
                       {tech}
                     </span>
@@ -391,7 +408,7 @@ function TimelineCard({ event, isRight, isEditing, formRef, onSaveEdit, onCancel
 
             <div className={`mb-4 ${isRight ? '' : 'text-right'}`}>
               <p className="text-xs text-[#AAAAAA] m-0 mb-2">프로젝트 소개</p>
-              <p className="text-sm text-ink leading-6 m-0 whitespace-pre-line">{event.description}</p>
+              <p className="text-sm text-ink leading-6 m-0 whitespace-pre-line break-words">{event.description}</p>
             </div>
 
             {event.images && event.images.length > 0 && (

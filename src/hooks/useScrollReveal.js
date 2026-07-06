@@ -6,7 +6,8 @@ import { useRef, useEffect, useCallback } from 'react';
  * @returns {Function} ref 콜백 — 감시할 DOM 요소에 ref={revealRef} 로 전달
  */
 export default function useScrollReveal() {
-  const revealRefs = useRef([]);
+  const observerRef = useRef(null);
+  const elementsRef = useRef([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -20,14 +21,21 @@ export default function useScrollReveal() {
       },
       { threshold: 0.1 }
     );
+    observerRef.current = observer;
 
-    revealRefs.current.forEach((element) => element && observer.observe(element));
-    return () => observer.disconnect();
+    elementsRef.current.forEach((element) => observer.observe(element));
+
+    return () => {
+      observer.disconnect();
+      observerRef.current = null;
+    };
   }, []);
 
   return useCallback((element) => {
-    if (element && !revealRefs.current.includes(element)) {
-      revealRefs.current.push(element);
+    if (!element) return;
+    if (!elementsRef.current.includes(element)) {
+      elementsRef.current.push(element);
     }
+    observerRef.current?.observe(element);
   }, []);
 }

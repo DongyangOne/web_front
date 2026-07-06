@@ -21,6 +21,27 @@ export default function ActivitiesSection({ isEditable = false }) {
     setDraftDescription(activities[index].description);
   };
 
+  const DESCRIPTION_LINE_LENGTH = 30;
+
+  const handleDescriptionChange = (value) => {
+    let [firstLine, ...restLines] = value.split('\n');
+    let secondLine = restLines.join('');
+
+    if (firstLine.length > DESCRIPTION_LINE_LENGTH) {
+      secondLine = firstLine.slice(DESCRIPTION_LINE_LENGTH) + secondLine;
+      firstLine = firstLine.slice(0, DESCRIPTION_LINE_LENGTH);
+    }
+    secondLine = secondLine.slice(0, DESCRIPTION_LINE_LENGTH);
+
+    setDraftDescription(restLines.length > 0 || secondLine ? `${firstLine}\n${secondLine}` : firstLine);
+  };
+
+  const handleDescriptionKeyDown = (event) => {
+    if (event.key === 'Enter' && draftDescription.includes('\n')) {
+      event.preventDefault();
+    }
+  };
+
   const handleSaveClick = (index) => {
     if (!draftTitle.trim() || !draftDescription.trim()) {
       alert('내용을 입력해 주세요.');
@@ -96,20 +117,23 @@ export default function ActivitiesSection({ isEditable = false }) {
                       value={draftTitle}
                       onChange={(event) => setDraftTitle(event.target.value)}
                       placeholder="활동 제목"
+                      maxLength={20}
                       className="mb-5 w-full rounded-md border border-line px-3 py-2 text-center text-lg font-bold text-ink"
                     />
                     <textarea
                       value={draftDescription}
-                      onChange={(event) => setDraftDescription(event.target.value)}
-                      placeholder="활동 설명"
-                      rows={3}
+                      onChange={(event) => handleDescriptionChange(event.target.value)}
+                      onKeyDown={handleDescriptionKeyDown}
+                      placeholder="활동 설명 (최대 2줄)"
+                      rows={2}
+                      maxLength={61}
                       className="w-full resize-none rounded-md border border-line px-3 py-2 text-center text-sm text-ink-sub"
                     />
                   </>
                 ) : (
                   <>
-                    <h3 className="text-lg font-bold text-ink mb-5">{activity.title}</h3>
-                    <p className="text-sm text-ink-sub leading-7 m-0 whitespace-pre-line">
+                    <h3 className="w-full text-lg font-bold text-ink mb-5 break-words">{activity.title}</h3>
+                    <p className="w-full text-sm text-ink-sub leading-7 m-0 whitespace-pre-line break-words">
                       {activity.description}
                     </p>
                   </>
