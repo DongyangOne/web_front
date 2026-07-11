@@ -27,3 +27,16 @@ export const getApplicantRegistrationForm = async (applicantMemberId) => {
 
   return response.data?.data;
 };
+
+/**
+ * (관리자) 신청 부원 상세 정보 조회
+ * 신청 부원 조회 페이지의 '정보조회'에서 사용한다.
+ * @param {number} applicantMemberId - 신청 부원 ID
+ * @returns {Promise<Object>} { applicantId, name, studentId, department, grade, gender,
+ *   phoneNumber, birthday, techStack, desiredActivity, motivation, finalWords }
+ */
+export const getApplicantDetail = async (applicantMemberId) => {
+  const response = await instance.get(`/api/v1/admin/applicantMembers/${applicantMemberId}`);
+
+  return response.data?.data;
+};
