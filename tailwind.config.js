@@ -22,7 +22,6 @@ export default {
         'scroll-track': '#EDEDED',
         'scroll-thumb': '#8A8A8A',
         'schedule-divider': '#FFE3D1',
-        'schedule-inactive': '#9F9F9F',
         'schedule-scroll-track': '#F0F0F0',
         'schedule-scroll-thumb': '#888888',
         'schedule-mark-red': '#F04438',
@@ -33,6 +32,7 @@ export default {
         'schedule-mark-purple': '#D444F1',
         'schedule-mark-pink': '#F63D68',
         error: '#F94700', // 필수 표시(*)·오류 메시지(brand보다 붉은 톤)
+        'schedule-inactive': '#9F9F9F', // 달력 비활성 날짜
       },
       // 명부 관리/부원 등록 화면 모서리 토큰(시안 실측).
       borderRadius: {

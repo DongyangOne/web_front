@@ -1,96 +1,85 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import { getApplicantDetail, getApplicantList } from '@/apis/applicant';
+import { APPLICANT_PAGE_SIZE } from '@/constants/member';
+import Pagination from '@/components/admin/Pagination';
+import AlertModal from '@/components/admin/AlertModal';
 import memberGroupIcon from '@/assets/images/member-group.svg';
 import searchIcon from '@/assets/images/search.svg';
 
-const APPLICANTS = [
-  {
-    id: 1,
-    name: '장한나',
-    studentId: '20301234',
-    department: '웹응용소프트웨어학과',
-    birthDate: '2025.01.01',
-    grade: '2',
-    gender: '여',
-    phone: '010-1111-2222',
-    appliedAt: '2026.08.08',
-    motivation: '동아리 활동을 하며 실무경험을 길러 보고 싶어 지원하게 되었습니다.',
-    usedTool: 'React, Figma',
-    goal: '프로젝트 경험 쌓기',
-    lastWord: '잘 부탁드립니다.',
-    isNew: false,
-  },
-  {
-    id: 2,
-    name: '장한나',
-    studentId: '20301234',
-    department: '웹응용소프트웨어학과',
-    birthDate: '2025.01.01',
-    grade: '2',
-    gender: '여',
-    phone: '010-1111-2222',
-    appliedAt: '2026.08.08',
-    motivation: '프로젝트를 함께 진행하며 성장하고 싶습니다.',
-    usedTool: 'JavaScript',
-    goal: '협업 능력 향상',
-    lastWord: '열심히 하겠습니다.',
-    isNew: false,
-  },
-  {
-    id: 3,
-    name: '장한나',
-    studentId: '20301234',
-    department: '웹응용소프트웨어학과',
-    birthDate: '2025.01.01',
-    grade: '2',
-    gender: '여',
-    phone: '010-1111-2222',
-    appliedAt: '2026.08.08',
-    motivation: '프론트엔드 개발 경험을 쌓고 싶어 지원했습니다.',
-    usedTool: 'HTML, CSS',
-    goal: '웹 프로젝트 참여',
-    lastWord: '잘 부탁드립니다.',
-    isNew: false,
-  },
-  {
-    id: 4,
-    name: '장한나',
-    studentId: '20301234',
-    department: '웹응용소프트웨어학과',
-    birthDate: '2025.01.01',
-    grade: '2',
-    gender: '여',
-    phone: '010-1111-2222',
-    appliedAt: '2026.08.08',
-    motivation: '팀 프로젝트에서 맡은 역할을 책임감 있게 수행하고 싶습니다.',
-    usedTool: 'React',
-    goal: '실무 경험 확보',
-    lastWord: '최선을 다하겠습니다.',
-    isNew: true,
-  },
-  {
-    id: 5,
-    name: '장한나',
-    studentId: '20301234',
-    department: '웹응용소프트웨어학과',
-    birthDate: '2025.01.01',
-    grade: '2',
-    gender: '여',
-    phone: '010-1111-2222',
-    appliedAt: '2026.08.08',
-    motivation: '동아리 활동을 통해 협업과 개발 역량을 키우고 싶습니다.',
-    usedTool: 'Figma',
-    goal: '포트폴리오 제작',
-    lastWord: '잘 부탁드립니다.',
-    isNew: true,
-  },
-];
-
 const TD_CLASS = 'h-[89px] border-b border-line text-[20px] font-normal text-ink';
 
-function RecruitManagePage() {
-  const [selectedApplicant, setSelectedApplicant] = useState(null);
+// 화면에는 5명씩 보여주지만, 서버 size는 15로 고정이라 15개씩 받아서 5개씩 3페이지로 쪼갠다.
+const DISPLAY_PAGE_SIZE = 5;
+const SERVER_PAGES_PER_GROUP = APPLICANT_PAGE_SIZE / DISPLAY_PAGE_SIZE;
 
-  const handleOpenDetail = (applicant) => setSelectedApplicant(applicant);
+const GENDER_LABEL = {
+  MALE: '남',
+  FEMALE: '여',
+};
+
+function formatAppliedDate(isoString) {
+  const date = new Date(isoString);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}.${mm}.${dd}`;
+}
+
+/**
+ * 신청 부원 조회 페이지.
+ * admin 히든 경로 하위에서 동작하며, 최근 1년 신청 부원 목록을 조회한다.
+ * 서버 size는 15로 고정되어 있어 15개씩 받아오고, 화면에는 5명씩 나눠 보여준다
+ * (페이지 3개당 한 번씩 서버에서 새로 받아옴).
+ */
+function RecruitManagePage() {
+  const [serverContent, setServerContent] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
+  const [alertMessage, setAlertMessage] = useState(null);
+
+  const serverPageIndex = Math.floor((currentPage - 1) / SERVER_PAGES_PER_GROUP);
+
+  // 신청 부원 목록 조회. 화면 페이지가 다음 서버 묶음(15개)으로 넘어갈 때만 새로 받아온다.
+  const fetchApplicants = useCallback(async () => {
+    try {
+      const paging = await getApplicantList({
+        page: serverPageIndex,
+        size: APPLICANT_PAGE_SIZE,
+      });
+      setServerContent(paging?.content ?? []);
+      setTotalElements(paging?.totalElements ?? 0);
+    } catch (error) {
+      console.error('[RecruitManagePage] 신청 부원 목록 조회 실패', error);
+      setServerContent([]);
+      setTotalElements(0);
+      setAlertMessage('신청 부원 목록을 불러오지 못했습니다.\n잠시 후 다시 시도해주세요.');
+    }
+  }, [serverPageIndex]);
+
+  useEffect(() => {
+    fetchApplicants();
+  }, [fetchApplicants]);
+
+  const totalPages = Math.max(1, Math.ceil(totalElements / DISPLAY_PAGE_SIZE));
+  const offsetWithinServerPage = ((currentPage - 1) % SERVER_PAGES_PER_GROUP) * DISPLAY_PAGE_SIZE;
+  const applicants = serverContent.slice(
+    offsetWithinServerPage,
+    offsetWithinServerPage + DISPLAY_PAGE_SIZE
+  );
+
+  // 정보조회: 신청 부원 상세 정보 API를 호출해 상세 모달에 보여준다.
+  const handleOpenDetail = async (applicant) => {
+    try {
+      const detail = await getApplicantDetail(applicant.applicantId);
+      setSelectedApplicant(detail);
+    } catch (error) {
+      console.error('[RecruitManagePage] 신청 부원 상세 조회 실패', error);
+      setAlertMessage('상세 정보를 불러오지 못했습니다.\n잠시 후 다시 시도해주세요.');
+    }
+  };
+
   const handleCloseDetail = () => setSelectedApplicant(null);
 
   return (
@@ -107,7 +96,7 @@ function RecruitManagePage() {
                 />
               </div>
               <p className="-mt-2 whitespace-nowrap text-[24px] font-[350] text-ink">
-                총 <span className="text-brand">{APPLICANTS.length}</span>명
+                총 <span className="text-brand">{totalElements}</span>명
               </p>
             </div>
             <h1 className="text-[40px] font-bold text-ink">신청 부원 조회</h1>
@@ -138,12 +127,12 @@ function RecruitManagePage() {
               </tr>
             </thead>
             <tbody>
-              {APPLICANTS.map((applicant) => (
-                <tr key={applicant.id}>
+              {applicants.map((applicant, index) => (
+                <tr key={applicant.applicantId}>
                   <td className={TD_CLASS}>
                     <span className="relative inline-block">
-                      {applicant.id}
-                      {applicant.isNew && (
+                      {(currentPage - 1) * DISPLAY_PAGE_SIZE + index + 1}
+                      {applicant.isFirstView && (
                         <span className="absolute left-full top-1/2 ml-3 -translate-y-1/2 inline-flex h-[18px] w-[19px] items-center justify-center rounded-sm bg-brand text-[14px] font-bold text-white">
                           N
                         </span>
@@ -152,8 +141,8 @@ function RecruitManagePage() {
                   </td>
                   <td className={TD_CLASS}>{applicant.name}</td>
                   <td className={TD_CLASS}>{applicant.studentId}</td>
-                  <td className={TD_CLASS}>{applicant.phone}</td>
-                  <td className={TD_CLASS}>{applicant.appliedAt}</td>
+                  <td className={TD_CLASS}>{applicant.phoneNum}</td>
+                  <td className={TD_CLASS}>{formatAppliedDate(applicant.createdAt)}</td>
                   <td className={TD_CLASS}>
                     <button
                       type="button"
@@ -169,42 +158,7 @@ function RecruitManagePage() {
           </table>
         </div>
 
-        <nav className="mt-8 flex items-center justify-center gap-9">
-          <button type="button" aria-label="이전 페이지" className="text-ink">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M15 18l-6-6 6-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <button type="button" className="text-[20px] text-brand">
-            1
-          </button>
-          <button type="button" className="text-[20px]">
-            2
-          </button>
-          <button type="button" className="text-[20px]">
-            3
-          </button>
-          <button type="button" className="text-[20px]">
-            4
-          </button>
-          <button type="button" aria-label="다음 페이지" className="text-ink">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M9 18l6-6-6-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </nav>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </div>
 
       {selectedApplicant && (
@@ -229,14 +183,14 @@ function RecruitManagePage() {
                 ['이름', selectedApplicant.name],
                 ['학번', selectedApplicant.studentId],
                 ['학과', selectedApplicant.department],
-                ['생년월일', selectedApplicant.birthDate],
-                ['전화번호', selectedApplicant.phone],
+                ['생년월일', selectedApplicant.birthday],
+                ['전화번호', selectedApplicant.phoneNumber],
                 ['학년', selectedApplicant.grade],
-                ['성별', selectedApplicant.gender],
+                ['성별', GENDER_LABEL[selectedApplicant.gender] ?? selectedApplicant.gender],
                 ['지원동기', selectedApplicant.motivation],
-                ['사용해봤거나 들어본 언어 및 라이브러리', selectedApplicant.usedTool],
-                ['동아리에서 해 보고 싶은 것', selectedApplicant.goal],
-                ['마지막으로 하고 싶은 말', selectedApplicant.lastWord],
+                ['사용해봤거나 들어본 언어 및 라이브러리', selectedApplicant.techStack],
+                ['동아리에서 해 보고 싶은 것', selectedApplicant.desiredActivity],
+                ['마지막으로 하고 싶은 말', selectedApplicant.finalWords],
               ].map(([label, value]) => (
                 <div key={label} className="grid grid-cols-[8.5rem_1fr] gap-6 max-sm:grid-cols-1">
                   <dt className="text-[18px] font-bold text-brand/70">{label}</dt>
@@ -246,6 +200,10 @@ function RecruitManagePage() {
             </dl>
           </section>
         </div>
+      )}
+
+      {alertMessage && (
+        <AlertModal message={alertMessage} onConfirm={() => setAlertMessage(null)} />
       )}
     </section>
   );

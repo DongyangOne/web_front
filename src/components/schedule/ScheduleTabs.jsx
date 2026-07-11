@@ -1,44 +1,24 @@
-import { VIEW_MODE } from '@/constants/schedule';
+const TABS = [
+  { value: 'calendar', label: '캘린더' },
+  { value: 'all', label: '전체일정' },
+];
 
-function ScheduleTabs({ viewMode, onChange, className = '' }) {
+function ScheduleTabs({ viewMode, onChange, className }) {
   return (
-    <div
-      className={`flex justify-start gap-2 ${className}`}
-      role="tablist"
-      aria-label="일정 보기 방식"
-    >
-      <button
-        type="button"
-        className={[
-          'h-8 min-w-[77px] rounded-[6px] px-[18px] text-center text-[14px] font-normal leading-[28px]',
-          viewMode === VIEW_MODE.CALENDAR
-            ? '!border-0 !bg-brand text-white'
-            : '!border-[1px] !border-solid !border-brand !bg-section text-black',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        onClick={() => onChange(VIEW_MODE.CALENDAR)}
-        role="tab"
-        aria-selected={viewMode === VIEW_MODE.CALENDAR}
-      >
-        캘린더
-      </button>
-      <button
-        type="button"
-        className={[
-          'h-8 min-w-[77px] rounded-[6px] px-[18px] text-center text-[14px] font-normal leading-[28px]',
-          viewMode === VIEW_MODE.ALL
-            ? '!border-0 !bg-brand text-white'
-            : '!border-[1px] !border-solid !border-brand !bg-section text-black',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        onClick={() => onChange(VIEW_MODE.ALL)}
-        role="tab"
-        aria-selected={viewMode === VIEW_MODE.ALL}
-      >
-        전체일정
-      </button>
+    <div className={`flex gap-[14px] ${className ?? ''}`}>
+      {TABS.map((tab) => (
+        <button
+          key={tab.value}
+          type="button"
+          onClick={() => onChange(tab.value)}
+          className={[
+            'whitespace-nowrap rounded-[6px] border border-brand px-4 py-2 text-[13px] transition-colors',
+            viewMode === tab.value ? 'bg-brand text-white' : 'bg-section text-ink',
+          ].join(' ')}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   );
 }

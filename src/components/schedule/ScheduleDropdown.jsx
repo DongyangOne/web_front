@@ -7,75 +7,70 @@ function ScheduleDropdown({ config, state, handlers, scrollRefs, classNames }) {
     buttonWidthClass,
     itemHeightClass,
     itemTextClass,
-    buttonPaddingClass = 'px-2',
+    panelWidthClass,
+    scrollTrackRightClass,
   } = classNames;
+
   return (
     <div className="relative">
       <button
         type="button"
-        className={[
-          `inline-flex w-[80px] h-[48px] ${buttonWidthClass} ${buttonPaddingClass} items-center justify-between rounded-[7px] !bg-white text-[18px] font-Regular leading-none text-ink`,
-          isOpen
-            ? '!border !border-solid !border-brand'
-            : '!border !border-solid !border-transparent',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
         aria-label={label}
+        aria-expanded={isOpen}
+        onClick={onToggle}
+        className={`${buttonWidthClass} flex h-[33px] items-center justify-between rounded-[6px] border border-line bg-white px-2 text-[18px] text-ink`}
       >
-        {value}
-        <span
-          className="h-[7px] w-[7px] translate-y-[-2px] rotate-45 border-b border-r border-current"
-          aria-hidden="true"
-        />
+        <span>{value}</span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+          <path
+            d={isOpen ? 'M1 5L5 1L9 5' : 'M1 1L5 5L9 1'}
+            stroke="#1A1A1A"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
       {isOpen && (
         <div
-          className="absolute left-0 top-[48px] z-20 h-[404px] w-[calc(100vw-36px)] max-w-[424px] rounded-[14px] border border-line bg-white shadow-schedule-dropdown sm:w-[424px]"
-          style={{ borderStyle: 'solid', borderWidth: '1px' }}
+          className={`${panelWidthClass} absolute left-0 top-full z-20 mt-1 h-[404px] overflow-hidden rounded-[20px] border border-[#F1F3F7] bg-white shadow-[0px_13px_12.5px_0px_rgba(132,140,166,0.13)]`}
         >
-          <ul
-            ref={listRef}
-            className="schedule-native-scrollbar-hidden absolute bottom-[26px] left-[22px] right-[22px] top-[22px] overflow-y-auto"
-            onScroll={onScroll}
-            role="listbox"
-            aria-label={`${label} 목록`}
-          >
-            {options.map((option) => (
-              <li key={option}>
-                <button
-                  type="button"
-                  className={[
-                    `${itemHeightClass} w-full !border !border-solid !border-line px-3 text-left ${itemTextClass}`,
-                    option === value || itemLabel(option) === value
-                      ? '!bg-brand font-medium text-white'
-                      : 'text-ink-sub hover:!bg-brand-soft',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  style={{ borderStyle: 'solid', borderWidth: '1px' }}
-                  onClick={() => onSelect(option)}
-                  role="option"
-                  aria-selected={option === value || itemLabel(option) === value}
-                >
-                  {itemLabel(option)}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <div
-            ref={trackRef}
-            className="absolute bottom-[26px] right-3 top-[22px] w-3 rounded-full bg-schedule-scroll-track"
-            aria-hidden="true"
-          >
+          <div className="relative h-full p-[23px]">
+            <ul
+              ref={listRef}
+              onScroll={onScroll}
+              className="h-full w-full divide-y divide-[#F1F3F7] overflow-y-auto"
+              style={{ scrollbarWidth: 'none' }}
+              role="listbox"
+              aria-label={label}
+            >
+              {options.map((option) => {
+                const isSelected = itemLabel(option) === value;
+                return (
+                  <li key={option} role="option" aria-selected={isSelected}>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(option)}
+                      className={[
+                        itemHeightClass,
+                        itemTextClass,
+                        'flex w-full items-center px-[12px] text-left transition-colors',
+                        isSelected ? 'bg-brand text-white' : 'text-ink-sub hover:bg-brand-soft',
+                      ].join(' ')}
+                    >
+                      {itemLabel(option)}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
             <div
-              ref={thumbRef}
-              className="absolute left-0 h-9 w-3 rounded-full bg-schedule-scroll-thumb opacity-100 transition-opacity duration-200"
-            />
+              ref={trackRef}
+              className={`${scrollTrackRightClass} pointer-events-none absolute top-[23px] bottom-[23px] w-[12px] rounded-full bg-[#E4E4E4]`}
+            >
+              <div ref={thumbRef} className="absolute hidden w-[12px] rounded-full bg-[#8A8A8A]" />
+            </div>
           </div>
         </div>
       )}
