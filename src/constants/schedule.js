@@ -12,5 +12,3 @@ export const DROPDOWN_TYPE = {
   MONTH: 'month',
   YEAR: 'year',
 };
-
-export const SCHEDULES = [];

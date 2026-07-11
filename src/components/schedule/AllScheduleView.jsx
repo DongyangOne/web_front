@@ -8,7 +8,7 @@ import { formatScheduleDate } from '@/utils/schedule';
 const ACCENT_COLORS = ['#FFBA88', '#D95D03', '#F96B03', '#953E00', '#6C3E1E'];
 
 function getScheduleKey(schedule) {
-  return schedule.id ?? `${schedule.startDate}-${schedule.endDate}-${schedule.title}`;
+  return schedule.calendarId ?? schedule.id ?? `${schedule.startDate}-${schedule.endDate}-${schedule.title}`;
 }
 
 function AllScheduleView({

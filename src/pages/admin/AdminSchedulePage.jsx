@@ -1,10 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import {
+  createCalendarSchedule,
+  deleteCalendarSchedules,
+  getAdminCalendar,
+  getAdminCalendarMonth,
+  updateCalendarSchedule,
+} from '@/apis/calendar';
+import AlertModal from '@/components/admin/AlertModal';
 import Header from '@/components/layout/Header';
 import AdminCalendarView from '@/components/schedule/AdminCalendarView';
 import AllScheduleView from '@/components/schedule/AllScheduleView';
 import ScheduleStyles from '@/styles/ScheduleStyles';
-import { CLUB_START_YEAR, DROPDOWN_TYPE, SCHEDULES, VIEW_MODE } from '@/constants/schedule';
+import { CLUB_START_YEAR, DROPDOWN_TYPE, VIEW_MODE } from '@/constants/schedule';
 import {
   formatAdminDate,
   formatDateKey,
@@ -16,6 +24,10 @@ import {
   sortByStartDate,
   updateScrollThumb,
 } from '@/utils/schedule';
+
+const FETCH_ERROR_MESSAGE = '일정을 불러오지 못했습니다.\n잠시 후 다시 시도해주세요.';
+const SAVE_ERROR_MESSAGE = '일정 저장에 실패했습니다.\n잠시 후 다시 시도해주세요.';
+const DELETE_ERROR_MESSAGE = '일정 삭제에 실패했습니다.\n잠시 후 다시 시도해주세요.';
 
 function AdminSchedulePage() {
   const monthListRef = useRef(null);
@@ -46,21 +58,21 @@ function AdminSchedulePage() {
   const [viewMode, setViewMode] = useState(VIEW_MODE.CALENDAR);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [schedulesToDelete, setSchedulesToDelete] = useState([]);
-  const [localSchedules, setLocalSchedules] = useState([]);
-
-  const allSchedules = useMemo(() => [...SCHEDULES, ...localSchedules], [localSchedules]);
+  const [yearSchedules, setYearSchedules] = useState([]);
+  const [monthSchedules, setMonthSchedules] = useState([]);
+  const [alertMessage, setAlertMessage] = useState(null);
 
   const calendarDates = useMemo(() => getCalendarDates(year, month), [year, month]);
-  const scheduleDateKeys = useMemo(() => getScheduleDateKeys(allSchedules), [allSchedules]);
+  const scheduleDateKeys = useMemo(() => getScheduleDateKeys(monthSchedules), [monthSchedules]);
   const visibleSchedules = useMemo(() => {
     const filteredSchedules =
       viewMode === VIEW_MODE.ALL
-        ? allSchedules.filter(
+        ? yearSchedules.filter(
             (schedule) => parseLocalDate(schedule.startDate).getFullYear() === year
           )
-        : allSchedules.filter((schedule) => isScheduleInMonth(schedule, year, month));
+        : monthSchedules.filter((schedule) => isScheduleInMonth(schedule, year, month));
     return [...filteredSchedules].sort(sortByStartDate);
-  }, [allSchedules, month, viewMode, year]);
+  }, [month, monthSchedules, viewMode, year, yearSchedules]);
   const scheduleMonthEntries = useMemo(
     () => Object.entries(groupSchedulesByMonth(visibleSchedules)),
     [visibleSchedules]
@@ -87,37 +99,89 @@ function AdminSchedulePage() {
     setOpenedDropdown(null);
   };
 
-  const handleAddSchedule = ({ dateKey, endDateKey, title }) => {
-    setLocalSchedules((prev) => [
-      ...prev,
-      { id: `local-${Date.now()}`, startDate: dateKey, endDate: endDateKey ?? dateKey, title },
-    ]);
+  const fetchYearSchedules = useCallback(async () => {
+    try {
+      const scheduleList = await getAdminCalendar(year);
+      setYearSchedules(scheduleList);
+    } catch (error) {
+      console.error('[AdminSchedulePage] 연간 일정 조회 실패', error);
+      setYearSchedules([]);
+      setAlertMessage(FETCH_ERROR_MESSAGE);
+    }
+  }, [year]);
+
+  const fetchMonthSchedules = useCallback(async () => {
+    try {
+      const scheduleList = await getAdminCalendarMonth({ year, month: month + 1 });
+      setMonthSchedules(scheduleList);
+    } catch (error) {
+      console.error('[AdminSchedulePage] 월간 일정 조회 실패', error);
+      setMonthSchedules([]);
+      setAlertMessage(FETCH_ERROR_MESSAGE);
+    }
+  }, [month, year]);
+
+  useEffect(() => {
+    if (viewMode === VIEW_MODE.ALL) fetchYearSchedules();
+  }, [viewMode, fetchYearSchedules]);
+
+  useEffect(() => {
+    if (viewMode === VIEW_MODE.CALENDAR) fetchMonthSchedules();
+  }, [viewMode, fetchMonthSchedules]);
+
+  const handleAddSchedule = async ({ dateKey, endDateKey, title }) => {
+    try {
+      await createCalendarSchedule({
+        title,
+        startDate: dateKey,
+        endDate: endDateKey ?? dateKey,
+      });
+      await fetchMonthSchedules();
+    } catch (error) {
+      console.error('[AdminSchedulePage] 일정 등록 실패', error);
+      setAlertMessage(SAVE_ERROR_MESSAGE);
+    }
   };
 
-  const handleSaveEdits = (updatedSchedules) => {
-    setLocalSchedules((prev) =>
-      prev.map((s) => {
-        const edited = updatedSchedules.find((u) => u.id === s.id);
-        return edited ? { ...s, title: edited.title } : s;
-      })
+  const handleSaveEdits = async (updatedSchedules) => {
+    const changedSchedules = updatedSchedules.filter(
+      (edited, index) => edited.title !== visibleSchedules[index]?.title
     );
+    if (changedSchedules.length === 0) return;
+
+    try {
+      await Promise.all(
+        changedSchedules.map((schedule) =>
+          updateCalendarSchedule(schedule.calendarId, {
+            title: schedule.title,
+            startDate: schedule.startDate,
+            endDate: schedule.endDate,
+          })
+        )
+      );
+      await fetchMonthSchedules();
+    } catch (error) {
+      console.error('[AdminSchedulePage] 일정 수정 실패', error);
+      setAlertMessage(SAVE_ERROR_MESSAGE);
+    }
   };
+
   const handleDeleteSchedule = (toDelete) => {
     if (!toDelete || toDelete.length === 0) return;
     setSchedulesToDelete(toDelete);
     setIsDeleteModalOpen(true);
   };
-  const handleDeleteConfirm = () => {
-    setLocalSchedules((prev) =>
-      prev.filter(
-        (s) =>
-          !schedulesToDelete.some(
-            (d) => d.startDate === s.startDate && d.endDate === s.endDate && d.title === s.title
-          )
-      )
-    );
-    setIsDeleteModalOpen(false);
-    setSchedulesToDelete([]);
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteCalendarSchedules(schedulesToDelete.map((schedule) => schedule.calendarId));
+      await (viewMode === VIEW_MODE.ALL ? fetchYearSchedules() : fetchMonthSchedules());
+    } catch (error) {
+      console.error('[AdminSchedulePage] 일정 삭제 실패', error);
+      setAlertMessage(DELETE_ERROR_MESSAGE);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setSchedulesToDelete([]);
+    }
   };
   const handleDeleteCancel = () => {
     setIsDeleteModalOpen(false);
@@ -291,6 +355,10 @@ function AdminSchedulePage() {
           </div>
         )}
       </section>
+
+      {alertMessage && (
+        <AlertModal message={alertMessage} onConfirm={() => setAlertMessage(null)} />
+      )}
     </>
   );
 }
