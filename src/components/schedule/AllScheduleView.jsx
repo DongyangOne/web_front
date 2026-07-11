@@ -1,129 +1,153 @@
-import { formatAllScheduleDate } from '@/utils/schedule';
-import tailwindConfig from '../../../tailwind.config';
+import { useState } from 'react';
+import ScheduleCheckbox from '@/components/schedule/ScheduleCheckbox';
+import ScheduleDropdown from '@/components/schedule/ScheduleDropdown';
+import ScheduleTabs from '@/components/schedule/ScheduleTabs';
+import { VIEW_MODE } from '@/constants/schedule';
+import { formatScheduleDate } from '@/utils/schedule';
 
-import ScheduleDropdown from './ScheduleDropdown';
-import ScheduleTabs from './ScheduleTabs';
+const ACCENT_COLORS = ['#FFBA88', '#D95D03', '#F96B03', '#953E00', '#6C3E1E'];
 
-const colors = tailwindConfig.theme.extend.colors;
+function getScheduleKey(schedule) {
+  return schedule.id ?? `${schedule.startDate}-${schedule.endDate}-${schedule.title}`;
+}
 
-const SCHEDULE_MARK_COLORS = [
-  colors['schedule-mark-red'],
-  colors.brand,
-  colors['schedule-mark-orange'],
-  colors['schedule-mark-green'],
-  colors['schedule-mark-blue'],
-  colors['schedule-mark-violet'],
-  colors['schedule-mark-purple'],
-  colors['schedule-mark-pink'],
-];
-
-function AllScheduleView({ yearDropdown, view, scheduleMonthEntries, scheduleScroll }) {
-  const { year, yearOptions } = yearDropdown;
+function AllScheduleView({
+  yearDropdown,
+  view,
+  scheduleMonthEntries,
+  scheduleScroll,
+  onDeleteSchedule,
+}) {
+  const { year, yearOptions, isOpen: isYearDropdownOpen, handlers, scrollRefs } = yearDropdown;
   const { viewMode, onViewModeChange } = view;
-  const {
-    listRef: allScheduleListRef,
-    trackRef: allScheduleTrackRef,
-    thumbRef: allScheduleThumbRef,
-    onScroll: onAllScheduleScroll,
-    onWheel: onAllScheduleWheel,
-  } = scheduleScroll;
+  const { listRef, trackRef, thumbRef, onScroll } = scheduleScroll;
+
+  const [selectedKeys, setSelectedKeys] = useState(new Set());
+
+  const handleToggleSelect = (key) => {
+    setSelectedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const handleAddClick = () => {
+    onViewModeChange(VIEW_MODE.CALENDAR);
+  };
+
+  const handleDeleteClick = () => {
+    const toDelete = scheduleMonthEntries
+      .flatMap(([, monthSchedules]) => monthSchedules)
+      .filter((schedule) => selectedKeys.has(getScheduleKey(schedule)));
+    onDeleteSchedule?.(toDelete);
+    setSelectedKeys(new Set());
+  };
+
   return (
-    <div className="pb-8 pl-[18px] pr-0 pt-[50px] sm:pl-9 xl:pl-[60px]">
-      <div className="flex w-full items-center gap-2 pr-[18px] sm:pr-9 xl:pr-[60px]">
+    <div className="flex h-full flex-col px-[18px] py-11 sm:px-11 xl:px-[60px] xl:py-0 xl:pt-[52px]">
+      <div className="mb-[14px] flex w-full items-center gap-4">
         <ScheduleDropdown
           config={{
-            label: '일정이 없습니다.',
+            label: '연도 선택',
             options: yearOptions.slice().reverse(),
-            itemLabel: (yearOption) => yearOption,
+            itemLabel: (option) => option,
           }}
-          state={{ value: year, isOpen: yearDropdown.isOpen }}
-          handlers={yearDropdown.handlers}
-          scrollRefs={yearDropdown.scrollRefs}
+          state={{ value: year, isOpen: isYearDropdownOpen }}
+          handlers={handlers}
+          scrollRefs={scrollRefs}
           classNames={{
             buttonWidthClass: 'w-[70px]',
-            buttonPaddingClass: 'pr-4',
-            itemHeightClass: 'h-[73px] leading-[73px]',
-            itemTextClass: 'text-[18px]',
+            itemHeightClass: 'h-[73px]',
+            itemTextClass: 'text-[20px]',
+            panelWidthClass: 'w-[455px]',
+            scrollTrackRightClass: 'right-[22px]',
           }}
         />
-
-        <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-auto" />
+        <ScheduleTabs viewMode={viewMode} onChange={onViewModeChange} className="ml-6" />
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleAddClick}
+            className="rounded-full bg-brand px-4 py-[7px] text-[13px] text-white transition-opacity hover:opacity-80"
+          >
+            일정 추가
+          </button>
+          <button
+            type="button"
+            onClick={handleDeleteClick}
+            className="rounded-full bg-brand px-4 py-[7px] text-[13px] text-white transition-opacity hover:opacity-80"
+          >
+            일정 삭제
+          </button>
+        </div>
       </div>
 
-      <div className="relative -ml-[18px] mt-[14px] sm:-ml-9 xl:-ml-[60px] xl:w-[1253px]">
-        <div
-          ref={allScheduleListRef}
-          className="schedule-native-scrollbar-hidden max-h-[560px] overflow-y-auto"
-          onScroll={onAllScheduleScroll}
-          onWheel={onAllScheduleWheel}
+      <div className="relative min-h-0 flex-1">
+        <ol
+          ref={listRef}
+          onScroll={onScroll}
+          className="schedule-scroll h-full list-none overflow-y-auto p-0 pr-16"
+          style={{ scrollbarWidth: 'none' }}
+          aria-label="연간 일정 목록"
         >
-          {scheduleMonthEntries.length === 0 ? (
-            <div className="grid min-h-[520px] place-items-center text-[16px] font-bold text-ink-sub">
-              일정이 없습니다.
-            </div>
-          ) : (
-            scheduleMonthEntries.map(([monthLabel, monthSchedules], monthIndex) => {
-              const isLastMonth = monthIndex === scheduleMonthEntries.length - 1;
-
-              return (
-                <section
-                  key={monthLabel}
-                  className={[
-                    'w-full py-4',
-                    isLastMonth ? '' : 'border-b border-solid border-schedule-divider',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  <div className="w-full pl-[18px] sm:pl-9 xl:w-[1044px] xl:pl-[60px]">
-                    <h3 className="mb-3 text-[22px] font-extrabold text-brand">{monthLabel}</h3>
-                    <ol className="flex flex-col">
-                      {monthSchedules.map((schedule, scheduleIndex) => {
-                        const isLastSchedule = scheduleIndex === monthSchedules.length - 1;
-                        const markerColor =
-                          SCHEDULE_MARK_COLORS[
-                            (monthIndex * monthSchedules.length + scheduleIndex) %
-                              SCHEDULE_MARK_COLORS.length
-                          ];
-
-                        return (
-                          <li
-                            key={`${schedule.startDate}-${schedule.endDate}-${schedule.title}`}
-                            className={[
-                              'grid h-[35.6px] grid-cols-[3px_210px_minmax(0,1fr)] items-center gap-x-3 text-[15px] font-bold text-ink',
-                              isLastSchedule ? '' : 'border-b border-solid border-schedule-divider',
-                            ]
-                              .filter(Boolean)
-                              .join(' ')}
-                          >
-                            <span
-                              className="block h-[9px] w-[3px] shrink-0 rounded-[1px]"
-                              style={{ backgroundColor: markerColor }}
-                              aria-hidden="true"
-                            />
-                            <time className="whitespace-nowrap">
-                              {formatAllScheduleDate(schedule)}
-                            </time>
-                            <span className="truncate text-right">{schedule.title}</span>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  </div>
-                </section>
-              );
-            })
+          {scheduleMonthEntries.length === 0 && (
+            <li className="pt-10 text-center text-[16px] text-ink-sub">등록된 일정이 없습니다.</li>
           )}
-        </div>
+          {scheduleMonthEntries.map(([monthKey, monthSchedules]) => {
+            const month = Number(monthKey.split('-')[1]);
+            return (
+              <li key={monthKey} className="mb-8">
+                <h3 className="mb-3 text-[30px] font-bold text-brand">{month}월</h3>
+                <div className="flex items-end gap-4">
+                  <ol className="min-w-0 flex-1 list-none p-0">
+                    {monthSchedules.map((schedule, index) => {
+                      const key = getScheduleKey(schedule);
+                      const isSelected = selectedKeys.has(key);
+                      const isRange = schedule.startDate !== schedule.endDate;
+                      return (
+                        <li
+                          key={key}
+                          className="flex min-w-0 items-center gap-3 border-b border-[#F1F3F7] py-3 text-[15px] leading-[1.3] last:border-b-0"
+                        >
+                          <ScheduleCheckbox
+                            checked={isSelected}
+                            onClick={() => handleToggleSelect(key)}
+                            label={`${schedule.title} 선택`}
+                          />
+                          <span
+                            className="h-[9px] w-[3px] shrink-0 rounded-[0.5px]"
+                            style={{ backgroundColor: ACCENT_COLORS[index % ACCENT_COLORS.length] }}
+                          />
+                          <time className="shrink-0 font-bold text-ink">
+                            {formatScheduleDate(schedule.startDate)}
+                            {isRange && ` ~ ${formatScheduleDate(schedule.endDate)}`}
+                          </time>
+                          <span className="min-w-0 flex-1 truncate text-right font-bold text-ink">
+                            {schedule.title}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedKeys(new Set())}
+                    className="mb-3 h-[32px] shrink-0 rounded-[6px] border border-brand bg-brand-soft px-[16px] text-[13px] text-brand transition-opacity hover:opacity-80"
+                  >
+                    완료
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
         <div
-          ref={allScheduleTrackRef}
-          className="absolute bottom-[10px] right-0 top-[-10px] w-3 rounded-full bg-schedule-scroll-track"
-          aria-hidden="true"
+          ref={trackRef}
+          className="pointer-events-none absolute right-2 top-0 h-full w-[12px] rounded-full bg-[#E4E4E4]"
         >
-          <div
-            ref={allScheduleThumbRef}
-            className="absolute left-0 h-9 w-3 rounded-full bg-schedule-scroll-thumb opacity-100 transition-opacity duration-200"
-          />
+          <div ref={thumbRef} className="absolute hidden w-[12px] rounded-full bg-[#8A8A8A]" />
         </div>
       </div>
     </div>
