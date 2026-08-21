@@ -2,6 +2,7 @@ import { useState } from 'react';
 import useScrollReveal from '@/hooks/useScrollReveal';
 import useAuthStore from '@/stores/authStore';
 import useHomeContentStore from '@/stores/homeContentStore';
+import { updateActivityCard, clearActivityCard } from '@/apis/home';
 import editIcon from '@/assets/images/editicon.svg';
 import deleteIcon from '@/assets/images/deleteicon.svg';
 
@@ -42,18 +43,31 @@ export default function ActivitiesSection({ isEditable = false }) {
     }
   };
 
-  const handleSaveClick = (index) => {
+  const handleSaveClick = async (index) => {
     if (!draftTitle.trim() || !draftDescription.trim()) {
       alert('내용을 입력해 주세요.');
       return;
     }
-    updateActivity(index, { title: draftTitle, description: draftDescription });
-    setEditingIndex(null);
+
+    const cardId = activities[index].cardId;
+    try {
+      await updateActivityCard(cardId, { title: draftTitle, content: draftDescription });
+      updateActivity(index, { title: draftTitle, description: draftDescription });
+      setEditingIndex(null);
+    } catch {
+      alert('카드 수정에 실패했습니다.');
+    }
   };
 
-  const handleDeleteContent = (index) => {
-    updateActivity(index, { title: '', description: '' });
-    setEditingIndex((previous) => (previous === index ? null : previous));
+  const handleDeleteContent = async (index) => {
+    const cardId = activities[index].cardId;
+    try {
+      await clearActivityCard(cardId);
+      updateActivity(index, { title: '', description: '' });
+      setEditingIndex((previous) => (previous === index ? null : previous));
+    } catch {
+      alert('카드 초기화에 실패했습니다.');
+    }
   };
 
   return (

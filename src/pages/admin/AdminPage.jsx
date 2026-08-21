@@ -1,7 +1,10 @@
+import { useEffect } from 'react';
 import ActivitiesSection from '@/pages/visitor/main/ActivitiesSection';
 import TimelineSection from '@/pages/visitor/main/TimelineSection';
 import RecruitSection from '@/pages/visitor/main/RecruitSection';
 import HeroSection from '../visitor/main/HeroSection';
+import { getVisitorMain } from '@/apis/home';
+import useHomeContentStore from '@/stores/homeContentStore';
 
 /**
  * 관리자 홈 콘텐츠 관리 페이지.
@@ -10,6 +13,22 @@ import HeroSection from '../visitor/main/HeroSection';
  * 방문자용 HomePage는 isEditable을 넘기지 않아 로그인 여부와 무관하게 항상 일반 화면만 보인다.
  */
 function AdminPage() {
+  const setHomeContent = useHomeContentStore((state) => state.setHomeContent);
+
+  useEffect(() => {
+    let ignore = false;
+
+    getVisitorMain()
+      .then((data) => {
+        if (!ignore) setHomeContent(data);
+      })
+      .catch(() => {});
+
+    return () => {
+      ignore = true;
+    };
+  }, [setHomeContent]);
+
   return (
     <section>
       <HeroSection />

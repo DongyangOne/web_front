@@ -2,11 +2,21 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import useScrollReveal from '@/hooks/useScrollReveal';
 import useAuthStore from '@/stores/authStore';
 import useHomeContentStore from '@/stores/homeContentStore';
+import { createProject, updateProject, deleteProject } from '@/apis/home';
+import { uploadFile } from '@/apis/upload';
 import editIcon from '@/assets/images/editicon.svg';
 import deleteIcon from '@/assets/images/deleteicon.svg';
 
 function toMonthInputValue(monthText) {
   return monthText ? monthText.trim().replace('.', '-') : '';
+}
+
+function formatMonth(dateText) {
+  return dateText ? dateText.slice(0, 7).replace('-', '.') : '';
+}
+
+function toApiDate(monthInputValue) {
+  return monthInputValue ? `${monthInputValue}-01` : null;
 }
 
 function parsePeriod(period) {
@@ -41,13 +51,14 @@ const EMPTY_EVENT = {
   techStack: [],
   description: '',
   images: [],
+  photoIds: [],
 };
 
 const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, onCancel, showSaveButton = false }, ref) {
-  const [year, setYear] = useState(event.year);
-  const [projectName, setProjectName] = useState(event.projectName);
-  const [award, setAward] = useState(event.award);
-  const [activity, setActivity] = useState(event.activity);
+  const [year, setYear] = useState(event.year ?? '');
+  const [projectName, setProjectName] = useState(event.projectName ?? '');
+  const [award, setAward] = useState(event.award ?? '');
+  const [activity, setActivity] = useState(event.activity ?? '');
   const initialPeriod = parsePeriod(event.period);
   const [periodStart, setPeriodStart] = useState(initialPeriod.periodStart);
   const [periodEnd, setPeriodEnd] = useState(initialPeriod.periodEnd);
@@ -55,8 +66,10 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
     event.memberCount === null || event.memberCount === undefined ? '' : String(event.memberCount)
   );
   const [techStack, setTechStack] = useState(event.techStack.length > 0 ? [...event.techStack] : ['']);
-  const [description, setDescription] = useState(event.description);
-  const [images, setImages] = useState([...event.images]);
+  const [description, setDescription] = useState(event.description ?? '');
+  const [photoDrafts, setPhotoDrafts] = useState(
+    event.images.map((url, i) => ({ url, id: event.photoIds?.[i] ?? null, file: null }))
+  );
   const createdObjectUrlsRef = useRef(new Set());
 
   useEffect(() => {
@@ -101,15 +114,15 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
     }
     const url = URL.createObjectURL(file);
     createdObjectUrlsRef.current.add(url);
-    setImages((previous) => [...previous, url]);
+    setPhotoDrafts((previous) => [...previous, { url, id: null, file }]);
   };
 
   const handleRemoveImage = (index) => {
-    setImages((previous) => {
+    setPhotoDrafts((previous) => {
       const removed = previous[index];
-      if (createdObjectUrlsRef.current.has(removed)) {
-        URL.revokeObjectURL(removed);
-        createdObjectUrlsRef.current.delete(removed);
+      if (createdObjectUrlsRef.current.has(removed.url)) {
+        URL.revokeObjectURL(removed.url);
+        createdObjectUrlsRef.current.delete(removed.url);
       }
       return previous.filter((_, i) => i !== index);
     });
@@ -127,17 +140,18 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
       return;
     }
 
-    createdObjectUrlsRef.current.clear();
     onSave({
       year,
       projectName,
       award,
       activity,
       period: formatPeriod(periodStart, periodEnd),
+      periodStart,
+      periodEnd,
       memberCount: memberCount === '' ? null : Number(memberCount),
       techStack: validTechStack,
       description,
-      images,
+      photoDrafts,
     });
   };
 
@@ -261,9 +275,9 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
       <div className="flex flex-col gap-1">
         <span className="text-xs text-ink-sub">이미지</span>
         <div className="flex gap-3">
-          {images.map((src, index) => (
+          {photoDrafts.map((draft, index) => (
             <div key={index} className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-[#F0F0F0]">
-              <img src={src} alt="" className="h-full w-full object-cover" />
+              <img src={draft.url} alt="" className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
@@ -274,7 +288,7 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
               </button>
             </div>
           ))}
-          {images.length < 3 && (
+          {photoDrafts.length < 3 && (
             <label className="flex h-16 w-24 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-dashed border-line text-xs text-ink-sub">
               이미지 추가
               <input type="file" accept="image/*" className="hidden" onChange={handleAddImage} />
@@ -442,10 +456,45 @@ export default function TimelineSection({ isEditable = false }) {
   const [isAdding, setIsAdding] = useState(false);
   const editFormRefs = useRef({});
 
-  const handleDelete = (index) => {
-    if (window.confirm('삭제하시겠습니까?')) {
+  const resolvePhotoKeys = async (photoDrafts) => {
+    const keepPhotoIds = [];
+    const newPhotoKeys = [];
+    for (const draft of photoDrafts) {
+      if (draft.id !== null && draft.id !== undefined) {
+        keepPhotoIds.push(draft.id);
+      } else if (draft.file) {
+        const objectKey = await uploadFile('project', draft.file);
+        newPhotoKeys.push(objectKey);
+      }
+    }
+    return { keepPhotoIds, newPhotoKeys };
+  };
+
+  const toStoreItem = (project, side) => ({
+    projectId: project.projectId,
+    year: project.year,
+    projectName: project.projectName,
+    award: project.award,
+    activity: project.activity,
+    side,
+    period: `${formatMonth(project.startDate)} - ${formatMonth(project.endDate)}`,
+    memberCount: project.participantCount ?? null,
+    techStack: project.techStacks ?? [],
+    description: project.description,
+    images: (project.photos ?? []).map((photo) => photo.url),
+    photoIds: (project.photos ?? []).map((photo) => photo.id),
+  });
+
+  const handleDelete = async (index) => {
+    if (!window.confirm('삭제하시겠습니까?')) return;
+
+    const projectId = timeline[index].projectId;
+    try {
+      await deleteProject(projectId);
       deleteTimelineItem(index);
       setEditingIndex((previous) => (previous === index ? null : previous));
+    } catch {
+      alert('프로젝트 삭제에 실패했습니다.');
     }
   };
 
@@ -457,10 +506,51 @@ export default function TimelineSection({ isEditable = false }) {
     }
   };
 
-  const handleSaveNew = (item) => {
-    const nextSide = timeline.length % 2 === 0 ? 'right' : 'left';
-    addTimelineItem({ ...item, side: nextSide });
-    setIsAdding(false);
+  const handleSaveEdit = async (index, patch) => {
+    const projectId = timeline[index].projectId;
+    try {
+      const { keepPhotoIds, newPhotoKeys } = await resolvePhotoKeys(patch.photoDrafts);
+      const project = await updateProject(projectId, {
+        year: patch.year,
+        projectName: patch.projectName,
+        award: patch.award,
+        activity: patch.activity,
+        startDate: toApiDate(patch.periodStart),
+        endDate: toApiDate(patch.periodEnd),
+        participantCount: patch.memberCount,
+        techStacks: patch.techStack,
+        description: patch.description,
+        keepPhotoIds,
+        newPhotoKeys,
+      });
+      updateTimelineItem(index, toStoreItem(project, timeline[index].side));
+      setEditingIndex(null);
+    } catch {
+      alert('프로젝트 수정에 실패했습니다.');
+    }
+  };
+
+  const handleSaveNew = async (patch) => {
+    try {
+      const { newPhotoKeys } = await resolvePhotoKeys(patch.photoDrafts);
+      const project = await createProject({
+        year: patch.year,
+        projectName: patch.projectName,
+        award: patch.award,
+        activity: patch.activity,
+        startDate: toApiDate(patch.periodStart),
+        endDate: toApiDate(patch.periodEnd),
+        participantCount: patch.memberCount,
+        techStacks: patch.techStack,
+        description: patch.description,
+        photoKeys: newPhotoKeys,
+      });
+      const nextSide = timeline.length % 2 === 0 ? 'right' : 'left';
+      addTimelineItem(toStoreItem(project, nextSide));
+      setIsAdding(false);
+    } catch {
+      alert('프로젝트 등록에 실패했습니다.');
+    }
   };
 
   return (
@@ -491,10 +581,7 @@ export default function TimelineSection({ isEditable = false }) {
                 formRef={(el) => {
                   editFormRefs.current[index] = el;
                 }}
-                onSaveEdit={(patch) => {
-                  updateTimelineItem(index, patch);
-                  setEditingIndex(null);
-                }}
+                onSaveEdit={(patch) => handleSaveEdit(index, patch)}
                 onCancelEdit={() => setEditingIndex(null)}
               />
             );

@@ -9,6 +9,7 @@ const mapActivityCards = (activityCards) => {
   return [...activityCards]
     .sort((a, b) => a.cardOrder - b.cardOrder)
     .map((card, index) => ({
+      cardId: card.cardId,
       icon: ACTIVITY_LIST[index % ACTIVITY_LIST.length].icon,
       title: card.title,
       description: card.content,
@@ -19,6 +20,7 @@ const mapProjectDetails = (projectDetails) => {
   if (!Array.isArray(projectDetails) || projectDetails.length === 0) return null;
 
   return projectDetails.map((project, index) => ({
+    projectId: project.projectId,
     year: project.year,
     projectName: project.projectName,
     award: project.award,
@@ -29,6 +31,7 @@ const mapProjectDetails = (projectDetails) => {
     techStack: project.techStacks ?? [],
     description: project.description,
     images: (project.photos ?? []).map((photo) => photo.url),
+    photoIds: (project.photos ?? []).map((photo) => photo.id),
   }));
 };
 
