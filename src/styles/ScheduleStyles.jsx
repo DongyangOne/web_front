@@ -1,20 +1,9 @@
-function ScheduleStyles() {
-  return (
-    <style>
-      {`
-        .schedule-native-scrollbar-hidden {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
+const STYLES = `
+  .schedule-scroll::-webkit-scrollbar { display: none; }
+`;
 
-        .schedule-native-scrollbar-hidden::-webkit-scrollbar {
-          display: none;
-          width: 0;
-          height: 0;
-        }
-      `}
-    </style>
-  );
+function ScheduleStyles() {
+  return <style>{STYLES}</style>;
 }
 
 export default ScheduleStyles;

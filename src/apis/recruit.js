@@ -8,6 +8,12 @@ import instance from './instance';
 export const submitRecruit = (data) => instance.post('/api/v1/visitor/applicantMembers', data);
 
 /**
+ * 신입 부원 모집 공고 조회
+ * @returns {Promise}
+ */
+export const getMainRecruitment = () => instance.get('/api/v1/visitor/main/recruitment');
+
+/**
  * (관리자) 지원자 목록 조회
  * @returns {Promise}
  */
