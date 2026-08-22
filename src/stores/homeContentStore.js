@@ -17,7 +17,8 @@ const mapActivityCards = (activityCards) => {
 };
 
 const mapProjectDetails = (projectDetails) => {
-  if (!Array.isArray(projectDetails) || projectDetails.length === 0) return null;
+  if (!Array.isArray(projectDetails)) return null;
+  if (projectDetails.length === 0) return [];
 
   return projectDetails.map((project, index) => ({
     projectId: project.projectId,

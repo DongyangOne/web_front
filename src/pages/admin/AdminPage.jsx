@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ActivitiesSection from '@/pages/visitor/main/ActivitiesSection';
 import TimelineSection from '@/pages/visitor/main/TimelineSection';
 import RecruitSection from '@/pages/visitor/main/RecruitSection';
-import HeroSection from '../visitor/main/HeroSection';
 import { getVisitorMain } from '@/apis/home';
 import useHomeContentStore from '@/stores/homeContentStore';
+
+import HeroSection from '../visitor/main/HeroSection';
 
 /**
  * 관리자 홈 콘텐츠 관리 페이지.
@@ -14,20 +15,48 @@ import useHomeContentStore from '@/stores/homeContentStore';
  */
 function AdminPage() {
   const setHomeContent = useHomeContentStore((state) => state.setHomeContent);
+  const [status, setStatus] = useState('loading');
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let ignore = false;
+    setStatus('loading');
 
     getVisitorMain()
       .then((data) => {
-        if (!ignore) setHomeContent(data);
+        if (ignore) return;
+        setHomeContent(data);
+        setStatus('success');
       })
-      .catch(() => {});
+      .catch((error) => {
+        if (ignore) return;
+        console.error('메인페이지 콘텐츠 조회 실패', error);
+        setStatus('error');
+      });
 
     return () => {
       ignore = true;
     };
-  }, [setHomeContent]);
+  }, [setHomeContent, retryCount]);
+
+  const handleRetry = useCallback(() => {
+    setRetryCount((count) => count + 1);
+  }, []);
+
+  if (status === 'loading') {
+    return <section>콘텐츠를 불러오는 중입니다...</section>;
+  }
+
+  if (status === 'error') {
+    return (
+      <section>
+        콘텐츠를 불러오지 못했습니다.
+        <button type="button" onClick={handleRetry}>
+          다시 시도
+        </button>
+      </section>
+    );
+  }
 
   return (
     <section>

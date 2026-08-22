@@ -54,7 +54,10 @@ const EMPTY_EVENT = {
   photoIds: [],
 };
 
-const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, onCancel, showSaveButton = false }, ref) {
+const TimelineEditForm = forwardRef(function TimelineEditForm(
+  { event, onSave, onCancel, showSaveButton = false, disabled = false },
+  ref
+) {
   const [year, setYear] = useState(event.year ?? '');
   const [projectName, setProjectName] = useState(event.projectName ?? '');
   const [award, setAward] = useState(event.award ?? '');
@@ -118,14 +121,12 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
   };
 
   const handleRemoveImage = (index) => {
-    setPhotoDrafts((previous) => {
-      const removed = previous[index];
-      if (createdObjectUrlsRef.current.has(removed.url)) {
-        URL.revokeObjectURL(removed.url);
-        createdObjectUrlsRef.current.delete(removed.url);
-      }
-      return previous.filter((_, i) => i !== index);
-    });
+    const removed = photoDrafts[index];
+    if (removed && createdObjectUrlsRef.current.has(removed.url)) {
+      URL.revokeObjectURL(removed.url);
+      createdObjectUrlsRef.current.delete(removed.url);
+    }
+    setPhotoDrafts((previous) => previous.filter((_, i) => i !== index));
   };
 
   const handleSave = () => {
@@ -276,7 +277,7 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
         <span className="text-xs text-ink-sub">이미지</span>
         <div className="flex gap-3">
           {photoDrafts.map((draft, index) => (
-            <div key={index} className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-[#F0F0F0]">
+            <div key={index} className="relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-schedule-scroll-track">
               <img src={draft.url} alt="" className="h-full w-full object-cover" />
               <button
                 type="button"
@@ -302,7 +303,12 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
           취소
         </button>
         {showSaveButton && (
-          <button type="button" onClick={handleSave} className="rounded-full bg-brand px-5 py-1.5 text-sm font-bold text-white">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={disabled}
+            className="rounded-full bg-brand px-5 py-1.5 text-sm font-bold text-white disabled:opacity-50"
+          >
             저장
           </button>
         )}
@@ -311,21 +317,28 @@ const TimelineEditForm = forwardRef(function TimelineEditForm({ event, onSave, o
   );
 });
 
-function TimelineControls({ isRight, isEditing, onEdit, onDelete }) {
+function TimelineControls({ isRight, isEditing, onEdit, onDelete, disabled = false }) {
   const editButton = (
     <button
       type="button"
       onClick={onEdit}
+      disabled={disabled}
       aria-label={isEditing ? '저장' : '수정'}
-      className={
+      className={`disabled:opacity-50 ${
         isEditing ? 'whitespace-nowrap text-sm font-bold text-brand' : 'flex h-6 w-6 items-center justify-center'
-      }
+      }`}
     >
       {isEditing ? '저장' : <img src={editIcon} alt="" className="h-3.5 w-3.5" />}
     </button>
   );
   const deleteButton = (
-    <button type="button" onClick={onDelete} aria-label="삭제" className="flex h-6 w-6 items-center justify-center">
+    <button
+      type="button"
+      onClick={onDelete}
+      disabled={disabled}
+      aria-label="삭제"
+      className="flex h-6 w-6 items-center justify-center disabled:opacity-50"
+    >
       <img src={deleteIcon} alt="" className="h-4 w-4" />
     </button>
   );
@@ -432,7 +445,7 @@ function TimelineCard({ event, isRight, isEditing, formRef, onSaveEdit, onCancel
                     key={index}
                     src={src}
                     alt={`${event.projectName} 이미지 ${index + 1}`}
-                    className="w-full aspect-[4/3] object-cover rounded-lg bg-[#F0F0F0]"
+                    className="w-full aspect-[4/3] object-cover rounded-lg bg-schedule-scroll-track"
                   />
                 ))}
               </div>
@@ -452,8 +465,9 @@ export default function TimelineSection({ isEditable = false }) {
   const deleteTimelineItem = useHomeContentStore((state) => state.deleteTimelineItem);
   const addTimelineItem = useHomeContentStore((state) => state.addTimelineItem);
 
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingProjectId, setEditingProjectId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const editFormRefs = useRef({});
 
   const resolvePhotoKeys = async (photoDrafts) => {
@@ -486,28 +500,36 @@ export default function TimelineSection({ isEditable = false }) {
   });
 
   const handleDelete = async (index) => {
+    if (isSaving) return;
     if (!window.confirm('삭제하시겠습니까?')) return;
 
     const projectId = timeline[index].projectId;
+    setIsSaving(true);
     try {
       await deleteProject(projectId);
-      deleteTimelineItem(index);
-      setEditingIndex((previous) => (previous === index ? null : previous));
+      const currentIndex = useHomeContentStore.getState().timeline.findIndex((item) => item.projectId === projectId);
+      if (currentIndex !== -1) deleteTimelineItem(currentIndex);
+      setEditingProjectId((previous) => (previous === projectId ? null : previous));
     } catch {
       alert('프로젝트 삭제에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleEditButtonClick = (index) => {
-    if (editingIndex === index) {
+    const projectId = timeline[index].projectId;
+    if (editingProjectId === projectId) {
       editFormRefs.current[index]?.requestSave();
     } else {
-      setEditingIndex(index);
+      setEditingProjectId(projectId);
     }
   };
 
   const handleSaveEdit = async (index, patch) => {
+    if (isSaving) return;
     const projectId = timeline[index].projectId;
+    setIsSaving(true);
     try {
       const { keepPhotoIds, newPhotoKeys } = await resolvePhotoKeys(patch.photoDrafts);
       const project = await updateProject(projectId, {
@@ -523,14 +545,22 @@ export default function TimelineSection({ isEditable = false }) {
         keepPhotoIds,
         newPhotoKeys,
       });
-      updateTimelineItem(index, toStoreItem(project, timeline[index].side));
-      setEditingIndex(null);
+      const currentTimeline = useHomeContentStore.getState().timeline;
+      const currentIndex = currentTimeline.findIndex((item) => item.projectId === projectId);
+      if (currentIndex !== -1) {
+        updateTimelineItem(currentIndex, toStoreItem(project, currentTimeline[currentIndex].side));
+      }
+      setEditingProjectId(null);
     } catch {
       alert('프로젝트 수정에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleSaveNew = async (patch) => {
+    if (isSaving) return;
+    setIsSaving(true);
     try {
       const { newPhotoKeys } = await resolvePhotoKeys(patch.photoDrafts);
       const project = await createProject({
@@ -550,6 +580,8 @@ export default function TimelineSection({ isEditable = false }) {
       setIsAdding(false);
     } catch {
       alert('프로젝트 등록에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -572,7 +604,7 @@ export default function TimelineSection({ isEditable = false }) {
 
           {timeline.map((event, index) => {
             const isRight = event.side === 'right';
-            const isEditing = editingIndex === index;
+            const isEditing = editingProjectId === event.projectId;
             const card = (
               <TimelineCard
                 event={event}
@@ -582,7 +614,7 @@ export default function TimelineSection({ isEditable = false }) {
                   editFormRefs.current[index] = el;
                 }}
                 onSaveEdit={(patch) => handleSaveEdit(index, patch)}
-                onCancelEdit={() => setEditingIndex(null)}
+                onCancelEdit={() => setEditingProjectId(null)}
               />
             );
             const controls = isAuthenticated && (
@@ -591,6 +623,7 @@ export default function TimelineSection({ isEditable = false }) {
                 isEditing={isEditing}
                 onEdit={() => handleEditButtonClick(index)}
                 onDelete={() => handleDelete(index)}
+                disabled={isSaving}
               />
             );
 
@@ -642,6 +675,7 @@ export default function TimelineSection({ isEditable = false }) {
                     onSave={handleSaveNew}
                     onCancel={() => setIsAdding(false)}
                     showSaveButton
+                    disabled={isSaving}
                   />
                 </div>
               </div>

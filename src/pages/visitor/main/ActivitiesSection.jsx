@@ -15,6 +15,7 @@ export default function ActivitiesSection({ isEditable = false }) {
   const [editingIndex, setEditingIndex] = useState(null);
   const [draftTitle, setDraftTitle] = useState('');
   const [draftDescription, setDraftDescription] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const startEdit = (index) => {
     setEditingIndex(index);
@@ -44,29 +45,37 @@ export default function ActivitiesSection({ isEditable = false }) {
   };
 
   const handleSaveClick = async (index) => {
+    if (isSaving) return;
     if (!draftTitle.trim() || !draftDescription.trim()) {
       alert('내용을 입력해 주세요.');
       return;
     }
 
     const cardId = activities[index].cardId;
+    setIsSaving(true);
     try {
       await updateActivityCard(cardId, { title: draftTitle, content: draftDescription });
       updateActivity(index, { title: draftTitle, description: draftDescription });
       setEditingIndex(null);
     } catch {
       alert('카드 수정에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleDeleteContent = async (index) => {
+    if (isSaving) return;
     const cardId = activities[index].cardId;
+    setIsSaving(true);
     try {
       await clearActivityCard(cardId);
       updateActivity(index, { title: '', description: '' });
       setEditingIndex((previous) => (previous === index ? null : previous));
     } catch {
       alert('카드 초기화에 실패했습니다.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -95,20 +104,22 @@ export default function ActivitiesSection({ isEditable = false }) {
                     <button
                       type="button"
                       onClick={() => (isEditing ? handleSaveClick(index) : startEdit(index))}
+                      disabled={isSaving}
                       aria-label={isEditing ? '저장' : '수정'}
-                      className={
+                      className={`disabled:opacity-50 ${
                         isEditing
                           ? 'rounded-full bg-brand px-3 py-1 text-xs font-bold text-white'
                           : 'flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-brand-soft'
-                      }
+                      }`}
                     >
                       {isEditing ? '저장' : <img src={editIcon} alt="" className="h-3.5 w-3.5" />}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDeleteContent(index)}
+                      disabled={isSaving}
                       aria-label="삭제"
-                      className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-brand-soft"
+                      className="flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-brand-soft disabled:opacity-50"
                     >
                       <img src={deleteIcon} alt="" className="h-4 w-4" />
                     </button>
