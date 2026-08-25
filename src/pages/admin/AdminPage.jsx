@@ -4,6 +4,7 @@ import TimelineSection from '@/pages/visitor/main/TimelineSection';
 import RecruitSection from '@/pages/visitor/main/RecruitSection';
 import { getVisitorMain } from '@/apis/home';
 import useHomeContentStore from '@/stores/homeContentStore';
+import { HOME_CONTENT_FETCH_ERROR_MESSAGE } from '@/constants/messages';
 
 import HeroSection from '../visitor/main/HeroSection';
 
@@ -30,7 +31,7 @@ function AdminPage() {
       })
       .catch((error) => {
         if (ignore) return;
-        console.error('메인페이지 콘텐츠 조회 실패', error);
+        console.error('[AdminPage] 메인페이지 콘텐츠 조회 실패', error);
         setStatus('error');
       });
 
@@ -50,7 +51,7 @@ function AdminPage() {
   if (status === 'error') {
     return (
       <section>
-        콘텐츠를 불러오지 못했습니다.
+        {HOME_CONTENT_FETCH_ERROR_MESSAGE}
         <button type="button" onClick={handleRetry}>
           다시 시도
         </button>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getVisitorMain } from '@/apis/home';
 import useHomeContentStore from '@/stores/homeContentStore';
+import { HOME_CONTENT_FETCH_ERROR_MESSAGE } from '@/constants/messages';
 
 import HeroSection from './main/HeroSection';
 import ActivitiesSection from './main/ActivitiesSection';
@@ -23,7 +24,7 @@ export default function HomePage() {
       })
       .catch((error) => {
         if (ignore) return;
-        console.error('메인페이지 콘텐츠 조회 실패', error);
+        console.error('[HomePage] 메인페이지 콘텐츠 조회 실패', error);
         setHasError(true);
       });
 
@@ -40,7 +41,7 @@ export default function HomePage() {
     <>
       {hasError && (
         <div>
-          콘텐츠를 불러오지 못했습니다.
+          {HOME_CONTENT_FETCH_ERROR_MESSAGE}
           <button type="button" onClick={handleRetry}>
             다시 시도
           </button>

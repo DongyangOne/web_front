@@ -3,6 +3,7 @@ import useScrollReveal from '@/hooks/useScrollReveal';
 import useAuthStore from '@/stores/authStore';
 import useHomeContentStore from '@/stores/homeContentStore';
 import { updateActivityCard, clearActivityCard } from '@/apis/home';
+import { ACTIVITY_CARD_UPDATE_ERROR_MESSAGE, ACTIVITY_CARD_CLEAR_ERROR_MESSAGE } from '@/constants/messages';
 import editIcon from '@/assets/images/editicon.svg';
 import deleteIcon from '@/assets/images/deleteicon.svg';
 
@@ -58,7 +59,7 @@ export default function ActivitiesSection({ isEditable = false }) {
       updateActivity(index, { title: draftTitle, description: draftDescription });
       setEditingIndex(null);
     } catch {
-      alert('카드 수정에 실패했습니다.');
+      alert(ACTIVITY_CARD_UPDATE_ERROR_MESSAGE);
     } finally {
       setIsSaving(false);
     }
@@ -73,7 +74,7 @@ export default function ActivitiesSection({ isEditable = false }) {
       updateActivity(index, { title: '', description: '' });
       setEditingIndex((previous) => (previous === index ? null : previous));
     } catch {
-      alert('카드 초기화에 실패했습니다.');
+      alert(ACTIVITY_CARD_CLEAR_ERROR_MESSAGE);
     } finally {
       setIsSaving(false);
     }
