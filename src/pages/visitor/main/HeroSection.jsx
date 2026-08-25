@@ -1,4 +1,5 @@
 import HeroScene from '@/three/scenes/HeroScene';
+import useHomeContentStore from '@/stores/homeContentStore';
 
 // clamp()는 Tailwind 임의 값으로 표현 불가 → inline 유지
 const ONE_LETTER_BASE_STYLE = {
@@ -9,7 +10,11 @@ const ONE_LETTER_BASE_STYLE = {
   textShadow: '0 4px 24px rgba(196,120,64,0.18)',
 };
 
+const DEFAULT_DESCRIPTION = '아이디어를 현실로 구현하는 공간, ONE';
+
 export default function HeroSection() {
+  const mainDescription = useHomeContentStore((state) => state.mainDescription);
+
   return (
     <section
       className="relative min-h-screen overflow-hidden flex items-center justify-center"
@@ -44,11 +49,10 @@ export default function HeroSection() {
         </div>
 
         <p
-          className="flex items-center justify-center gap-2 font-medium text-[#7A4A28]"
+          className="font-medium text-[#7A4A28]"
           style={{ fontSize: 'clamp(1rem, 2.5vw, 1.4rem)' }}
         >
-          아이디어를 현실로 구현하는 공간,
-          <strong className="text-brand">ONE</strong>
+          {mainDescription || DEFAULT_DESCRIPTION}
         </p>
       </div>
 
